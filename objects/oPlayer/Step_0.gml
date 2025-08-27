@@ -69,6 +69,15 @@ switch (wall_jump_state) {
             vsp = 0;
         }
 
+        // ✅ Allow wall jump during grab
+        if (_key_jump) {
+            hsp = -_on_wall * wall_jump_distance;
+            vsp = jump_height_wall - 2;
+            wall_jump_delay = wall_jump_delay_max;
+            wall_jump_gravity_bypass = 0; // ✅ Reset gravity bypass immediately
+            wall_jump_state = WallJumpState.JUMP;
+        }
+
         if (wall_grab_timer >= wall_grab_timer_max) {
             wall_jump_state = WallJumpState.SLIDE;
         }
@@ -87,7 +96,7 @@ switch (wall_jump_state) {
             hsp = -_on_wall * wall_jump_distance;
             vsp = jump_height_wall - 2;
             wall_jump_delay = wall_jump_delay_max;
-            wall_jump_gravity_bypass = wall_jump_gravity_bypass_max + 4;
+            wall_jump_gravity_bypass = 0; // ✅ Reset gravity bypass immediately
             wall_jump_state = WallJumpState.JUMP;
         }
         break;
