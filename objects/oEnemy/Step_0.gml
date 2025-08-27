@@ -158,21 +158,40 @@ if (place_meeting(x, y + vsp, oBlock)) {
 #endregion
 
 #region ANIMATION & SPRITE ORIENTATION
-// Flip the sprite horizontally based on the current direction
-// Assumes sprite is facing right by default.
+// Set the sprite based on the enemy's current state.
+switch (enemy_state) {
+    case ENEMY_STATE.PATROL:
+    case ENEMY_STATE.ALERT:
+        // Use the base enemy sprite for patrol and alert states.
+        sprite_index = sEnemyPatrol;
+        break;
+
+    case ENEMY_STATE.CHASE:
+        // Use the dedicated chase sprite for the chase state.
+        if (sprite_exists(sEnemyChase)) {
+            sprite_index = sEnemyChase;
+        } else {
+            // Fallback to the default sprite if the chase sprite is missing.
+            sprite_index = sEnemyPatrol;
+        }
+        break;
+}
+
+// Flip the sprite horizontally based on the current direction.
 if (current_dir == 1) {
     image_xscale = 1; // Face right
 } else {
     image_xscale = -1; // Face left (flipped)
 }
 
-// Update the sprite animation if needed (e.g., walking animation)
-// If moving and image_speed isn't already set
-if (hsp != 0 && floor(image_speed) == 0) {
-    image_speed = 0.2; // Adjust animation speed as desired
-} else if (hsp == 0 && image_speed != 0) {
-    image_speed = 0; // Stop animation if not moving
-    image_index = 0; // Reset to first frame
+// Control animation speed based on horizontal movement.
+if (hsp != 0) {
+    // If moving, play the animation.
+    image_speed = 1;
+} else {
+    // If not moving, stop the animation.
+    image_speed = 0;
+    image_index = 0; // Reset to first frame.
 }
 #endregion
 

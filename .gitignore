@@ -1,0 +1,34 @@
+# GameMaker Studio project ignore rules
+
+# Compiled binaries
+*.exe
+*.app
+*.zip
+*.yyz
+
+# Cache and build folders
+__GMSCache/
+output/
+build/
+bin/
+obj/
+
+# Backup and temp files
+*.log
+*.tmp
+*.backup
+*.swp
+*.bak
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# IDE-specific
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# GitHub Desktop artifacts
+.gitattributes
