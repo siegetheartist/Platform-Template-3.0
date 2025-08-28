@@ -1,6 +1,20 @@
+// --- Enemy Parent Movement, AI, and Collision Logic ---
+
+#region VARIABLES
+// --- Get tilemap ID for collision ---
+var collision_tileset = layer_tilemap_get_id("t_Collision"); // Get the ID of the collision tilemap layer
+
+// Declare all local variables used within this step event
+var _player_instance = noone; // Reference to the player object
+var _distance_to_player = 0; // Distance from enemy to player
+var _line_of_sight_clear = false; // True if enemy has clear sight to player
+var _target_hsp = 0; // Desired horizontal speed based on current state
+var _pixel_step = 0; // For pixel-by-pixel collision adjustment
+#endregion
+
 #region PLAYER DETECTION & STATE TRANSITION
 // Find the player object (assuming it's named oPlayer)
-var _player_instance = instance_find(oPlayer, 0); // Finds the first instance of oPlayer
+_player_instance = instance_find(oPlayer, 0); // Finds the first instance of oPlayer
 
 // Decrement the alert cooldown timer
 if (alert_cooldown_timer > 0) {
@@ -9,11 +23,10 @@ if (alert_cooldown_timer > 0) {
 
 if (instance_exists(_player_instance)) {
     // Calculate the distance to the player
-    var _distance_to_player = point_distance(x, y, _player_instance.x, _player_instance.y);
+    _distance_to_player = point_distance(x, y, _player_instance.x, _player_instance.y);
     
-    // Check for line of sight to the player
-    // This will return 'noone' if there's no oBlock between the enemy and the player
-    var _line_of_sight_clear = !collision_line(x, y, _player_instance.x, _player_instance.y, oBlock, false, true);
+    // Check for line of sight to the player using the collision tilemap
+    _line_of_sight_clear = !collision_line(x, y, _player_instance.x, _player_instance.y, collision_tileset, false, true);
 
     switch (enemy_state) {
         case ENEMY_STATE.PATROL:
@@ -21,7 +34,8 @@ if (instance_exists(_player_instance)) {
             // Transition to ALERT if player is in range and line of sight is clear AND cooldown is over
             if (_distance_to_player < alert_range && _line_of_sight_clear && alert_cooldown_timer <= 0) {
                 enemy_state = ENEMY_STATE.ALERT;
-                alert_timer = alert_timeout; // Start the timer
+                alert_timer = alert_timeout; // Start the alert countdown timer
+                // show_debug_message("ENEMY STATE CHANGE: PATROL -> ALERT"); // Debug: Uncomment to see state changes
             }
             break;
 
@@ -30,11 +44,13 @@ if (instance_exists(_player_instance)) {
             // Transition to CHASE if player is closer and line of sight is clear
             if (_distance_to_player < chase_range && _line_of_sight_clear) {
                 enemy_state = ENEMY_STATE.CHASE;
+                // show_debug_message("ENEMY STATE CHANGE: ALERT -> CHASE"); // Debug: Uncomment to see state changes
             }
             // Transition back to PATROL if player is too far or line of sight is blocked
             else if (_distance_to_player > deaggro_range || !_line_of_sight_clear) {
                 enemy_state = ENEMY_STATE.PATROL;
                 alert_cooldown_timer = alert_cooldown_time; // Start the cooldown timer
+                // show_debug_message("ENEMY STATE CHANGE: ALERT -> PATROL (De-aggro/LOS Blocked)"); // Debug: Uncomment to see state changes
             }
             // Check if the alert timer has run out
             if (alert_timer > 0) {
@@ -43,6 +59,7 @@ if (instance_exists(_player_instance)) {
             if (alert_timer <= 0) {
                 enemy_state = ENEMY_STATE.PATROL; // Time's up, go back to patrolling
                 alert_cooldown_timer = alert_cooldown_time; // Start the cooldown timer
+                // show_debug_message("ENEMY STATE CHANGE: ALERT -> PATROL (Timeout)"); // Debug: Uncomment to see state changes
             }
             break;
 
@@ -50,19 +67,21 @@ if (instance_exists(_player_instance)) {
             hsp_max = chase_hsp_max; // Set horizontal speed for chasing
             // Turn towards the player if chasing
             if (_player_instance.x < x) {
-                current_dir = -1; // Player is to the left
+                current_dir = -1; // Player is to the left, face left
             } else {
-                current_dir = 1; // Player is to the right
+                current_dir = 1; // Player is to the right, face right
             }
             // Transition back to ALERT if player moves out of chase range or line of sight is blocked
             if (_distance_to_player > chase_range || !_line_of_sight_clear) {
                 enemy_state = ENEMY_STATE.ALERT;
-                alert_timer = alert_timeout; // Restart the timer
+                alert_timer = alert_timeout; // Restart the alert countdown timer
+                // show_debug_message("ENEMY STATE CHANGE: CHASE -> ALERT (Range/LOS Blocked)"); // Debug: Uncomment to see state changes
             }
             // If player is very far, transition directly to PATROL (skipping ALERT)
             if (_distance_to_player > deaggro_range) {
-                 enemy_state = ENEMY_STATE.PATROL;
-                 alert_cooldown_timer = alert_cooldown_time; // Start the cooldown timer
+                enemy_state = ENEMY_STATE.PATROL;
+                alert_cooldown_timer = alert_cooldown_time; // Start the cooldown timer
+                // show_debug_message("ENEMY STATE CHANGE: CHASE -> PATROL (De-aggro)"); // Debug: Uncomment to see state changes
             }
             break;
     }
@@ -75,7 +94,7 @@ if (instance_exists(_player_instance)) {
 
 #region MOVEMENT ACCELERATION / DECELERATION
 // Calculate the target horizontal speed based on current direction and dynamic max speed
-var _target_hsp = current_dir * hsp_max;
+_target_hsp = current_dir * hsp_max;
 
 // If the enemy needs to change speed (either accelerate or decelerate)
 if (hsp != _target_hsp) {
@@ -86,7 +105,7 @@ if (hsp != _target_hsp) {
         } else { // Decelerate towards 0
             hsp -= sign(hsp) * hsp_decel;
         }
-    } 
+    }    
     // Otherwise, accelerate towards the target speed
     else {
         if (abs(_target_hsp - hsp) < hsp_accel) { // If very close to target, snap to target
@@ -110,93 +129,60 @@ if (enemy_state == ENEMY_STATE.PATROL) {
     var _edge_check_x = x + (current_dir * _edge_check_offset);
     var _edge_check_y = y + _ground_check_offset;
 
-    // If there is no solid block at the edge position, reverse direction
-    if (!place_meeting(_edge_check_x, _edge_check_y, oBlock)) {
+    // If there is no solid tile at the edge position, reverse direction
+    if (!place_meeting(_edge_check_x, _edge_check_y, collision_tileset)) {
         current_dir *= -1; // Change direction
     }
 }
 #endregion
 
 #region HORIZONTAL COLLISION
-// Check for horizontal collision with solid blocks (oBlock)
-if (place_meeting(x + hsp, y, oBlock)) {
+// Apply horizontal movement
+x += hsp;
+
+// Resolve horizontal collision with solid blocks (collision_tileset)
+if (place_meeting(x, y, collision_tileset)) {
     // Determine the direction of collision (pixel by pixel adjustment)
-    var _pixel_step = sign(hsp);
+    _pixel_step = sign(hsp);
     // Move the enemy back one pixel at a time until it's no longer colliding
-    while (!place_meeting(x + _pixel_step, y, oBlock)) {
-        x += _pixel_step;
+    while (place_meeting(x, y, collision_tileset)) { // While *still* colliding
+        x -= _pixel_step;
     }
     hsp = 0; // Stop horizontal movement
-    current_dir *= -1; // Reverse direction
+    current_dir *= -1; // Reverse direction (bounce off tilemap wall)
 }
 
-// Check for horizontal collision with other bad entities/enemies (oBad)
-// This will make enemies bounce off each other
-if (place_meeting(x + hsp, y, oBad)) {
-    // Determine the direction of collision (pixel by pixel adjustment)
-    var _pixel_step = sign(hsp);
-    // Move the enemy back one pixel at a time until it's no longer colliding
-    while (!place_meeting(x + _pixel_step, y, oBad)) {
-        x += _pixel_step;
-    }
-    hsp = 0; // Stop horizontal movement
+// Resolve horizontal collision with other bad entities/enemies (oEnemy, parent object)
+// This will make enemies bounce off each other without getting stuck.
+// IMPORTANT: For dynamic instances, avoid pixel-by-pixel `while` loops to prevent deadlocks.
+if (place_meeting(x, y, oEnemy)) { // If colliding with any instance of oEnemy (including children)
+    hsp = 0; // Stop horizontal movement immediately
     current_dir *= -1; // Reverse direction
 }
 #endregion
 
 #region VERTICAL COLLISION
-// Check for vertical collision with solid blocks (oBlock)
-if (place_meeting(x, y + vsp, oBlock)) {
-    // Determine the direction of collision (pixel by pixel adjustment)
-    var _pixel_step = sign(vsp);
-    // Move the enemy back one pixel at a time until it's no longer colliding
-    while (!place_meeting(x, y + _pixel_step, oBlock)) {
-        y += _pixel_step;
-    }
-    vsp = 0; // Stop vertical movement
-}
-#endregion
+// --- Vertical Movement and Collision Resolution ---
 
-#region ANIMATION & SPRITE ORIENTATION
-// Set the sprite based on the enemy's current state.
-switch (enemy_state) {
-    case ENEMY_STATE.PATROL:
-    case ENEMY_STATE.ALERT:
-        // Use the base enemy sprite for patrol and alert states.
-        sprite_index = sEnemyPatrol;
-        break;
+// Check if currently on ground BEFORE applying movement for this frame
+var _is_on_ground_before_move = place_meeting(x, y + 1, collision_tileset);
 
-    case ENEMY_STATE.CHASE:
-        // Use the dedicated chase sprite for the chase state.
-        if (sprite_exists(sEnemyChase)) {
-            sprite_index = sEnemyChase;
-        } else {
-            // Fallback to the default sprite if the chase sprite is missing.
-            sprite_index = sEnemyPatrol;
-        }
-        break;
+// If on ground, explicitly set vsp to 0 before applying frame's movement to prevent micro-vibrations
+if (_is_on_ground_before_move) {
+    vsp = 0;
 }
 
-// Flip the sprite horizontally based on the current direction.
-if (current_dir == 1) {
-    image_xscale = 1; // Face right
-} else {
-    image_xscale = -1; // Face left (flipped)
-}
-
-// Control animation speed based on horizontal movement.
-if (hsp != 0) {
-    // If moving, play the animation.
-    image_speed = 1;
-} else {
-    // If not moving, stop the animation.
-    image_speed = 0;
-    image_index = 0; // Reset to first frame.
-}
-#endregion
-
-#region FINAL MOVEMENT
-// Apply the calculated horizontal and vertical speeds to the enemy's position
-x += hsp;
+// Apply vertical movement for this frame
 y += vsp;
+
+// Resolve vertical collision with solid blocks (collision_tileset)
+if (place_meeting(x, y, collision_tileset)) {
+    // Determine the direction of collision (pixel by pixel adjustment)
+    _pixel_step = sign(vsp);
+    // Move the enemy back one pixel at a time until it's no longer colliding
+    while (place_meeting(x, y, collision_tileset)) { // While *still* colliding
+        y -= _pixel_step;
+    }
+    vsp = 0; // Ensure vsp is zero after resolving collision
+}
 #endregion
