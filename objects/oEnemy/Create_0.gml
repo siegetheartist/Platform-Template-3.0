@@ -57,7 +57,7 @@ _ground_check_offset = 0; // Initialize, will be set by children
 exclamation_sprite = -1; 
 
 // Placeholder sprite variables for animation (children will set these)
-spr_patrol_idle = -1; // Default sprite for idle during patrol/alert (if any)
+spr_idle_specific = -1; // Stores the specific idle sprite for this enemy type.
 spr_patrol_move = -1; // Default sprite for moving during patrol/alert
 spr_chase_move = -1;  // Default sprite for moving during chase
 #endregion

@@ -1,11 +1,12 @@
 /// @function scr_enemy_init_sprites_and_offsets(_idle_sprite, _patrol_move_sprite, _chase_move_sprite)
-/// @arg {sprite_index} _idle_sprite           The default idle sprite for this enemy type.
+/// @arg {sprite_index} _idle_sprite           The specific idle sprite for this enemy type.
 /// @arg {sprite_index} _patrol_move_sprite    The movement sprite for PATROL/ALERT states.
 /// @arg {sprite_index} _chase_move_sprite     The movement sprite for CHASE state.
 
 function scr_enemy_init_sprites_and_offsets(_idle_sprite, _patrol_move_sprite, _chase_move_sprite) {
     // Set the instance's primary sprite and animation sprites
-    self.sprite_index = _idle_sprite;
+    self.sprite_index = _idle_sprite;        // Sets initial sprite to the idle sprite
+    self.spr_idle_specific = _idle_sprite;   // Store the specific idle sprite for later use
     self.spr_patrol_move = _patrol_move_sprite;
     self.spr_chase_move = _chase_move_sprite;
     self.exclamation_sprite = spr_exclamation; // Always use spr_exclamation

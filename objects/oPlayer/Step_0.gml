@@ -257,7 +257,7 @@ if (!_on_ground) {
         sprite_index = sPlayerRun; // Set sprite for running
         image_speed = 1; // Play running animation
     } else {
-        sprite_index = sPlayer; // Set sprite for idle
+        sprite_index = sPlayerIdle; // Set sprite for idle
         image_speed = 0; // Stop animation
         image_index = 0; // Reset to first frame of idle
     }
