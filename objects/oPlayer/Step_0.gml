@@ -277,7 +277,7 @@ if (!_on_ground) {
 #region HAZARD & DEBUG COLLISIONS
 // --- Enemy Collision ---
 // Checks for collision with enemy objects and triggers respawn
-if (place_meeting(x, y, oBad)) {
+if (place_meeting(x, y, oEnemy) || place_meeting(x, y, oHazard)) {
     instance_create_layer(0, 0, "l_Faders", oFader); // Create a fader object
     oFader.fader_mode = "respawn"; // Set fader mode to respawn
 }
