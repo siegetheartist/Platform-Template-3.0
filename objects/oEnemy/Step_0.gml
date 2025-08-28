@@ -165,12 +165,22 @@ if (place_meeting(x, y, collision_tileset)) {
 
 // Resolve horizontal collision with other bad entities/enemies (oEnemy, parent object)
 // This will make enemies bounce off each other without getting stuck.
-// IMPORTANT: For dynamic instances, avoid pixel-by-pixel `while` loops to prevent deadlocks.
 show_debug_message("DEBUG: Enemy " + string(id) + " Checking horizontal enemy collision at (X,Y): " + string(x) + "," + string(y));
 if (place_meeting(x, y, oEnemy)) { // If colliding with any instance of oEnemy (including children)
     show_debug_message("DEBUG: Enemy " + string(id) + " HORIZONTAL COLLISION with ANOTHER ENEMY. hsp=" + string(hsp));
+    
+    // Store the original intended direction of movement before reversing
+    var _original_move_dir = sign(hsp); // Use current hsp to determine direction of collision
+    if (_original_move_dir == 0) _original_move_dir = current_dir; // Fallback if hsp was 0
+
     hsp = 0; // Stop horizontal movement immediately
-    current_dir *= -1; // Reverse direction
+    current_dir *= -1; // Reverse direction (will start moving in new direction next frame)
+
+    // Push the enemy back one pixel in the opposite direction of its original movement
+    // This immediately separates them to prevent re-collision in the next step.
+    x -= _original_move_dir; 
+    
+    show_debug_message("DEBUG: Enemy " + string(id) + " PUSHED by " + string(-_original_move_dir) + "px. New X: " + string(x) + " New current_dir: " + string(current_dir));
 }
 #endregion
 
