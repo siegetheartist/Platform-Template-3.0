@@ -1,3 +1,5 @@
+
+
 #region VARIABLES
 var _key_left = 0; // True if 'A' is pressed
 var _key_right = 0; // True if 'D' is pressed

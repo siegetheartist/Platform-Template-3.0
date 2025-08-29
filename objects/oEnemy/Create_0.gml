@@ -33,7 +33,7 @@ chase_hsp_max = 3;  // Default faster speed for chasing
 
 // Acceleration and deceleration values for smoother movement
 hsp_accel = 0.1; // How quickly the enemy speeds up horizontally
-hsp_decel = 0.2; // How quickly the enemy slows down horizontally
+hsp_decel = 0.3; // How quickly the enemy slows down horizontally
 
 // Define detection ranges for player interaction (children can override these)
 alert_range = 200; // Distance at which the enemy will enter ALERT state
@@ -42,11 +42,11 @@ deaggro_range = 250; // Distance at which the enemy will stop chasing/alerting a
 
 // New variables for the alert timeout
 alert_timer = 0; // The current countdown timer for the alert state
-alert_timeout = 240; // The total time (in frames) before the enemy returns to patrol (e.g., 4 seconds at 60 FPS)
+alert_timeout = 120; // The total time (in frames) before the enemy returns to patrol (e.g., 4 seconds at 60 FPS)
 
 // New variables for the alert cooldown
 alert_cooldown_timer = 0; // A timer to prevent immediate re-alerting after de-aggro
-alert_cooldown_time = 180; // The total time (in frames) before a new alert can be triggered (e.g., 3 seconds)
+alert_cooldown_time = 120; // The total time (in frames) before a new alert can be triggered (e.g., 3 seconds)
 
 // Offset for edge detection check. These will be calculated by child objects
 // based on their specific sprite_width/height.
