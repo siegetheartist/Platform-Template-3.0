@@ -18,6 +18,10 @@ function scr_enemy_handle_animation() {
         case ENEMY_STATE.CHASE:
             self.sprite_index = self.spr_chase_move; // Use specific chase/attack sprite
             break;
+        
+        case ENEMY_STATE.TAUNT: // NEW: Display taunt animation
+            self.sprite_index = self.spr_taunt_specific; // Use the specific taunt sprite
+            break;
     }
 
     // Flip the sprite horizontally based on the current direction.
@@ -28,8 +32,9 @@ function scr_enemy_handle_animation() {
     }
 
     // Control animation speed based on horizontal movement.
-    if (self.hsp != 0) {
-        self.image_speed = 1; // Play animation when moving
+    // If taunting, animation should usually play, but movement speed is 0.
+    if (self.hsp != 0 || self.enemy_state == ENEMY_STATE.TAUNT) { // Play animation if moving OR taunting
+        self.image_speed = 1; // Play animation
     } else {
         self.image_speed = 0; // Stop animation when not moving
         self.image_index = 0; // Reset to first frame

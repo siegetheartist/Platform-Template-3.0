@@ -21,7 +21,8 @@ grav = 0.4; // Gravity strength pulling the enemy down
 enum ENEMY_STATE {
     PATROL, // Default state: walks back and forth
     ALERT,  // Player spotted, but not yet chasing (e.g., investigating)
-    CHASE   // Chasing state: moves towards the player
+    CHASE,   // Chasing state: moves towards the player
+    TAUNT    // NEW: Enemy is taunting after hitting the player
 }
 
 // Initialize the enemy's starting state
@@ -42,11 +43,11 @@ deaggro_range = 250; // Distance at which the enemy will stop chasing/alerting a
 
 // New variables for the alert timeout
 alert_timer = 0; // The current countdown timer for the alert state
-alert_timeout = 120; // The total time (in frames) before the enemy returns to patrol (e.g., 4 seconds at 60 FPS)
+alert_timeout = 120; // The total time (in frames) before the enemy returns to patrol (e.g., 2 seconds at 60 FPS)
 
 // New variables for the alert cooldown
 alert_cooldown_timer = 0; // A timer to prevent immediate re-alerting after de-aggro
-alert_cooldown_time = 120; // The total time (in frames) before a new alert can be triggered (e.g., 3 seconds)
+alert_cooldown_time = 120; // The total time (in frames) before a new alert can be triggered (e.g., 2 seconds)
 
 // Offset for edge detection check. These will be calculated by child objects
 // based on their specific sprite_width/height.
@@ -60,4 +61,10 @@ exclamation_sprite = -1;
 spr_idle_specific = -1; // Stores the specific idle sprite for this enemy type.
 spr_patrol_move = -1; // Default sprite for moving during patrol/alert
 spr_chase_move = -1;  // Default sprite for moving during chase
+spr_taunt_specific = -1; // NEW: Stores the specific taunt sprite for this enemy type.
+
+// --- ENEMY DAMAGE AND TAUNT SETTINGS (NEW) ---
+enemy_damage = 1; // Default damage this enemy deals (children will override)
+taunt_timer = 0; // Timer for how long the enemy is in the TAUNT state
+taunt_duration = 60; // How long the enemy taunts (1 second at 60 FPS)
 #endregion

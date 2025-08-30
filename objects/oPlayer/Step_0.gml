@@ -1,6 +1,10 @@
-
+// --- Player Movement and Collision Logic ---
 
 #region VARIABLES
+// --- Get tilemap ID for collision ---
+var collision_tileset = layer_tilemap_get_id("t_Collision"); // Get the ID of the collision tilemap layer
+
+// Declare all local variables used within this step event
 var _key_left = 0; // True if 'A' is pressed
 var _key_right = 0; // True if 'D' is pressed
 var _key_jump = 0; // True if 'Space' is pressed (single press)
@@ -15,9 +19,17 @@ var _on_wall = 0; // Indicates wall direction (-1 left, 0 none, 1 right)
 var _is_touching_wall = false; // True if player is touching any wall
 var _is_pressing_wall = false; // True if player is pressing against a wall in their movement direction
 var _can_wall_grab = false; // True if conditions for initiating a wall grab are met
-var collision_tileset = layer_tilemap_get_id("t_Collision"); // Get the ID of the collision tilemap layer
 #endregion
 
+#region TIMER MANAGEMENT
+// --- Invulnerability and Flash Timers ---
+if (invulnerable_timer > 0) {
+    invulnerable_timer--; // Decrement invulnerability timer
+}
+if (flash_timer > 0) {
+    flash_timer--; // Decrement flash timer for visual feedback
+}
+#endregion
 
 #region COLLISION CHECKS (Initial)
 // --- Ground Check ---
@@ -219,8 +231,11 @@ if (_is_ascending && !_key_jump_held) {
 x += hsp;
 if (place_meeting(x, y, collision_tileset)) {
     var _pixel_step = sign(hsp); // Determine direction of collision
-    while (place_meeting(x, y, collision_tileset)) {
-        x -= _pixel_step; // Move back pixel by pixel until no longer colliding
+    if (_pixel_step == 0) { // Failsafe for hsp=0
+        _pixel_step = 1; // Default push direction
+    }
+    while (place_meeting(x, y, collision_tileset)) { // Move back pixel by pixel until no longer colliding
+        x -= _pixel_step;
     }
     hsp = 0; // Stop horizontal movement after collision
 }
@@ -229,8 +244,11 @@ if (place_meeting(x, y, collision_tileset)) {
 y += vsp;
 if (place_meeting(x, y, collision_tileset)) {
     var _pixel_step = sign(vsp); // Determine direction of collision
-    while (place_meeting(x, y, collision_tileset)) {
-        y -= _pixel_step; // Move back pixel by pixel until no longer colliding
+    if (_pixel_step == 0) { // Failsafe for vsp=0
+        _pixel_step = -1; // Default push direction (up)
+    }
+    while (place_meeting(x, y, collision_tileset)) { // Move back pixel by pixel until no longer colliding
+        y -= _pixel_step;
     }
     vsp = 0; // Stop vertical movement after collision
 }
@@ -276,18 +294,96 @@ if (!_on_ground) {
 }
 #endregion
 
-#region HAZARD & DEBUG COLLISIONS
-// --- Enemy Collision ---
-// Checks for collision with enemy objects and triggers respawn
-if (place_meeting(x, y, oEnemy) || place_meeting(x, y, oHazard)) {
-    instance_create_layer(0, 0, "l_Faders", oFader); // Create a fader object
-    oFader.fader_mode = "respawn"; // Set fader mode to respawn
+#region HAZARD & ENEMY DAMAGE (UPDATED)
+// --- Enemy/Hazard Collision and Damage ---
+// Checks for collision with enemy objects or hazards
+var _collided_enemy = instance_place(x, y, oEnemy); // Get the ID of the enemy collided with
+var _collided_hazard = place_meeting(x, y, oHazard); // Check for hazard collision
+
+if ((_collided_enemy != noone || _collided_hazard) && invulnerable_timer <= 0) {
+    var _damage_taken = 0;
+    if (_collided_enemy != noone) {
+        _damage_taken = _collided_enemy.enemy_damage; // Get damage from the enemy
+    } else if (_collided_hazard) {
+        _damage_taken = 1; // Default damage for hazards (can be made a variable later)
+    }
+
+    if (_damage_taken > 0) {
+        player_health -= _damage_taken; // Decrement player health
+        invulnerable_timer = invulnerable_duration; // Start invulnerability timer
+        flash_timer = flash_duration; // Start visual flash timer
+
+        // Trigger enemy taunt (if an enemy caused damage)
+        if (_collided_enemy != noone) {
+            // Check if the enemy is not already taunting to prevent re-triggering
+            if (_collided_enemy.enemy_state != ENEMY_STATE.TAUNT) {
+                _collided_enemy.enemy_state = ENEMY_STATE.TAUNT; // Set enemy to taunt state
+                _collided_enemy.taunt_timer = _collided_enemy.taunt_duration; // Start enemy taunt timer
+            }
+        }
+    }
+
+    // --- Player Death and Respawn Logic (FIXED) ---
+    if (player_health <= 0) {
+        // First, check if the player has any lives left
+        if (oPlayerController.player_lives > 0) {
+            // Player has lives remaining: Decrement life and respawn
+            oPlayerController.player_lives--; // Decrement a life
+            oPlayerController.crystals_collected = 0; // Lose all crystals on respawn
+            player_health = oPlayerController.max_player_health; // Reset player health to full
+            
+            // Trigger respawn sequence via fader.
+            // The fader object will handle moving the player to global.checkpoint_x/y
+            instance_create_layer(0, 0, "l_Faders", oFader); 
+            oFader.fader_mode = "respawn"; 
+        } else {
+            // Player has no lives remaining: GAME OVER
+            // Reset oPlayerController stats for a fresh game start
+            oPlayerController.player_lives = 1; // Reset to default starting lives
+            oPlayerController.crystals_collected = 0; // Reset crystals
+            player_health = oPlayerController.max_player_health; // Reset player health to full
+            
+            room_restart(); // Restart the entire room (Game Over)
+            // You might want to transition to a dedicated "Game Over" room here later
+        }
+    }
 }
 
 // --- Debug Respawn ---
 // Allows for quick respawn with 'Enter' key press
 if (keyboard_check(vk_enter)) {
-    instance_create_layer(0, 0, "l_Faders", oFader); // Create a fader object
-    oFader.fader_mode = "respawn"; // Set fader mode to respawn
+    // If player has lives, respawn with full health
+    if (oPlayerController.player_lives > 0) { // Check lives from oPlayerController
+        player_health = oPlayerController.max_player_health; // Reset health to full
+        oPlayerController.crystals_collected = 0; // Lose all crystals from oPlayerController
+        
+        // Trigger respawn sequence via fader for debug
+        instance_create_layer(0, 0, "l_Faders", oFader); 
+        oFader.fader_mode = "respawn"; 
+    } else {
+        // If no lives, this debug key can act as an instant game over for testing
+        // Reset oPlayerController stats for a fresh game start
+        oPlayerController.player_lives = 1; // Reset to default starting lives
+        oPlayerController.crystals_collected = 0; // Reset crystals
+        player_health = oPlayerController.max_player_health; // Reset player health to full
+        
+        room_restart(); // Restart the entire room (Game Over)
+    }
+}
+#endregion
+
+#region CRYSTAL COLLECTION (UPDATED)
+// --- Check for Crystal Collection ---
+var _collected_crystal = instance_place(x, y, oCrystal); // Assuming you have an oCrystal object
+if (_collected_crystal != noone) {
+    oPlayerController.crystals_collected++; // Increment crystal count via oPlayerController
+    instance_destroy(_collected_crystal); // Destroy the collected crystal
+
+    // Check if enough crystals for an extra life
+    if (oPlayerController.crystals_collected >= oPlayerController.max_crystals_for_life) {
+        oPlayerController.player_lives++; // Gain a life via oPlayerController
+        oPlayerController.crystals_collected = 0; // Reset crystal count via oPlayerController
+        // Play a sound or show a visual effect for gaining a life here
+    }
 }
 #endregion

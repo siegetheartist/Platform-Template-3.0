@@ -1,8 +1,5 @@
 // --- Player Initialization Variables ---
 
-
-
-
 #region CHECKPOINT SYSTEM
 // Stores the player's last checkpoint position for respawn logic
 global.checkpoint_x = x; // Stores current X position as checkpoint
@@ -11,7 +8,8 @@ global.checkpoint_y = y; // Stores current Y position as checkpoint
 
 #region CINEMATIC CONTROL
 // Determines whether the player can move or act (used during cutscenes or transitions)
-can_control = false; // Flag to enable/disable player input
+// Only enable control if not in the start menu
+can_control = (room != rStartMenu);
 #endregion
 
 #region MOVEMENT VARIABLES
@@ -26,7 +24,7 @@ decel = 0.3; // Rate at which horizontal speed decreases
 
 #region SPEED LIMITS
 // Maximum horizontal speed
-max_hsp = 4; // Maximum horizontal speed the player can reach
+max_hsp = 5; // Maximum horizontal speed the player can reach
 
 // Gravity settings for normal falling
 grav = 0.5; // Strength of gravity pulling the player down
@@ -39,25 +37,25 @@ grav_max_wall = 5; // Maximum vertical speed while wall sliding
 
 #region JUMPING VARIABLES
 // Distance to check below player for ground detection
-ground_check_dist = 4; // Pixels below player to check for solid ground
+ground_check_dist = 12; // Pixels below player to check for solid ground
 
 // Frames after leaving ground where jump is still allowed (coyote time)
-coyote_time = 6; // Frames to allow jumping after leaving a platform
+coyote_time = 10; // Frames to allow jumping after leaving a platform
 
 // Minimum jump height when releasing jump early
 jump_height_min = -3; // Minimum upward velocity when jump key is released early
 
 // Standard jump velocity
-jump_height = -8; // Initial upward velocity for a full jump
+jump_height = -12; // Initial upward velocity for a full jump
 
 // Frames to buffer jump input before landing
 jump_buffer = 0; // Timer to store a jump input if pressed slightly before landing
 
 // Horizontal push when jumping off a wall
-wall_jump_distance = 6; // Horizontal force applied during a wall jump
+wall_jump_distance = 7; // Horizontal force applied during a wall jump
 
 // Vertical velocity for wall jump
-jump_height_wall = -8; // Initial upward velocity for a wall jump
+jump_height_wall = -12; // Initial upward velocity for a wall jump
 #endregion
 
 #region WALL JUMP STATE MACHINE
@@ -85,3 +83,18 @@ wall_jump_delay_max = 8; // Max frames for horizontal input lockout after wall j
 wall_jump_gravity_bypass = 0; // Current timer for gravity suppression
 wall_jump_gravity_bypass_max = 5; // Max frames to bypass gravity after wall interaction
 #endregion
+
+#region PLAYER HEALTH AND INVULNERABILITY
+player_health = 3; // Player's current health, starts at 3
+invulnerable_timer = 0; // Timer for player invulnerability frames
+invulnerable_duration = 60; // How many frames player is invulnerable after taking damage (1 second at 60 FPS)
+flash_timer = 0; // Timer for visual damage indicator (blinking)
+flash_duration = 30; // How long the player sprite flashes after taking damage (0.5 seconds at 60 FPS)
+// max_player_health is removed from here; it will be a property of oHUD
+#endregion
+
+// #region PLAYER LIVES AND CRYSTALS (REMOVED - now handled by oHUD)
+// player_lives = 1;
+// crystals_collected = 0;
+// max_crystals_for_life = 3;
+// #endregion
