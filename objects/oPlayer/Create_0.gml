@@ -24,7 +24,7 @@ decel = 0.3; // Rate at which horizontal speed decreases
 
 #region SPEED LIMITS
 // Maximum horizontal speed
-max_hsp = 5; // Maximum horizontal speed the player can reach
+max_hsp = 3; // Maximum horizontal speed the player can reach
 
 // Gravity settings for normal falling
 grav = 0.5; // Strength of gravity pulling the player down
@@ -46,16 +46,16 @@ coyote_time = 10; // Frames to allow jumping after leaving a platform
 jump_height_min = -3; // Minimum upward velocity when jump key is released early
 
 // Standard jump velocity
-jump_height = -12; // Initial upward velocity for a full jump
+jump_height = -8; // Initial upward velocity for a full jump
 
 // Frames to buffer jump input before landing
 jump_buffer = 0; // Timer to store a jump input if pressed slightly before landing
 
 // Horizontal push when jumping off a wall
-wall_jump_distance = 7; // Horizontal force applied during a wall jump
+wall_jump_distance = 6; // Horizontal force applied during a wall jump
 
 // Vertical velocity for wall jump
-jump_height_wall = -12; // Initial upward velocity for a wall jump
+jump_height_wall = -8; // Initial upward velocity for a wall jump
 #endregion
 
 #region WALL JUMP STATE MACHINE
