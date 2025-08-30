@@ -1,3 +1,5 @@
+#region TRANSITION FADE-IN / FADE-OUT
+
 // Create the fader object on the new "l_Faders" layer, as per naming convention.
 // This will ensure it is drawn on top of all other objects.
 instance_create_layer(0, 0, "l_Faders", oFader);
@@ -12,3 +14,15 @@ with (oPlayer) {
 with (oFader) {
     fader_mode = "fade_in";
 }
+
+#endregion
+
+
+#region PARALLAX BACKGROUND VARIABLES
+// Parallax scroll speeds. These are multipliers of the camera's horizontal speed.
+// 0.2 means the layer moves at 20% the speed of the camera.
+bg_1_scroll_speed = 0.02; // Furthest layer (least movement)
+bg_2_scroll_speed = 0.06; // Middle layer
+bg_3_scroll_speed = 0; // Closest layer (most movement)
+#endregion
+
