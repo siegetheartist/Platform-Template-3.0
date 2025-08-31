@@ -32,16 +32,14 @@ if (flash_timer > 0) {
 #endregion
 
 #region COLLISION CHECKS (Initial)
+
 // --- Ground Check ---
-// Checks if the player is one pixel above the collision tilemap
-_on_ground = place_meeting(x, y + 1, collision_tileset);
+_on_ground = place_meeting(x, y + 1, collision_tileset); // Checks if the player is one pixel above the collision tilemap
 
 // --- Movement Check ---
-// Determines if the player is currently moving horizontally
-_is_moving = hsp != 0;
+_is_moving = hsp != 0; // Determines if the player is currently moving horizontally
 
 // --- Vertical State Checks ---
-// Determines if the player is ascending or descending
 _is_ascending = vsp < 0; // Player is moving upwards
 _is_descending = vsp > 0; // Player is moving downwards
 
@@ -52,7 +50,7 @@ _is_touching_wall = (_on_wall != 0); // True if touching a wall on either side
 #endregion
 
 #region INPUT HANDLING
-// --- Input ---
+
 // Reads player input only if control is enabled (not in a cinematic)
 if (can_control) {
     _key_left = keyboard_check(ord("A")); // Check if 'A' key is held
@@ -190,8 +188,8 @@ if (wall_jump_gravity_bypass > 0) {
         _vsp_min_clamp = 0; // Allow vsp to go to 0 during wall slide
     } else if (_key_down) {
         // Potentially apply fast fall gravity if 'down' is held (adjust grav values as needed)
-        _grav_final = grav; 
-        _grav_max_final = grav_max; 
+        _grav_final = grav;
+        _grav_max_final = grav_max;
     }
 
     vsp += _grav_final; // Apply gravity to vertical speed
@@ -255,7 +253,7 @@ if (place_meeting(x, y, collision_tileset)) {
 #endregion
 
 #region ANIMATION & SPRITE ORIENTATION
-// --- Animation ---
+
 // Handle player animations based on ground state and wall jump state
 if (!_on_ground) {
     switch (wall_jump_state) {
@@ -294,7 +292,7 @@ if (!_on_ground) {
 }
 #endregion
 
-#region HAZARD & ENEMY DAMAGE (UPDATED)
+#region HAZARD & ENEMY DAMAGE
 // --- Enemy/Hazard Collision and Damage ---
 // Checks for collision with enemy objects or hazards
 var _collided_enemy = instance_place(x, y, oEnemy); // Get the ID of the enemy collided with
@@ -322,33 +320,45 @@ if ((_collided_enemy != noone || _collided_hazard) && invulnerable_timer <= 0) {
             }
         }
     }
+}
+#endregion
 
-    // --- Player Death and Respawn Logic (FIXED) ---
-    if (player_health <= 0) {
-        // First, check if the player has any lives left
-        if (oPlayerController.player_lives > 0) {
-            // Player has lives remaining: Decrement life and respawn
-            oPlayerController.player_lives--; // Decrement a life
-            oPlayerController.crystals_collected = 0; // Lose all crystals on respawn
-            player_health = oPlayerController.max_player_health; // Reset player health to full
-            
-            // Trigger respawn sequence via fader.
-            // The fader object will handle moving the player to global.checkpoint_x/y
-            instance_create_layer(0, 0, "l_Faders", oFader); 
-            oFader.fader_mode = "respawn"; 
-        } else {
-            // Player has no lives remaining: GAME OVER
-            // Reset oPlayerController stats for a fresh game start
-            oPlayerController.player_lives = 1; // Reset to default starting lives
-            oPlayerController.crystals_collected = 0; // Reset crystals
-            player_health = oPlayerController.max_player_health; // Reset player health to full
-            
-            room_restart(); // Restart the entire room (Game Over)
-            // You might want to transition to a dedicated "Game Over" room here later
-        }
-    }
+#region DEATH BY FALLING & GLOBAL DEATH LOGIC
+// --- Fall-off-screen Death Check ---
+// Checks if the player's vertical position is below the room's threshold.
+if (y > fall_threshold) {
+    // Set health to 0 to trigger the death/respawn logic below.
+    player_health = 0;
 }
 
+// --- Player Death and Respawn Logic ---
+// This code runs every frame to check if the player's health has dropped to 0,
+// regardless of how they took damage (enemy, hazard, or fall).
+if (player_health <= 0) {
+    // First, check if the player has any lives left
+    if (oPlayerController.player_lives > 0) {
+        // Player has lives remaining: Decrement life and respawn
+        oPlayerController.player_lives--; // Decrement a life
+        player_health = oPlayerController.max_player_health; // Reset player health to full
+        
+        // Trigger respawn sequence via fader.
+        // The fader object will handle moving the player to global.checkpoint_x/y
+        instance_create_layer(0, 0, "l_Faders", oFader); 
+        oFader.fader_mode = "respawn"; 
+    } else {
+        // Player has no lives remaining: GAME OVER
+        // Reset oPlayerController stats for a fresh game start
+        oPlayerController.player_lives = 1; // Reset to default starting lives
+        oPlayerController.crystals_collected = 0; // Reset crystals
+        player_health = oPlayerController.max_player_health; // Reset player health to full
+        
+        room_restart(); // Restart the entire room (Game Over)
+        // You might want to transition to a dedicated "Game Over" room here later
+    }
+}
+#endregion
+
+#region DEBUG RESPAWN
 // --- Debug Respawn ---
 // Allows for quick respawn with 'Enter' key press
 if (keyboard_check(vk_enter)) {
@@ -372,7 +382,8 @@ if (keyboard_check(vk_enter)) {
 }
 #endregion
 
-#region CRYSTAL COLLECTION (UPDATED)
+#region CRYSTAL COLLECTION 
+
 // --- Check for Crystal Collection ---
 var _collected_crystal = instance_place(x, y, oCrystal); // Assuming you have an oCrystal object
 if (_collected_crystal != noone) {

@@ -23,6 +23,6 @@ with (oFader) {
 // 0.2 means the layer moves at 20% the speed of the camera.
 bg_1_scroll_speed = 0.02; // Furthest layer (least movement)
 bg_2_scroll_speed = 0.06; // Middle layer
-bg_3_scroll_speed = 0; // Closest layer (most movement)
+bg_3_scroll_speed = 0.08; // Closest layer (most movement)
 #endregion
 

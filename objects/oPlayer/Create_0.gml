@@ -90,11 +90,9 @@ invulnerable_timer = 0; // Timer for player invulnerability frames
 invulnerable_duration = 60; // How many frames player is invulnerable after taking damage (1 second at 60 FPS)
 flash_timer = 0; // Timer for visual damage indicator (blinking)
 flash_duration = 30; // How long the player sprite flashes after taking damage (0.5 seconds at 60 FPS)
-// max_player_health is removed from here; it will be a property of oHUD
 #endregion
 
-// #region PLAYER LIVES AND CRYSTALS (REMOVED - now handled by oHUD)
-// player_lives = 1;
-// crystals_collected = 0;
-// max_crystals_for_life = 3;
-// #endregion
+#region DEATH CONDITIONS
+// Distance below the room where the player dies
+fall_threshold = room_height + 64; // 64 pixels below the bottom of the room
+#endregion

@@ -12,7 +12,7 @@ patrol_hsp_max = 1.5; // Goblin patrols a bit faster than the default enemy
 chase_hsp_max = 4;    // Goblin chases faster than the default enemy
 alert_range = 180;    // Goblin has a slightly smaller alert range
 
-// --- Set Goblin-specific damage (NEW) ---
+// --- Set Goblin-specific damage ---
 enemy_damage = 1; // Goblin deals 1 damage to the player
 
 // You can override any other variable defined in oEnemy's Create event here

@@ -6,8 +6,4 @@ oFader.fader_mode = "next_level";
 //IMPORTANT!!!
 // room_goto_next() is set in the oFader object for a smooth transition.
 
-
-
-
-
 #endregion

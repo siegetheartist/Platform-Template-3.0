@@ -5,7 +5,7 @@ event_inherited();
 
 // --- Initialize specific sprites and calculate offsets using the helper script ---
 // Calls the function with the specific sprite assets for the Orc, including the taunt sprite.
-scr_enemy_init_sprites_and_offsets(sOrcIdle, sOrcPatrol, sOrcChase, sOrcTaunt); // NEW: Added sOrcTaunt
+scr_enemy_init_sprites_and_offsets(sOrcIdle, sOrcPatrol, sOrcChase, sOrcTaunt);
 
 // --- Override parent values for Orc's behavior (optional) ---
 // Example overrides - adjust these values as you design your Orc's unique stats
