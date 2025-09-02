@@ -1,5 +1,8 @@
-#region TRANSITION FADE-IN / FADE-OUT
+// Set Game over UI invisible by default
+layer_set_visible("Layer_Game_over", false);
 
+
+#region TRANSITION FADE-IN / FADE-OUT
 // Create the fader object on the new "l_Faders" layer, as per naming convention.
 // This will ensure it is drawn on top of all other objects.
 instance_create_layer(0, 0, "l_Faders", oFader);
@@ -14,7 +17,6 @@ with (oPlayer) {
 with (oFader) {
     fader_mode = "fade_in";
 }
-
 #endregion
 
 
@@ -26,3 +28,8 @@ bg_2_scroll_speed = 0.06; // Middle layer
 bg_3_scroll_speed = 0.08; // Closest layer (most movement)
 #endregion
 
+#region BACKGROUND MUSIC
+// Play the background music on a loop when the room starts.
+// The priority (10) determines which sounds are played if the game reaches its channel limit.
+audio_play_sound(sndLevel1, 10, true);
+#endregion

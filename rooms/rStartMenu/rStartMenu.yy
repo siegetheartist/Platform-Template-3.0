@@ -6,11 +6,13 @@
   "inheritCreationOrder":false,
   "inheritLayers":false,
   "instanceCreationOrder":[
-    {"name":"inst_38C3E12D","path":"rooms/rStartMenu/rStartMenu.yy",},
-    {"name":"inst_297F89CC","path":"rooms/rStartMenu/rStartMenu.yy",},
-    {"name":"inst_1FB74173","path":"rooms/rStartMenu/rStartMenu.yy",},
-    {"name":"inst_C1585F9","path":"rooms/rStartMenu/rStartMenu.yy",},
     {"name":"inst_3404DF9D","path":"rooms/rStartMenu/rStartMenu.yy",},
+    {"name":"inst_C1585F9","path":"rooms/rStartMenu/rStartMenu.yy",},
+    {"name":"inst_1FB74173","path":"rooms/rStartMenu/rStartMenu.yy",},
+    {"name":"inst_297F89CC","path":"rooms/rStartMenu/rStartMenu.yy",},
+    {"name":"inst_23B1F7E4","path":"roomui/RoomUI/RoomUI.yy",},
+    {"name":"inst_52702E1C","path":"roomui/RoomUI/RoomUI.yy",},
+    {"name":"inst_38C3E12D","path":"rooms/rStartMenu/rStartMenu.yy",},
   ],
   "isDnd":false,
   "layers":[
@@ -57,7 +59,7 @@
   },
   "sequenceId":null,
   "views":[
-    {"hborder":320,"hport":672,"hspeed":-1,"hview":224,"inherit":false,"objectId":{"name":"oPlayer","path":"objects/oPlayer/oPlayer.yy",},"vborder":180,"visible":true,"vspeed":-1,"wport":1056,"wview":352,"xport":0,"xview":0,"yport":0,"yview":0,},
+    {"hborder":272,"hport":672,"hspeed":-1,"hview":224,"inherit":false,"objectId":{"name":"oPlayer","path":"objects/oPlayer/oPlayer.yy",},"vborder":132,"visible":true,"vspeed":-1,"wport":1056,"wview":352,"xport":0,"xview":0,"yport":0,"yview":0,},
     {"hborder":32,"hport":768,"hspeed":-1,"hview":768,"inherit":false,"objectId":null,"vborder":32,"visible":false,"vspeed":-1,"wport":1366,"wview":1366,"xport":0,"xview":0,"yport":0,"yview":0,},
     {"hborder":32,"hport":768,"hspeed":-1,"hview":768,"inherit":false,"objectId":null,"vborder":32,"visible":false,"vspeed":-1,"wport":1366,"wview":1366,"xport":0,"xview":0,"yport":0,"yview":0,},
     {"hborder":32,"hport":768,"hspeed":-1,"hview":768,"inherit":false,"objectId":null,"vborder":32,"visible":false,"vspeed":-1,"wport":1366,"wview":1366,"xport":0,"xview":0,"yport":0,"yview":0,},

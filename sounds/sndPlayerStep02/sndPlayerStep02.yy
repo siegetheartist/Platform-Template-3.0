@@ -1,0 +1,25 @@
+{
+  "$GMSound":"",
+  "%Name":"sndPlayerStep02",
+  "audioGroupId":{
+    "name":"audiogroup_default",
+    "path":"audiogroups/audiogroup_default",
+  },
+  "bitDepth":1,
+  "bitRate":128,
+  "compression":3,
+  "conversionMode":0,
+  "duration":0.10031746,
+  "name":"sndPlayerStep02",
+  "parent":{
+    "name":"sndPlayer",
+    "path":"folders/Sounds/sndPlayer.yy",
+  },
+  "preload":false,
+  "resourceType":"GMSound",
+  "resourceVersion":"2.0",
+  "sampleRate":44100,
+  "soundFile":"sndPlayerStep02.mp3",
+  "type":1,
+  "volume":1.0,
+}

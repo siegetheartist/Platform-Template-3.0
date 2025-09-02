@@ -56,16 +56,21 @@ wall_jump_distance = 6; // Horizontal force applied during a wall jump
 
 // Vertical velocity for wall jump
 jump_height_wall = -8; // Initial upward velocity for a wall jump
+
+// JUMP COMBO VARIABLES
+consecutive_jumps = 0; // Tracks the number of consecutive jumps for variable sounds
+jump_combo_timer = 0; // Timer to reset the combo if a new jump isn't performed
+jump_combo_timeout = 120; // 2 seconds at 60 FPS
 #endregion
 
 #region WALL JUMP STATE MACHINE
 // Enum to manage wall interaction states
 enum WallJumpState {
-    NONE,        // Not interacting with a wall
-    GRAB,        // Brief pause after hitting wall (gravity suppressed)
-    SLIDE,       // Sliding down wall with reduced gravity
-    JUMP,        // Just performed a wall jump
-    RECOVER      // Regaining control after wall jump (input lockout)
+    NONE,        // Not interacting with a wall
+    GRAB,        // Brief pause after hitting wall (gravity suppressed)
+    SLIDE,       // Sliding down wall with reduced gravity
+    JUMP,        // Just performed a wall jump
+    RECOVER      // Regaining control after wall jump (input lockout)
 }
 wall_jump_state = WallJumpState.NONE; // Initialize wall jump state
 #endregion
@@ -95,4 +100,13 @@ flash_duration = 30; // How long the player sprite flashes after taking damage (
 #region DEATH CONDITIONS
 // Distance below the room where the player dies
 fall_threshold = room_height + 64; // 64 pixels below the bottom of the room
+#endregion
+
+#region AUDIO VARIABLES
+// Keeps track of which running sound to play next for a "pit, pat" effect.
+// 0 for sndPlayerStep01, 1 for sndPlayerStep02.
+current_step_sound = 0;
+// Tracks the image index from the previous frame to prevent sounds from
+// re-triggering on the same animation frame.
+image_index_previous = 0;
 #endregion

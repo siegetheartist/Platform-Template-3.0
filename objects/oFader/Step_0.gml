@@ -1,5 +1,3 @@
-// Events -> Add Event -> Step -> Step
-
 // --- FADING LOGIC ---
 if (fader_mode == "fade_in") {
     // Fade in by reducing the alpha.
@@ -31,7 +29,6 @@ if (fader_mode == "respawn") {
     // When the screen is black, respawn the player at the last checkpoint.
     if (alpha >= 1) {
         // Find the player object and destroy it.
-        // This makes sure the old instance is gone before the new one is created.
         with (oPlayer) {
             instance_destroy();
         }
@@ -53,5 +50,18 @@ if (fader_mode == "respawn") {
 
         // Change the fader mode to fade back in.
         fader_mode = "fade_in";
+    }
+}
+
+if (fader_mode == "game_over") {
+    // Fade out by increasing the alpha.
+    alpha = min(alpha + fade_speed, 1);
+    
+    // When the screen is black, handle all game-over logic here.
+    if (alpha >= 1) {
+        // Create the new Game Over screen object on the correct UI layer.
+        instance_create_layer(0, 0, "l_Controllers", oGameOverScreen);
+        // Destroy the fader object, so it doesn't try to manage the room transition.
+        instance_destroy();
     }
 }
