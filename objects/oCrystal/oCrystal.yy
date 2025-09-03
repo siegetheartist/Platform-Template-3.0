@@ -2,8 +2,8 @@
   "$GMObject":"",
   "%Name":"oCrystal",
   "eventList":[
-    {"$GMEvent":"v1","%Name":"","collisionObjectId":null,"eventNum":0,"eventType":0,"isDnD":false,"name":"","resourceType":"GMEvent","resourceVersion":"2.0",},
     {"$GMEvent":"v1","%Name":"","collisionObjectId":{"name":"oPlayer","path":"objects/oPlayer/oPlayer.yy",},"eventNum":0,"eventType":4,"isDnD":false,"name":"","resourceType":"GMEvent","resourceVersion":"2.0",},
+    {"$GMEvent":"v1","%Name":"","collisionObjectId":null,"eventNum":0,"eventType":0,"isDnD":false,"name":"","resourceType":"GMEvent","resourceVersion":"2.0",},
   ],
   "managed":true,
   "name":"oCrystal",
@@ -12,7 +12,10 @@
     "name":"Objects",
     "path":"folders/Objects.yy",
   },
-  "parentObjectId":null,
+  "parentObjectId":{
+    "name":"oCollectable",
+    "path":"objects/oCollectable/oCollectable.yy",
+  },
   "persistent":false,
   "physicsAngularDamping":0.1,
   "physicsDensity":0.5,
@@ -34,6 +37,9 @@
     "name":"sCrystal",
     "path":"sprites/sCrystal/sCrystal.yy",
   },
-  "spriteMaskId":null,
+  "spriteMaskId":{
+    "name":"sCrystal",
+    "path":"sprites/sCrystal/sCrystal.yy",
+  },
   "visible":true,
 }

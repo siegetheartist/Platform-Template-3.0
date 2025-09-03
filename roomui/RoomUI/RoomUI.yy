@@ -36,5 +36,5 @@
           ],"flexDirection":0,"height":{"unit":2,"value":100.0,},"justifyContent":1,"name":"Death_window","nodeColour":4282970806,"resourceType":"GMRFlexPanel","resourceVersion":"2.0","width":{"unit":2,"value":100.0,},},
       ],"flexDirection":0,"gridX":32,"gridY":32,"justifyContent":1,"name":"Layer_Game_over","nodeColour":4285526600,"resourceType":"GMRUILayer","resourceVersion":"2.0",},
   ],
-  "visible":true,
+  "visible":false,
 }

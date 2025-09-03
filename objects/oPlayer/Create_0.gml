@@ -1,15 +1,8 @@
-// --- Player Initialization Variables ---
-
-#region CHECKPOINT SYSTEM
-// Stores the player's last checkpoint position for respawn logic
-global.checkpoint_x = x; // Stores current X position as checkpoint
-global.checkpoint_y = y; // Stores current Y position as checkpoint
-#endregion
-
 #region CINEMATIC CONTROL
 // Determines whether the player can move or act (used during cutscenes or transitions)
 // Only enable control if not in the start menu
 can_control = (room != rStartMenu);
+is_dying = false; // Flag to stop player movement after death is initiated.
 #endregion
 
 #region MOVEMENT VARIABLES

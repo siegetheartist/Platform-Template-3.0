@@ -1,5 +1,23 @@
-// --- Music Control for Room Start ---
+#region INITIAL FADE IN
+// Set the default respawn position to the player's starting position in this room.
+// This ensures we always have a valid respawn point if no checkpoint is activated.
+if (instance_exists(oPlayer)) {
+    global.checkpoint_x = oPlayer.x;
+    global.checkpoint_y = oPlayer.y;
+}
 
+// Start the initial fade-in.
+initiate_fader_in();
+
+// Find the player object and disable its control.
+// The fader will re-enable it when the fade-in is complete.
+with (oPlayer) {
+    can_control = false;
+}
+#endregion
+
+
+#region MUSIC CONTROLER
 // Stop any music that might currently be playing.
 audio_stop_all();
 
@@ -22,3 +40,4 @@ switch (room) {
         audio_play_sound(sndLevel1, 10, true);
         break;
 }
+#endregion

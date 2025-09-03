@@ -21,5 +21,5 @@
   "sampleRate":44100,
   "soundFile":"sndLevelUp.wav",
   "type":1,
-  "volume":0.4,
+  "volume":0.3,
 }

@@ -1,4 +1,8 @@
-// --- Player Movement and Collision Logic ---
+// If the player is in the process of dying, do nothing.
+if (is_dying) {
+    exit;
+}
+
 
 #region VARIABLES
 // --- Get tilemap ID for collision ---
@@ -147,25 +151,7 @@ switch (wall_jump_state) {
         }
 
         if (_key_jump) {
-            consecutive_jumps++; // Increment jump combo
-            jump_combo_timer = jump_combo_timeout; // Reset combo timer
-            var _jump_sound_to_play = sndPlayerJump; // Default to first sound
-            switch (consecutive_jumps) {
-                case 1:
-                    _jump_sound_to_play = sndPlayerJump;
-                    break;
-                case 2:
-                    _jump_sound_to_play = sndPlayerJump02;
-                    break;
-                case 3:
-                    _jump_sound_to_play = sndPlayerJump03;
-                    break;
-                default:
-                    _jump_sound_to_play = sndPlayerJump;
-                    consecutive_jumps = 1;
-                    break;
-            }
-            audio_play_sound(_jump_sound_to_play, 10, false);
+            scr_player_jump_sound();
             hsp = -_on_wall * wall_jump_distance; // Apply horizontal wall jump force
             vsp = jump_height_wall - 2; // Apply vertical wall jump force
             wall_jump_delay = wall_jump_delay_max; // Start wall jump input lockout timer
@@ -252,25 +238,7 @@ if (_on_ground) {
     
     if (jump_buffer > 0) {
         vsp = jump_height; // Perform a jump from buffer
-        consecutive_jumps++; // Increment jump combo
-        jump_combo_timer = jump_combo_timeout; // Reset combo timer
-        var _jump_sound_to_play = sndPlayerJump; // Default to first sound
-        switch (consecutive_jumps) {
-            case 1:
-                _jump_sound_to_play = sndPlayerJump;
-                break;
-            case 2:
-                _jump_sound_to_play = sndPlayerJump02;
-                break;
-            case 3:
-                _jump_sound_to_play = sndPlayerJump03;
-                break;
-            default:
-                _jump_sound_to_play = sndPlayerJump;
-                consecutive_jumps = 1;
-                break;
-        }
-        audio_play_sound(_jump_sound_to_play, 10, false);
+        scr_player_jump_sound();
         jump_buffer = 0; // Clear jump buffer
     }
 } else {
@@ -278,25 +246,7 @@ if (_on_ground) {
 
     if (_key_jump && coyote_time > 0) {
         vsp = jump_height; // Perform a jump using coyote time
-        consecutive_jumps++; // Increment jump combo
-        jump_combo_timer = jump_combo_timeout; // Reset combo timer
-        var _jump_sound_to_play = sndPlayerJump; // Default to first sound
-        switch (consecutive_jumps) {
-            case 1:
-                _jump_sound_to_play = sndPlayerJump;
-                break;
-            case 2:
-                _jump_sound_to_play = sndPlayerJump02;
-                break;
-            case 3:
-                _jump_sound_to_play = sndPlayerJump03;
-                break;
-            default:
-                _jump_sound_to_play = sndPlayerJump;
-                consecutive_jumps = 1;
-                break;
-        }
-        audio_play_sound(_jump_sound_to_play, 10, false);
+        scr_player_jump_sound();
         coyote_time = 0; // Clear coyote time
     }
 }
@@ -393,8 +343,6 @@ if (!_on_ground) {
     }
 }
 
-// Update the image_index_previous variable at the very end of the Step Event
-// to prevent the crash you encountered.
 image_index_previous = image_index;
 #endregion
 
@@ -429,67 +377,6 @@ if ((_collided_enemy != noone || _collided_hazard) && invulnerable_timer <= 0) {
                 _collided_enemy.taunt_timer = _collided_enemy.taunt_duration; // Start enemy taunt timer
             }
         }
-    }
-}
-#endregion
-
-#region DEATH BY FALLING & GLOBAL DEATH LOGIC
-// --- Fall-off-screen Death Check ---
-// Checks if the player's vertical position is below the room's threshold.
-if (y > fall_threshold) {
-    // Set health to 0 to trigger the death/respawn logic below.
-    player_health = 0;
-}
-
-// --- Player Death and Respawn Logic ---
-// This code runs every frame to check if the player's health has dropped to 0,
-// regardless of how they took damage (enemy, hazard, or fall).
-if (player_health <= 0) {
-    // Play the death sound for any death.
-    audio_play_sound(sndPlayerDeath, 10, false);
-    
-    // First, check if the player has any lives left
-    if (oPlayerController.player_lives > 0) {
-        // Player has lives remaining: Decrement life and respawn
-        oPlayerController.player_lives--; // Decrement a life
-        player_health = oPlayerController.max_player_health; // Reset player health to full
-        
-        // Trigger respawn sequence via fader.
-        var _fader_instance = instance_create_layer(0, 0, "l_Faders", oFader);
-        _fader_instance.fader_mode = "respawn";
-        // NOTE: You need to set a 'fader_duration' variable on the oFader object itself
-        // to control the speed of the fade. A value like 0.033 (1/30) is a good starting point.
-    } else {
-        // Player has no lives remaining: GAME OVER
-        // Use a fader for a clean transition, which will also allow the sound to play.
-        var _fader_instance = instance_create_layer(0, 0, "l_Faders", oFader);
-        _fader_instance.fader_mode = "game_over";
-        // NOTE: For a longer fade, you can set a custom duration on this fader instance,
-        // e.g., _fader_instance.fade_speed = 0.0167; (for a 1-second fade at 60 FPS).
-    }
-}
-#endregion
-
-#region DEBUG RESPAWN
-// --- Debug Respawn ---
-// Allows for quick respawn with 'Enter' key press
-if (keyboard_check(vk_enter)) {
-    // If player has lives, respawn with full health
-    if (oPlayerController.player_lives > 0) { // Check lives from oPlayerController
-        player_health = oPlayerController.max_player_health; // Reset health to full
-        oPlayerController.crystals_collected = 0; // Lose all crystals from oPlayerController
-        
-        // Trigger respawn sequence via fader for debug
-        var _fader_instance = instance_create_layer(0, 0, "l_Faders", oFader);
-        _fader_instance.fader_mode = "respawn";
-    } else {
-        // If no lives, this debug key can act as an instant game over for testing
-        // Reset oPlayerController stats for a fresh game start
-        oPlayerController.player_lives = 1; // Reset to default starting lives
-        oPlayerController.crystals_collected = 0; // Reset crystals
-        player_health = oPlayerController.max_player_health; // Reset player health to full
-        
-        room_restart(); // Restart the entire room (Game Over)
     }
 }
 #endregion

@@ -1,67 +1,30 @@
-// --- FADING LOGIC ---
+// Manages fading animation.
 if (fader_mode == "fade_in") {
-    // Fade in by reducing the alpha.
-    alpha = max(alpha - fade_speed, 0);
+    // Fade in by reducing the alpha.
+    alpha = max(alpha - fade_speed, 0);
 
-    // If the fade is complete, destroy the object and restore player control.
-    if (alpha <= 0) {
-        instance_destroy();
-        with (oPlayer) {
-            can_control = true;
-        }
-    }
+    // If the fade is complete, destroy the object and restore player control.
+    if (alpha <= 0) {
+        if (instance_exists(oGameManager)) {
+            oGameManager.current_state = GAME_STATE.IDLE;
+        }
+        with (oPlayer) {
+            can_control = true;
+        }
+        instance_destroy();
+    }
 }
 
-if (fader_mode == "next_level") {
+if (fader_mode == "fade_out") {
     // Fade out by increasing the alpha.
     alpha = min(alpha + fade_speed, 1);
 
-    // When the screen is black, go to the next room.
+    // If the fade is complete, tell the game manager that the screen is black.
     if (alpha >= 1) {
-        room_goto_next();
-    }
-}
-
-if (fader_mode == "respawn") {
-    // Fade out by increasing the alpha.
-    alpha = min(alpha + fade_speed, 1);
-
-    // When the screen is black, respawn the player at the last checkpoint.
-    if (alpha >= 1) {
-        // Find the player object and destroy it.
-        with (oPlayer) {
-            instance_destroy();
+        if (instance_exists(oGameManager)) {
+            oGameManager.current_state = GAME_STATE.FADE_COMPLETE;
         }
-
-        // Now, create a new player instance at the last checkpoint's location.
-        var _new_player = instance_create_layer(global.checkpoint_x, global.checkpoint_y, "l_Player", oPlayer);
-        
-        // Disable the new player's control until the fade-in is complete.
-        _new_player.can_control = false;
-        
-        // Reset all enemies to their starting positions and states.
-        with (oEnemy) {
-            x = start_x;
-            y = start_y;
-            hsp = 0; // Stop any current movement
-            vsp = 0; // Stop falling/jumping
-            enemy_state = ENEMY_STATE.PATROL; // Reset to default state
-        }
-
-        // Change the fader mode to fade back in.
-        fader_mode = "fade_in";
-    }
-}
-
-if (fader_mode == "game_over") {
-    // Fade out by increasing the alpha.
-    alpha = min(alpha + fade_speed, 1);
-    
-    // When the screen is black, handle all game-over logic here.
-    if (alpha >= 1) {
-        // Create the new Game Over screen object on the correct UI layer.
-        instance_create_layer(0, 0, "l_Controllers", oGameOverScreen);
-        // Destroy the fader object, so it doesn't try to manage the room transition.
+        // Destroy the fader instance so a new one can be created for the fade-in.
         instance_destroy();
     }
 }

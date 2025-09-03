@@ -8,7 +8,6 @@
   "instanceCreationOrder":[
     {"name":"inst_3404DF9D","path":"rooms/rStartMenu/rStartMenu.yy",},
     {"name":"inst_C1585F9","path":"rooms/rStartMenu/rStartMenu.yy",},
-    {"name":"inst_1FB74173","path":"rooms/rStartMenu/rStartMenu.yy",},
     {"name":"inst_297F89CC","path":"rooms/rStartMenu/rStartMenu.yy",},
     {"name":"inst_23B1F7E4","path":"roomui/RoomUI/RoomUI.yy",},
     {"name":"inst_52702E1C","path":"roomui/RoomUI/RoomUI.yy",},
@@ -18,7 +17,6 @@
   "layers":[
     {"$GMRInstanceLayer":"","%Name":"l_Faders","depth":0,"effectEnabled":true,"effectType":null,"gridX":16,"gridY":16,"hierarchyFrozen":false,"inheritLayerDepth":false,"inheritLayerSettings":false,"inheritSubLayers":true,"inheritVisibility":true,"instances":[],"layers":[],"name":"l_Faders","properties":[],"resourceType":"GMRInstanceLayer","resourceVersion":"2.0","userdefinedDepth":false,"visible":true,},
     {"$GMRInstanceLayer":"","%Name":"l_Controllers","depth":100,"effectEnabled":true,"effectType":null,"gridX":16,"gridY":16,"hierarchyFrozen":false,"inheritLayerDepth":false,"inheritLayerSettings":false,"inheritSubLayers":true,"inheritVisibility":true,"instances":[
-        {"$GMRInstance":"v2","%Name":"inst_1FB74173","colour":4294967295,"frozen":false,"hasCreationCode":false,"ignore":false,"imageIndex":0,"imageSpeed":1.0,"inheritCode":false,"inheritedItemId":null,"inheritItemSettings":false,"isDnd":false,"name":"inst_1FB74173","objectId":{"name":"oPlayerController","path":"objects/oPlayerController/oPlayerController.yy",},"properties":[],"resourceType":"GMRInstance","resourceVersion":"2.0","rotation":0.0,"scaleX":1.0,"scaleY":1.0,"x":0.0,"y":208.0,},
         {"$GMRInstance":"v2","%Name":"inst_C1585F9","colour":4294967295,"frozen":false,"hasCreationCode":false,"ignore":false,"imageIndex":0,"imageSpeed":1.0,"inheritCode":false,"inheritedItemId":null,"inheritItemSettings":false,"isDnd":false,"name":"inst_C1585F9","objectId":{"name":"oHUD","path":"objects/oHUD/oHUD.yy",},"properties":[],"resourceType":"GMRInstance","resourceVersion":"2.0","rotation":0.0,"scaleX":1.0,"scaleY":1.0,"x":0.0,"y":192.0,},
         {"$GMRInstance":"v2","%Name":"inst_3404DF9D","colour":4294967295,"frozen":false,"hasCreationCode":false,"ignore":false,"imageIndex":0,"imageSpeed":1.0,"inheritCode":false,"inheritedItemId":null,"inheritItemSettings":false,"isDnd":false,"name":"inst_3404DF9D","objectId":{"name":"oGameManager","path":"objects/oGameManager/oGameManager.yy",},"properties":[],"resourceType":"GMRInstance","resourceVersion":"2.0","rotation":0.0,"scaleX":1.0,"scaleY":1.0,"x":0.0,"y":176.0,},
       ],"layers":[],"name":"l_Controllers","properties":[],"resourceType":"GMRInstanceLayer","resourceVersion":"2.0","userdefinedDepth":false,"visible":true,},
