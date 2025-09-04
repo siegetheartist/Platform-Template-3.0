@@ -14,27 +14,35 @@ if (instance_exists(oPlayer) && (oPlayer.player_health <= 0 || oPlayer.y > oPlay
     // === DEBUG: Check if death is detected ===
     show_debug_message("Death condition met. Player health: " + string(oPlayer.player_health) + " | Player Y: " + string(oPlayer.y));
     
-    // We moved the state check here to make the logic more robust.
     if (current_state == GAME_STATE.IDLE) {
-        // Play the death sound for any death.
-        audio_play_sound(sndPlayerDeath, 10, false);
-        
-        // Check if the player has lives remaining.
-        if (player_lives > 0) {
-            // Player has lives remaining: Decrement life and trigger respawn.
-            player_lives--;
-            next_action = "respawn";
-        } else {
-            // Player has no lives remaining: GAME OVER.
-            next_action = "game_over";
-        }
-    
-        // === DEBUG: Check next action ===
-        show_debug_message("Setting next_action to: " + next_action);
-        
-        // Start the fade-out process.
-        initiate_fader_out();
-    }
+        // We will also check if the player is in the process of dying
+        if (!oPlayer.is_dying) {
+            // Set the death flag to prevent the death loop.
+            oPlayer.is_dying = true;
+        
+            // Play the death sound for any death.
+            audio_play_sound(sndPlayerDeath, 10, false);
+            
+            // Check if the player has lives remaining.
+            if (player_lives > 0) {
+                // Player has lives remaining: Decrement life and trigger respawn.
+                player_lives--;
+                next_action = "respawn";
+            } else {
+                // Player has no lives remaining: GAME OVER.
+                next_action = "game_over";
+            }
+            
+            // === DEBUG: Check next action ===
+            show_debug_message("Setting next_action to: " + next_action);
+            
+            // Start the fade-out process.
+            initiate_fader_out();
+            
+            // Manually destroy the player instance to prevent the death loop.
+            instance_destroy(oPlayer);
+        }
+    }
 }
 #endregion
 
@@ -103,18 +111,13 @@ switch (current_state) {
                 break;
                 
             case "game_over":
-                // Game over logic (Temporary)
-                // We will create the Game Over screen later, for now we will just restart the room.
-                // instance_create_layer(0, 0, "l_Controllers", oGameOverScreen);
-                // Reset game stats to their starting values
-                player_lives = 1;
-                crystals_collected = 0;
-                
-                current_state = GAME_STATE.IDLE;
-                room_restart();
-                initiate_fader_in(); // Trigger the fade back in on the new room
-                break;
-        }
+                // Game over logic (Permanent)
+                layer_set_visible("Layer_Game_over", true);
+                selected_button = 0; // Default to "Try Again"
+                current_state = GAME_STATE.GAME_OVER;
+                break;
+        }
+        break;
 
     case GAME_STATE.FADING_IN:
         // === DEBUG: Confirm state change ===
@@ -124,10 +127,34 @@ switch (current_state) {
         break;
         
     case GAME_STATE.GAME_OVER:
-        // === DEBUG: Confirm state change ===
-        show_debug_message("Game is now in GAME_OVER state.");
-    
-        // The game has ended.
+        // --- Game Over Screen Input ---
+        // 'A' key to select previous button
+        if (keyboard_check_pressed(ord("A"))) {
+            selected_button = max(0, selected_button - 1);
+        }
+        
+        // 'D' key to select next button
+        if (keyboard_check_pressed(ord("D"))) {
+            selected_button = min(1, selected_button + 1);
+        }
+        
+        // 'J' key to confirm selection
+        if (keyboard_check_pressed(ord("J"))) {
+            // These actions are common to both buttons, so we can do them here
+            player_lives = 1;
+            crystals_collected = 0;
+            current_state = GAME_STATE.IDLE;
+            layer_set_visible("Layer_Game_over", false);
+            
+            // Now, perform the unique action for the selected button
+            if (selected_button == 0) { // Try Again
+                room_restart();
+                initiate_fader_in();
+            } else if (selected_button == 1) { // Back to Menu
+                room_goto(rStartMenu);
+                initiate_fader_in();
+            }
+        }
         break;
 }
 

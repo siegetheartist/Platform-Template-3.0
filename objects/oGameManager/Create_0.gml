@@ -38,6 +38,10 @@ max_player_health = 3; // Maximum player health (for display and resetting healt
 // --- Respawn Invulnerability Timer ---
 respawn_grace_period = 0; // A timer to briefly prevent death checks after respawn.
 
+// --- Game Over Screen Variables ---
+// Track which button is currently selected (0 for Try Again, 1 for Back to Menu).
+selected_button = 0;
+
 
 #region GAME UI
 // Set Game over UI invisible by default

@@ -1,9 +1,3 @@
-// If the player is in the process of dying, do nothing.
-if (is_dying) {
-    exit;
-}
-
-
 #region VARIABLES
 // --- Get tilemap ID for collision ---
 var collision_tileset = layer_tilemap_get_id("t_Collision"); // Get the ID of the collision tilemap layer

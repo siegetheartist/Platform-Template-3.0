@@ -50,6 +50,8 @@
     {"id":{"name":"fnt_game_Over","path":"fonts/fnt_game_Over/fnt_game_Over.yy",},},
     {"id":{"name":"fnt_hud_default","path":"fonts/fnt_hud_default/fnt_hud_default.yy",},},
     {"id":{"name":"oButton","path":"objects/oButton/oButton.yy",},},
+    {"id":{"name":"oButtonBackToMenu","path":"objects/oButtonBackToMenu/oButtonBackToMenu.yy",},},
+    {"id":{"name":"oButtonTryAgain","path":"objects/oButtonTryAgain/oButtonTryAgain.yy",},},
     {"id":{"name":"oCheckpoint","path":"objects/oCheckpoint/oCheckpoint.yy",},},
     {"id":{"name":"oCollectable","path":"objects/oCollectable/oCollectable.yy",},},
     {"id":{"name":"oCrystal","path":"objects/oCrystal/oCrystal.yy",},},

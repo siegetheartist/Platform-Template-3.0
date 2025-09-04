@@ -30,6 +30,8 @@
   ],
   "ResourceOrderSettings":[
     {"name":"fnt_game_Over","order":1,"path":"fonts/fnt_game_Over/fnt_game_Over.yy",},
+    {"name":"oButtonBackToMenu","order":2,"path":"objects/oButtonBackToMenu/oButtonBackToMenu.yy",},
+    {"name":"oButtonTryAgain","order":1,"path":"objects/oButtonTryAgain/oButtonTryAgain.yy",},
     {"name":"oCheckpoint","order":5,"path":"objects/oCheckpoint/oCheckpoint.yy",},
     {"name":"oCollectable","order":19,"path":"objects/oCollectable/oCollectable.yy",},
     {"name":"oCrystal","order":13,"path":"objects/oCrystal/oCrystal.yy",},
