@@ -1,20 +1,15 @@
 {
   "$GMObject":"",
-  "%Name":"oButtonBackToMenu",
-  "eventList":[
-    {"$GMEvent":"v1","%Name":"","collisionObjectId":null,"eventNum":0,"eventType":0,"isDnD":false,"name":"","resourceType":"GMEvent","resourceVersion":"2.0",},
-  ],
+  "%Name":"sText",
+  "eventList":[],
   "managed":true,
-  "name":"oButtonBackToMenu",
+  "name":"sText",
   "overriddenProperties":[],
   "parent":{
-    "name":"oUserInterface",
-    "path":"folders/Objects/oUserInterface.yy",
+    "name":"Objects",
+    "path":"folders/Objects.yy",
   },
-  "parentObjectId":{
-    "name":"oButton",
-    "path":"objects/oButton/oButton.yy",
-  },
+  "parentObjectId":null,
   "persistent":false,
   "physicsAngularDamping":0.1,
   "physicsDensity":0.5,
@@ -32,7 +27,10 @@
   "resourceType":"GMObject",
   "resourceVersion":"2.0",
   "solid":false,
-  "spriteId":null,
+  "spriteId":{
+    "name":"sTryAgain",
+    "path":"sprites/sTryAgain/sTryAgain.yy",
+  },
   "spriteMaskId":null,
   "visible":true,
 }

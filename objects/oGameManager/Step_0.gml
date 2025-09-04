@@ -161,6 +161,7 @@ switch (current_state) {
 #endregion
 
 
+
 #region PARALLAX SCROLLING
 // --- Parallax Scrolling Logic ---
 // Get the camera's current X position.

@@ -21,5 +21,5 @@
   "sampleRate":44100,
   "soundFile":"sndMenuMusic.mp3",
   "type":1,
-  "volume":0.15,
+  "volume":0.05,
 }

@@ -118,8 +118,8 @@
   "maintainGms1Font":false,
   "name":"fnt_game_Over",
   "parent":{
-    "name":"Fonts",
-    "path":"folders/Fonts.yy",
+    "name":"Controllers",
+    "path":"folders/Objects/Controllers.yy",
   },
   "pointRounding":0,
   "ranges":[
@@ -133,10 +133,7 @@
   "sdfSpread":8,
   "size":18.0,
   "styleName":"Regular",
-  "textureGroupId":{
-    "name":"Default",
-    "path":"texturegroups/Default",
-  },
+  "textureGroupId":null,
   "TTFName":"",
   "usesSDF":false,
 }
