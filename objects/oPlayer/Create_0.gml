@@ -50,7 +50,7 @@ wall_jump_distance = 6; // Horizontal force applied during a wall jump
 // Vertical velocity for wall jump
 jump_height_wall = -8; // Initial upward velocity for a wall jump
 
-// JUMP COMBO VARIABLES
+// Jump combo variables
 consecutive_jumps = 0; // Tracks the number of consecutive jumps for variable sounds
 jump_combo_timer = 0; // Timer to reset the combo if a new jump isn't performed
 jump_combo_timeout = 120; // 2 seconds at 60 FPS
