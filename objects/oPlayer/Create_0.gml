@@ -1,8 +1,6 @@
 #region CINEMATIC CONTROL
 // Determines whether the player can move or act (used during cutscenes or transitions)
-// Only enable control if not in the start menu
 can_control = (room != rStartMenu);
-is_dying = false; // Flag to stop player movement after death is initiated.
 #endregion
 
 #region MOVEMENT VARIABLES
@@ -33,7 +31,8 @@ grav_max_wall = 5; // Maximum vertical speed while wall sliding
 ground_check_dist = 12; // Pixels below player to check for solid ground
 
 // Frames after leaving ground where jump is still allowed (coyote time)
-coyote_time = 10; // Frames to allow jumping after leaving a platform
+coyote_time_max = 10;
+coyote_time = coyote_time_max;
 
 // Minimum jump height when releasing jump early
 jump_height_min = -3; // Minimum upward velocity when jump key is released early
@@ -42,7 +41,8 @@ jump_height_min = -3; // Minimum upward velocity when jump key is released early
 jump_height = -8; // Initial upward velocity for a full jump
 
 // Frames to buffer jump input before landing
-jump_buffer = 0; // Timer to store a jump input if pressed slightly before landing
+jump_buffer_max = 10; // Max frames to buffer a jump input
+jump_buffer = 0;
 
 // Horizontal push when jumping off a wall
 wall_jump_distance = 6; // Horizontal force applied during a wall jump
@@ -56,30 +56,14 @@ jump_combo_timer = 0; // Timer to reset the combo if a new jump isn't performed
 jump_combo_timeout = 120; // 2 seconds at 60 FPS
 #endregion
 
-#region WALL JUMP STATE MACHINE
-// Enum to manage wall interaction states
-enum WallJumpState {
-    NONE,        // Not interacting with a wall
-    GRAB,        // Brief pause after hitting wall (gravity suppressed)
-    SLIDE,       // Sliding down wall with reduced gravity
-    JUMP,        // Just performed a wall jump
-    RECOVER      // Regaining control after wall jump (input lockout)
-}
-wall_jump_state = WallJumpState.NONE; // Initialize wall jump state
-#endregion
-
-#region WALL INTERACTION TIMERS
-// Timer for how long the player "grabs" the wall before sliding
-wall_grab_timer = 0; // Current timer for wall grab duration
-wall_grab_timer_max = 8; // Max frames to "hang" on wall before sliding
-
+#region WALL JUMP TIMERS
 // Timer for how long horizontal control is disabled after wall jump
-wall_jump_delay = 0; // Current timer for wall jump input lockout
 wall_jump_delay_max = 8; // Max frames for horizontal input lockout after wall jump
+wall_jump_delay = 0; // Current timer for wall jump input lockout
 
 // Timer to suppress gravity after wall jump or wall grab
-wall_jump_gravity_bypass = 0; // Current timer for gravity suppression
 wall_jump_gravity_bypass_max = 5; // Max frames to bypass gravity after wall interaction
+wall_jump_gravity_bypass = 0; // Current timer for gravity suppression
 #endregion
 
 #region PLAYER HEALTH AND INVULNERABILITY
@@ -97,9 +81,31 @@ fall_threshold = room_height + 64; // 64 pixels below the bottom of the room
 
 #region AUDIO VARIABLES
 // Keeps track of which running sound to play next for a "pit, pat" effect.
-// 0 for sndPlayerStep01, 1 for sndPlayerStep02.
 current_step_sound = 0;
 // Tracks the image index from the previous frame to prevent sounds from
 // re-triggering on the same animation frame.
 image_index_previous = 0;
+#endregion
+
+#region STATE MACHINE
+// Enum to manage the player's current state
+enum PlayerState {
+    IDLE,
+    RUN,
+    AIR,
+    WALL_GRAB,
+    WALL_SLIDE,
+    DEAD
+}
+player_state = PlayerState.IDLE; // Initialize the player's state
+#endregion
+
+#region VISUALS
+facing_direction = 1; // 1 for right, -1 for left
+#endregion
+
+#region WALL INTERACTION VARIABLES
+// Timer for how long the player "grabs" the wall before sliding
+wall_grab_timer = 0;
+wall_grab_timer_max = 8; // Max frames to "hang" on wall before sliding
 #endregion

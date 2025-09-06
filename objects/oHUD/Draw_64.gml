@@ -1,6 +1,6 @@
 /// @description Draws the heads-up display on top of the game view.
 
-// --- HUD Drawing Logic ---
+//  HUD Drawing Logic 
 
 #region FONT AND COLOR SETUP
 // Set the font for drawing text (e.g., for crystal count)
@@ -13,12 +13,12 @@ draw_set_color(c_white); // Set default text color to white
 // We can now safely assume oGameManager exists because it is a persistent object.
 var _game_manager = oGameManager;
 
-// --- Layout Variables ---
+//  Layout Variables 
 var _padding = 15; // Padding from the viewport edges
 var _row_gap = 15; // Gap between each row of HUD elements
 
 #region DRAW PLAYER LIVES
-// --- Draw Player Lives ---
+//  Draw Player Lives 
 // Always draw one 'sLives' sprite as the icon for the lives counter
 var _life_x_start = _padding; // Starting X position for lives display, with padding
 var _life_y = _padding;      // Y position for lives display, with padding
@@ -29,7 +29,7 @@ draw_text(_life_x_start + sprite_get_width(sLives), _life_y + (sprite_get_height
 #endregion
 
 #region DRAW PLAYER HEALTH
-// --- Draw Player Health ---
+//  Draw Player Health 
 // We need to get the current player's health from the oPlayer instance
 var _current_player_health = 0;
 if (instance_exists(oPlayer)) {
@@ -49,7 +49,7 @@ for (var i = 0; i < _game_manager.max_player_health; i++) {
 #endregion
 
 #region DRAW CRYSTALS COLLECTED
-// --- Draw Crystals Collected ---
+//  Draw Crystals Collected 
 // Draw the 'sCrystal' sprite and the count next to it
 var _crystal_x = _padding; // X position for crystal sprite, with padding
 var _crystal_y = _health_y + sprite_get_height(sHealth) + _row_gap; // Y position below health, with row gap

@@ -35,10 +35,10 @@ max_crystals_for_life = 3; // Number of crystals needed to gain an extra life
 max_player_health = 3; // Maximum player health (for display and resetting health on respawn)
 #endregion
 
-// --- Respawn Invulnerability Timer ---
+//  Respawn Invulnerability Timer 
 respawn_grace_period = 0; // A timer to briefly prevent death checks after respawn.
 
-// --- Game Over Screen Variables ---
+//  Game Over Screen Variables 
 // Track which button is currently selected (0 for Try Again, 1 for Back to Menu).
 selected_button = 0;
 

@@ -1,26 +1,22 @@
-#region DEFAULT PLAYER DRAWING
+#region VISUALS
+// --- Sprite Flipping Logic ---
+// The WALL_SLIDE and WALL_GRAB states handle their own sprite flipping.
+if (player_state != PlayerState.WALL_SLIDE && player_state != PlayerState.WALL_GRAB) {
+    image_xscale = facing_direction;
+}
+
 // --- Visual Damage Indicator (Blinking) ---
-// Check to make sure the sprite is valid before drawing. This prevents a crash or
-// an error box from appearing if the sprite is misspelled or missing.
 if (sprite_index != noone) {
-    // Only apply the blinking effect if the flash_timer is active
-    if (flash_timer > 0) {
-        // Make the player blink white.
-        // We'll use a simple modulo operation to make it flash on/off.
-        // Adjust '6' for faster/slower blinking (lower number = faster blink).
-        if (flash_timer mod 6 < 3) { // Blinks every 3 frames (on for 3, off for 3)
-            draw_sprite_ext(sprite_index, image_index, x, y, image_xscale, image_yscale, image_angle, c_white, 1);
-        } else {
-            // Draw with current sprite's alpha (effectively invisible for a moment)
-            draw_sprite_ext(sprite_index, image_index, x, y, image_xscale, image_yscale, image_angle, image_blend, 0);  
-        }
-    } else {
-        // If not flashing, draw the player normally
-        draw_self();  
-    }
+    if (flash_timer > 0) {
+        if (flash_timer mod 6 < 3) {
+            draw_sprite_ext(sprite_index, image_index, x, y, image_xscale, image_yscale, image_angle, c_white, 1);
+        } else {
+            draw_sprite_ext(sprite_index, image_index, x, y, image_xscale, image_yscale, image_angle, image_blend, 0);   
+        }
+    } else {
+        draw_self();   
+    }
 } else {
-    // If the sprite is not valid, you can print a debug message to the console
-    // to help you find the problem.
-    show_debug_message("ERROR: Player sprite is not a valid asset!");
+    show_debug_message("ERROR: Player sprite is not a valid asset!");
 }
 #endregion

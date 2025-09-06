@@ -1,376 +1,172 @@
-#region VARIABLES
-// --- Get tilemap ID for collision ---
-var collision_tileset = layer_tilemap_get_id("t_Collision"); // Get the ID of the collision tilemap layer
+#region INPUT AND VARIABLES
+// Declare all local variables used within this step event.
+var _key_left = 0;
+var _key_right = 0;
+var _key_jump = 0;
+var _key_jump_held = 0;
+var _dir = 0;
+var _on_ground = false;
+var _on_wall = 0;
+var _is_touching_wall = false;
+var _is_pressing_wall = false;
+var _is_ascending = false;
+var collision_tileset = layer_tilemap_get_id("t_Collision");
 
-// Declare all local variables used within this step event
-var _key_left = 0; // True if 'A' is pressed
-var _key_right = 0; // True if 'D' is pressed
-var _key_jump = 0; // True if 'Space' is pressed (single press)
-var _key_jump_held = 0; // True if 'Space' is held down
-var _key_down = 0; // True if 'S' is pressed
-var _dir = 0; // Calculated horizontal input direction (-1 left, 0 none, 1 right)
-var _is_moving = false; // True if player has horizontal speed
-var _is_ascending = false; // True if player is moving upwards
-var _is_descending = false; // True if player is moving downwards
-var _on_ground = false; // True if player is touching the ground
-var _on_wall = 0; // Indicates wall direction (-1 left, 0 none, 1 right)
-var _is_touching_wall = false; // True if player is touching any wall
-var _is_pressing_wall = false; // True if player is pressing against a wall in their movement direction
-var _can_wall_grab = false; // True if conditions for initiating a wall grab are met
+// Read player input only if control is enabled
+if (can_control && player_state != PlayerState.DEAD) {
+    _key_left = keyboard_check(ord("A"));
+    _key_right = keyboard_check(ord("D"));
+    _key_jump = keyboard_check_pressed(vk_space);
+    _key_jump_held = keyboard_check(vk_space);
+}
+
+// Check for wall jump delay. If active, zero out horizontal input.
+if (wall_jump_delay > 0) {
+    wall_jump_delay--;
+    _dir = 0;
+} else {
+    // Calculate horizontal input direction as normal.
+    _dir = _key_right - _key_left;
+}
 #endregion
 
 #region TIMER MANAGEMENT
 // --- Invulnerability and Flash Timers ---
 if (invulnerable_timer > 0) {
-    invulnerable_timer--; // Decrement invulnerability timer
+    invulnerable_timer--;
 }
 if (flash_timer > 0) {
-    flash_timer--; // Decrement flash timer for visual feedback
+    flash_timer--;
 }
 // --- Jump Combo Timer ---
 if (jump_combo_timer > 0) {
-    jump_combo_timer--; // Decrement the timer
+    jump_combo_timer--;
 } else {
-    // If the timer runs out, reset the jump combo count
     consecutive_jumps = 0;
 }
 #endregion
 
-#region COLLISION CHECKS (Initial)
-
+#region COLLISION CHECKS
 // --- Ground Check ---
-_on_ground = place_meeting(x, y + 1, collision_tileset); // Checks if the player is one pixel above the collision tilemap
-
-// --- Movement Check ---
-_is_moving = hsp != 0; // Determines if the player is currently moving horizontally
+_on_ground = place_meeting(x, y + 1, collision_tileset);
 
 // --- Vertical State Checks ---
-_is_ascending = vsp < 0; // Player is moving upwards
-_is_descending = vsp > 0; // Player is moving downwards
+_is_ascending = vsp < 0;
 
 // --- Wall Check ---
-// Checks for walls to the right and left, determining _on_wall direction
 _on_wall = place_meeting(x + 1, y, collision_tileset) - place_meeting(x - 1, y, collision_tileset);
-_is_touching_wall = (_on_wall != 0); // True if touching a wall on either side
+_is_touching_wall = (_on_wall != 0);
+_is_pressing_wall = (sign(_dir) == _on_wall) && (_dir != 0);
 #endregion
 
-#region INPUT HANDLING
-
-// Reads player input only if control is enabled (not in a cinematic)
-if (can_control) {
-    _key_left = keyboard_check(ord("A")); // Check if 'A' key is held
-    _key_right = keyboard_check(ord("D")); // Check if 'D' key is held
-    _key_jump = keyboard_check_pressed(vk_space); // Check for a single press of 'Space'
-    _key_jump_held = keyboard_check(vk_space); // Check if 'Space' key is held
-    _key_down = keyboard_check(ord("S")); // Check if 'S' key is held
-}
-
-// --- Direction ---
-// Calculates horizontal input direction, ignoring input during wall jump recovery
-if (can_control && wall_jump_state != WallJumpState.RECOVER) {
-    _dir = _key_right - _key_left; // -1 for left, 1 for right, 0 for no input
-}
-#endregion
-
-#region WALL INTERACTION LOGIC
-// --- Wall Interaction ---
-// Determines if the player is pressing against a wall (e.g., holding 'left' into a left wall)
-_is_pressing_wall = (sign(_key_right - _key_left) == _on_wall);
-
-// --- Refined Wall Grab Detection ---
-var _vaulting = (vsp < -6); // Prevents wall grab if player is actively vaulting upwards
-_can_wall_grab = _is_touching_wall && !_on_ground && _is_pressing_wall; // Basic conditions for wall grab
-var _valid_wall_grab = _can_wall_grab && !_vaulting; // Final check for a valid wall grab
-
-// --- Wall Jump State Machine ---
-switch (wall_jump_state) {
-    case WallJumpState.NONE:
-        if (_valid_wall_grab) {
-            wall_jump_state = WallJumpState.GRAB; // Enter wall grab state
-            wall_grab_timer = 0; // Reset wall grab timer
-            wall_jump_gravity_bypass = wall_jump_gravity_bypass_max; // Temporarily suppress gravity
-            audio_play_sound(sndPlayerStep01, 10, false); // Play sound on wall grab
-        }
-        break;
-
-    case WallJumpState.GRAB:
-        wall_grab_timer++; // Increment wall grab timer
-
-        if (wall_grab_timer <= wall_grab_timer_max) {
-            wall_jump_gravity_bypass = wall_grab_timer_max; // Keep gravity suppressed during initial grab
-            vsp = 0; // Stop vertical movement
-        }
-
-        // ✅ Allow wall jump during grab
-        if (_key_jump) {
-            consecutive_jumps++; // Increment jump combo
-            jump_combo_timer = jump_combo_timeout; // Reset combo timer
-            var _jump_sound_to_play = sndPlayerJump; // Default to first sound
-            switch (consecutive_jumps) {
-                case 1:
-                    _jump_sound_to_play = sndPlayerJump;
-                    break;
-                case 2:
-                    _jump_sound_to_play = sndPlayerJump02;
-                    break;
-                case 3:
-                    _jump_sound_to_play = sndPlayerJump03;
-                    break;
-                default:
-                    // After the third jump, loop back to the first sound.
-                    _jump_sound_to_play = sndPlayerJump;
-                    consecutive_jumps = 1;
-                    break;
-            }
-            audio_play_sound(_jump_sound_to_play, 10, false);
-            hsp = -_on_wall * wall_jump_distance; // Apply horizontal wall jump force
-            vsp = jump_height_wall - 2; // Apply vertical wall jump force
-            wall_jump_delay = wall_jump_delay_max; // Start wall jump input lockout timer
-            wall_jump_gravity_bypass = 0; // ✅ Reset gravity bypass immediately on jump
-            wall_jump_state = WallJumpState.JUMP; // Transition to wall jump state
-        }
-
-        if (wall_grab_timer >= wall_grab_timer_max) {
-            wall_jump_state = WallJumpState.SLIDE; // Transition to wall slide after grab time
-        }
-
-        if (!_valid_wall_grab) {
-            wall_jump_state = WallJumpState.NONE; // Exit wall grab if conditions are no longer met
-        }
-        break;
-
-    case WallJumpState.SLIDE:
-        if (!_valid_wall_grab) {
-            wall_jump_state = WallJumpState.NONE; // Exit wall slide if conditions are no longer met
-        }
-
-        if (_key_jump) {
-            scr_player_jump_sound();
-            hsp = -_on_wall * wall_jump_distance; // Apply horizontal wall jump force
-            vsp = jump_height_wall - 2; // Apply vertical wall jump force
-            wall_jump_delay = wall_jump_delay_max; // Start wall jump input lockout timer
-            wall_jump_gravity_bypass = 0; // ✅ Reset gravity bypass immediately on jump
-            wall_jump_state = WallJumpState.JUMP; // Transition to wall jump state
-        }
-        break;
-
-    case WallJumpState.JUMP:
-        wall_jump_state = WallJumpState.RECOVER; // Immediately transition to recovery after jump
-        break;
-
-    case WallJumpState.RECOVER:
-        if (wall_jump_delay > 0) {
-            wall_jump_delay--; // Decrement recovery timer
-        } else {
-            wall_jump_state = WallJumpState.NONE; // Exit recovery when timer runs out
-        }
-        break;
-}
-#endregion
-
-#region HORIZONTAL MOVEMENT & INPUT
-// --- Horizontal Movement ---
-if (can_control) {
-    if (wall_jump_state == WallJumpState.GRAB || wall_jump_state == WallJumpState.SLIDE) {
-        _dir = 0; // No horizontal input influence during wall grab/slide
-        hsp = 0; // Stop horizontal movement during wall grab/slide
-    }
-
-    // Prevents player from 'sticking' to walls if already on ground and trying to move into a wall
-    if (_on_ground && _dir != 0 && place_meeting(x + _dir, y, collision_tileset)) {
-        hsp = 0; // Stop horizontal movement
-        _dir = 0; // Clear directional input
-    }
-
+#region STATE TRANSITIONS
+// Universal transition from air to ground
+if (_on_ground && player_state == PlayerState.AIR) {
     if (_dir != 0) {
-        hsp += _dir * accel; // Accelerate in input direction
+        player_state = PlayerState.RUN;
     } else {
-        hsp = (hsp > 0) ? max(hsp - decel, 0) : min(hsp + decel, 0); // Decelerate to stop
+        player_state = PlayerState.IDLE;
     }
-
-    hsp = clamp(hsp, -max_hsp, max_hsp); // Clamp horizontal speed within limits
-} else {
-    hsp = 0; // Stop horizontal movement if player control is disabled
+}
+// Universal transition from ground to air (e.g., walking off a ledge)
+if (!_on_ground && (player_state == PlayerState.IDLE || player_state == PlayerState.RUN)) {
+    player_state = PlayerState.AIR;
 }
 #endregion
 
-#region JUMP BUFFER & GRAVITY
-// --- Jump Buffer ---
-if (can_control && _key_jump) {
-    jump_buffer = 10; // Set jump buffer timer if jump is pressed
-}
-jump_buffer--; // Decrement jump buffer timer
-
-// --- Gravity ---
-if (wall_jump_gravity_bypass > 0) {
-    wall_jump_gravity_bypass--; // Decrement gravity bypass timer
-} else {
-    var _grav_final = grav; // Default gravity
-    var _grav_max_final = grav_max; // Default max gravity
-    var _vsp_min_clamp = jump_height; // Default minimum vertical speed (for jump height)
-
-    if (wall_jump_state == WallJumpState.SLIDE) {
-        _grav_final = grav_wall; // Use wall slide gravity
-        _grav_max_final = grav_max_wall; // Use wall slide max gravity
-        _vsp_min_clamp = 0; // Allow vsp to go to 0 during wall slide
-    } else if (_key_down) {
-        // Potentially apply fast fall gravity if 'down' is held (adjust grav values as needed)
-        _grav_final = grav;
-        _grav_max_final = grav_max;
-    }
-
-    vsp += _grav_final; // Apply gravity to vertical speed
-    vsp = clamp(vsp, _vsp_min_clamp, _grav_max_final); // Clamp vertical speed
+#region STATE MACHINE LOGIC
+// Execute the logic for the current state
+switch (player_state) {
+    case PlayerState.IDLE:
+        scr_player_state_idle(_dir, _key_jump);
+        break;
+    case PlayerState.RUN:
+        scr_player_state_run(_dir, _key_jump);
+        break;
+    case PlayerState.AIR:
+        scr_player_state_air(_key_jump_held, _on_wall, _is_touching_wall, _is_pressing_wall, _dir);
+        break;
+    case PlayerState.WALL_GRAB:
+        scr_player_state_wall_grab(_on_wall, _is_pressing_wall, _key_jump);
+        break;
+    case PlayerState.WALL_SLIDE:
+        scr_player_state_wall_slide(_on_wall, _is_touching_wall, _is_pressing_wall, _key_jump);
+        break;
+    case PlayerState.DEAD:
+        // Add death logic here later
+        hsp = 0;
+        vsp = 0;
+        break;
 }
 #endregion
 
-#region GROUND JUMP & VARIABLE JUMP
-// --- Ground Jump & Coyote Time ---
-if (_on_ground) {
-    vsp = 0; // Reset vertical speed on ground
-    coyote_time = 10; // Reset coyote time
-    
-    if (jump_buffer > 0) {
-        vsp = jump_height; // Perform a jump from buffer
-        scr_player_jump_sound();
-        jump_buffer = 0; // Clear jump buffer
-    }
-} else {
-    coyote_time--; // Decrement coyote time when in air
-
-    if (_key_jump && coyote_time > 0) {
-        vsp = jump_height; // Perform a jump using coyote time
-        scr_player_jump_sound();
-        coyote_time = 0; // Clear coyote time
-    }
+#region MOVEMENT AND COLLISION
+// Apply friction/deceleration if not moving or if control is locked
+if (player_state != PlayerState.RUN && player_state != PlayerState.AIR) {
+    hsp = (hsp > 0) ? max(hsp - decel, 0) : min(hsp + decel, 0);
 }
 
-// --- Variable Jump Height ---
-// Shortens jump if jump key is released early while ascending
-if (_is_ascending && !_key_jump_held) {
-    vsp = max(vsp, jump_height_min); // Limit upward speed to minimum jump height
-}
-#endregion
-
-#region APPLY MOVEMENT & TILEMAP COLLISION RESOLUTION
-// --- Apply Movement ---
 // Apply horizontal speed and resolve collision with the tilemap
 x += hsp;
 if (place_meeting(x, y, collision_tileset)) {
-    var _pixel_step = sign(hsp); // Determine direction of collision
-    if (_pixel_step == 0) { // Failsafe for hsp=0
-        _pixel_step = 1; // Default push direction
+    var _pixel_step = sign(hsp);
+    if (_pixel_step == 0) {
+        _pixel_step = 1;
     }
-    while (place_meeting(x, y, collision_tileset)) { // Move back pixel by pixel until no longer colliding
+    while (place_meeting(x, y, collision_tileset)) {
         x -= _pixel_step;
     }
-    hsp = 0; // Stop horizontal movement after collision
+    hsp = 0;
 }
 
 // Apply vertical speed and resolve collision with the tilemap
 y += vsp;
 if (place_meeting(x, y, collision_tileset)) {
-    var _pixel_step = sign(vsp); // Determine direction of collision
-    if (_pixel_step == 0) { // Failsafe for vsp=0
-        _pixel_step = -1; // Default push direction (up)
+    var _pixel_step = sign(vsp);
+    if (_pixel_step == 0) {
+        _pixel_step = -1;
     }
-    while (place_meeting(x, y, collision_tileset)) { // Move back pixel by pixel until no longer colliding
+    while (place_meeting(x, y, collision_tileset)) {
         y -= _pixel_step;
     }
-    vsp = 0; // Stop vertical movement after collision
+    vsp = 0;
 }
 #endregion
 
-#region ANIMATION & SPRITE ORIENTATION
-
-// Handle player animations based on ground state and wall jump state
-if (!_on_ground) {
-    switch (wall_jump_state) {
-        case WallJumpState.GRAB:
-        case WallJumpState.SLIDE:
-            sprite_index = sPlayerOnWall; // Set sprite for wall grab/slide
-            image_speed = 0; // Stop animation
-            image_xscale = -_on_wall; // Flip sprite based on wall direction
-            break;
-
-        default:
-            sprite_index = sPlayerInAir; // Set sprite for jumping/falling
-            image_index = (vsp < 0) ? 0 : 1; // Show first frame for ascent, second for descent
-            image_speed = 0; // Stop animation
-            break;
-    }
-} else {
-    if (_is_moving) {
-        sprite_index = sPlayerRun; // Set sprite for running
-        image_speed = 1; // Play running animation
-
-        // --- Running Sound Logic ---
-        // Play the step sound at the beginning of animation frames 0 and 2.
-        // We use floor() because image_index is a float.
-        if ((floor(image_index) == 0 || floor(image_index) == 2) && (floor(image_index_previous) != floor(image_index))) {
-            // Check which sound to play next for the "pit, pat" effect.
-            if (current_step_sound == 0) {
-                audio_play_sound(sndPlayerStep01, 1, false);
-                current_step_sound = 1; // Switch to the next sound
-            } else {
-                audio_play_sound(sndPlayerStep02, 1, false);
-                current_step_sound = 0; // Switch back
-            }
-        }
-    } else {
-        sprite_index = sPlayerIdle; // Set sprite for idle
-        image_speed = 0; // Stop animation
-        image_index = 0; // Reset to first frame of idle
-        
-        // When not running, reset the step sound for the next run sequence.
-        current_step_sound = 0;
-    }
-    
-    // --- Sprite Flipping Logic ---
-    // Only flip if not wall sliding/grabbing (where image_xscale is already set by _on_wall)
-    if (wall_jump_state == WallJumpState.NONE || wall_jump_state == WallJumpState.RECOVER) {
-        if (_dir != 0) { // If there's active directional input
-            image_xscale = _dir; // Flip sprite based on input direction
-        } else if (hsp != 0) { // If still moving from momentum but no input
-            image_xscale = sign(hsp); // Flip sprite based on current momentum direction
-        }
-    }
+#region UPDATE VISUALS
+// Update facing direction based on input or momentum
+if (_dir != 0) {
+    facing_direction = _dir;
+} else if (hsp != 0) {
+    facing_direction = sign(hsp);
 }
-
-image_index_previous = image_index;
 #endregion
 
 #region HAZARD & ENEMY DAMAGE
 // --- Enemy/Hazard Collision and Damage ---
-// Checks for collision with enemy objects or hazards
-var _collided_enemy = instance_place(x, y, oEnemy); // Get the ID of the enemy collided with
-var _collided_hazard = place_meeting(x, y, oHazard); // Check for hazard collision
+var _collided_enemy = instance_place(x, y, oEnemy);
+var _collided_hazard = place_meeting(x, y, oHazard);
 
 if ((_collided_enemy != noone || _collided_hazard) && invulnerable_timer <= 0) {
     var _damage_taken = 0;
     if (_collided_enemy != noone) {
-        _damage_taken = _collided_enemy.enemy_damage; // Get damage from the enemy
+        _damage_taken = _collided_enemy.enemy_damage;
     } else if (_collided_hazard) {
-        _damage_taken = 1; // Default damage for hazards (can be made a variable later)
+        _damage_taken = 1;
     }
 
     if (_damage_taken > 0) {
-        // Only play damage sound if the hit is NOT fatal
         if (player_health - _damage_taken > 0) {
-            audio_play_sound(sndPlayerTakesDamage, 10, false); // Play damage sound here
+            audio_play_sound(sndPlayerTakesDamage, 10, false);
         }
-        player_health -= _damage_taken; // Decrement player health
-        invulnerable_timer = invulnerable_duration; // Start invulnerability timer
-        flash_timer = flash_duration; // Start visual flash timer
-
-        // Trigger enemy taunt (if an enemy caused damage)
-        if (_collided_enemy != noone) {
-            // Check if the enemy is not already taunting to prevent re-triggering
-            if (_collided_enemy.enemy_state != ENEMY_STATE.TAUNT) {
-                _collided_enemy.enemy_state = ENEMY_STATE.TAUNT; // Set enemy to taunt state
-                _collided_enemy.taunt_timer = _collided_enemy.taunt_duration; // Start enemy taunt timer
-            }
-        }
+        player_health -= _damage_taken;
+        invulnerable_timer = invulnerable_duration;
+        flash_timer = flash_duration;
     }
 }
+#endregion
+
+#region MISC LOGIC
+// Update previous image index for animation sound logic
+image_index_previous = image_index;
 #endregion

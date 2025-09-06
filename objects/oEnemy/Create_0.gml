@@ -1,4 +1,4 @@
-// --- Enemy Parent Initialization Variables ---
+//  Enemy Parent Initialization Variables 
 
 #region INITIALIZATION
 hsp = 0; // Horizontal speed (pixels per frame)
@@ -63,7 +63,7 @@ spr_patrol_move = -1; // Default sprite for moving during patrol/alert
 spr_chase_move = -1;  // Default sprite for moving during chase
 spr_taunt_specific = -1; // NEW: Stores the specific taunt sprite for this enemy type.
 
-// --- ENEMY DAMAGE AND TAUNT SETTINGS (NEW) ---
+//  ENEMY DAMAGE AND TAUNT SETTINGS (NEW) 
 enemy_damage = 1; // Default damage this enemy deals (children will override)
 taunt_timer = 0; // Timer for how long the enemy is in the TAUNT state
 taunt_duration = 60; // How long the enemy taunts (1 second at 60 FPS)

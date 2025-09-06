@@ -13,7 +13,7 @@ function scr_enemy_init_sprites_and_offsets(_idle_sprite, _patrol_move_sprite, _
     self.spr_taunt_specific = _taunt_sprite; // NEW: Store the specific taunt sprite
     self.exclamation_sprite = spr_exclamation; // Always use spr_exclamation
 
-    // --- Calculate offsets based on actual sprite_width/height ---
+    //  Calculate offsets based on actual sprite_width/height 
     // These calculations must happen AFTER sprite_index is set, so sprite_width/height are correct.
     // Using 'self.' to explicitly refer to the calling instance's properties.
     self._edge_check_offset = self.sprite_width / 2 + 2;   // Offset for horizontal edge check

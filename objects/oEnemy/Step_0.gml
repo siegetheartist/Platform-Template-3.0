@@ -1,7 +1,7 @@
-// --- Enemy Parent Movement, AI, and Collision Logic ---
+//  Enemy Parent Movement, AI, and Collision Logic 
 
 #region VARIABLES
-// --- Get tilemap ID for collision ---
+//  Get tilemap ID for collision 
 var collision_tileset = layer_tilemap_get_id("t_Collision"); // Get the ID of the collision tilemap layer
 
 // Declare all local variables used within this step event
@@ -13,7 +13,7 @@ var _pixel_step = 0; // For pixel-by-pixel collision adjustment
 #endregion
 
 #region TIMER MANAGEMENT (NEW)
-// --- Taunt Timer Management ---
+//  Taunt Timer Management 
 if (taunt_timer > 0) {
     taunt_timer--; // Decrement taunt timer
 }
@@ -183,7 +183,7 @@ if (place_meeting(x, y, oEnemy)) { // If colliding with any instance of oEnemy (
 #endregion
 
 #region VERTICAL COLLISION
-// --- Vertical Movement and Collision Resolution ---
+//  Vertical Movement and Collision Resolution 
 
 // Check if currently on ground BEFORE applying movement for this frame
 var _is_on_ground_before_move = place_meeting(x, y + 1, collision_tileset);

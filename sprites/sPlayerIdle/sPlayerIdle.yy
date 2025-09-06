@@ -3,7 +3,7 @@
   "%Name":"sPlayerIdle",
   "bboxMode":2,
   "bbox_bottom":46,
-  "bbox_left":14,
+  "bbox_left":13,
   "bbox_right":34,
   "bbox_top":20,
   "collisionKind":1,

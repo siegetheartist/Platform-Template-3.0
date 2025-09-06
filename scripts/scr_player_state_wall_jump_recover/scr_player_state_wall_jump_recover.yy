@@ -1,9 +1,9 @@
 {
   "$GMScript":"v1",
-  "%Name":"scr_player_jump_sound",
+  "%Name":"scr_player_state_wall_jump_recover",
   "isCompatibility":false,
   "isDnD":false,
-  "name":"scr_player_jump_sound",
+  "name":"scr_player_state_wall_jump_recover",
   "parent":{
     "name":"scr_player",
     "path":"folders/Scripts/scr_player.yy",

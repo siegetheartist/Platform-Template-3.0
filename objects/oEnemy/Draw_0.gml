@@ -1,4 +1,4 @@
-// --- Enemy Parent Drawing Logic ---
+//  Enemy Parent Drawing Logic 
 
 #region DEFAULT DRAWING
 // Draw the enemy's sprite at its current position and with current scale/rotation
