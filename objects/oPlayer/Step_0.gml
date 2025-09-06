@@ -13,13 +13,14 @@ var _dir = _player_input.dir;
 // --- Collision Tileset ---
 var collision_tileset = layer_tilemap_get_id("t_Collision");
 
-// Check for wall jump delay. If active, zero out horizontal input.
-if (wall_jump_temp_hor_loss > 0) {
-    wall_jump_temp_hor_loss--;
+// Check for Walljump Move-Loss timer (after a wall jump) If active, zero out horizontal input.
+// Do not move, as this affects _dir. If placed elsewhere, other code that overrides _dir will be effected.
+if (wall_jump_move_loss > 0) {
+    wall_jump_move_loss--;
     _dir = 0;
 }
 
-// --- Jump Buffer Logic --- Test if this works
+// --- Jump Buffer Logic --- 
 if (_key_jump && !place_meeting(x, y + 1, collision_tileset)) {
     jump_buffer = jump_buffer_max;
 }
@@ -58,8 +59,8 @@ if (_on_ground) {
 }
 // Wall grab timer
 if (wall_jump_gravity_bypass > 0) wall_jump_gravity_bypass--;
-// Temporary Horizontal Controll Loss on Wall Jump timer
-if (wall_jump_temp_hor_loss > 0) wall_jump_temp_hor_loss--; 
+// Wall jump move loss timer
+if (wall_jump_move_loss > 0) wall_jump_move_loss--; 
 #endregion
 
 
@@ -67,10 +68,6 @@ if (wall_jump_temp_hor_loss > 0) wall_jump_temp_hor_loss--;
 // We check for jump input here, before state transitions, to ensure that
 // a jump can be registered even in the brief window after leaving the ground (coyote time).
 if (scr_player_jump_input(_key_jump, _on_ground)) {
-    // If a jump was initiated, exit the current script to prevent other
-    // movement logic from interfering with the upward momentum.
-    // The state will be set correctly by the jump script itself.
-    return;
 }
 #endregion
 
@@ -94,10 +91,10 @@ if (!_on_ground && (player_state == PlayerState.IDLE || player_state == PlayerSt
 // Execute the logic for the current state
 switch (player_state) {
     case PlayerState.IDLE:
-        scr_player_state_idle(_dir, _key_jump);
+        scr_player_state_idle(_dir);
         break;
     case PlayerState.RUN:
-        scr_player_state_run(_dir, _key_jump);
+        scr_player_state_run(_dir);
         break;
     case PlayerState.AIR:
         scr_player_state_air(_key_jump_held, _on_wall, _is_touching_wall, _is_pressing_wall, _dir);

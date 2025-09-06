@@ -52,9 +52,9 @@ layer_set_visible("Layer_Game_over", false);
 #region PARALLAX BACKGROUND VARIABLES
 // Parallax scroll speeds. These are multipliers of the camera's horizontal speed.
 // 0.2 means the layer moves at 20% the speed of the camera.
-bg_1_scroll_speed = 0.02; // Furthest layer (least movement)
+bg_1_scroll_speed = 0.08; // Furthest layer (least movement)
 bg_2_scroll_speed = 0.06; // Middle layer
-bg_3_scroll_speed = 0.08; // Closest layer (most movement)
+bg_3_scroll_speed = 0.02; // Closest layer (most movement)
 #endregion
 
 

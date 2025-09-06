@@ -55,8 +55,8 @@ jump_combo_timeout = 120; // 2 seconds at 60 FPS
 
 #region WALL JUMP TIMERS
 // Timer for how long horizontal control is disabled after wall jump
-wall_jump_temp_hor_loss_max = 4; // Max frames for horizontal input lockout after wall jump
-wall_jump_temp_hor_loss = 0; // Current timer for wall jump input lockout
+wall_jump_move_loss_max = 4; // Max frames for horizontal input lockout after wall jump
+wall_jump_move_loss = 0; // Current timer for wall jump input lockout
 
 // Timer to suppress gravity after wall jump or wall grab
 wall_jump_gravity_bypass_max = 5; // Max frames to bypass gravity after wall interaction

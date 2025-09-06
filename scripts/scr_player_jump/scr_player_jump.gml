@@ -16,10 +16,11 @@ function scr_player_jump(_jump_type, _wall_dir=0) {
             // The wall jump impulse needs to be handled here.
             vsp = wall_jump_height;
             hsp = -_wall_dir * wall_jump_horizontal_push_off;
+			
             // After a wall jump, we suppress gravity to prevent an immediate re-grab.
             wall_jump_gravity_bypass = wall_jump_gravity_bypass_max;
-            // After a wall jump, we transition to the AIR state and start the input lockout.
-            wall_jump_temp_hor_loss = wall_jump_temp_hor_loss_max;
+            // After a wall jump, we transition to the AIR state and horizontal move loss.
+            wall_jump_move_loss = wall_jump_move_loss_max;
             player_state = PlayerState.AIR;
             break;
     }
