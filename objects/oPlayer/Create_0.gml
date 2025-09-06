@@ -34,21 +34,18 @@ ground_check_dist = 12; // Pixels below player to check for solid ground
 coyote_time_max = 10;
 coyote_time = 0;
 
-// Minimum jump height when releasing jump early
+// Jumping
 jump_height_min = -3; // Minimum upward velocity when jump key is released early
-
-// Standard jump velocity
 jump_height = -8; // Initial upward velocity for a full jump
 
 // Frames to buffer jump input before landing
 jump_buffer_max = 10; // Max frames to buffer a jump input
 jump_buffer = 0;
 
-// Horizontal push when jumping off a wall
-wall_jump_distance = 6; // Horizontal force applied during a wall jump
 
-// Vertical velocity for wall jump
-jump_height_wall = -8; // Initial upward velocity for a wall jump
+// Wall jump
+wall_jump_horizontal_push_off = 4; // Horizontal push when jumping off a wall
+wall_jump_height = -8; // Initial upward velocity for a wall jump
 
 // Jump combo variables
 consecutive_jumps = 0; // Tracks the number of consecutive jumps for variable sounds
@@ -58,8 +55,8 @@ jump_combo_timeout = 120; // 2 seconds at 60 FPS
 
 #region WALL JUMP TIMERS
 // Timer for how long horizontal control is disabled after wall jump
-wall_jump_delay_max = 8; // Max frames for horizontal input lockout after wall jump
-wall_jump_delay = 0; // Current timer for wall jump input lockout
+wall_jump_temp_hor_loss_max = 4; // Max frames for horizontal input lockout after wall jump
+wall_jump_temp_hor_loss = 0; // Current timer for wall jump input lockout
 
 // Timer to suppress gravity after wall jump or wall grab
 wall_jump_gravity_bypass_max = 5; // Max frames to bypass gravity after wall interaction

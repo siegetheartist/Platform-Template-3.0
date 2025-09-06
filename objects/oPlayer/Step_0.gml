@@ -14,8 +14,8 @@ var _dir = _player_input.dir;
 var collision_tileset = layer_tilemap_get_id("t_Collision");
 
 // Check for wall jump delay. If active, zero out horizontal input.
-if (wall_jump_delay > 0) {
-    wall_jump_delay--;
+if (wall_jump_temp_hor_loss > 0) {
+    wall_jump_temp_hor_loss--;
     _dir = 0;
 }
 
@@ -51,9 +51,13 @@ if (jump_combo_timer > 0) {
 }
 // --- Jump & Gravity Timers ---
 if (jump_buffer > 0) jump_buffer--;
-if (coyote_time > 0) coyote_time--;
+if (_on_ground) {
+    coyote_time = coyote_time_max;
+} else {
+    coyote_time--;
+}
 if (wall_jump_gravity_bypass > 0) wall_jump_gravity_bypass--;
-if (wall_jump_delay > 0) wall_jump_delay--;
+//if (wall_jump_temp_hor_loss > 0) wall_jump_temp_hor_loss--; what does this do? do we still need this?
 #endregion
 
 
@@ -65,13 +69,10 @@ if (_on_ground && player_state == PlayerState.AIR) {
     } else {
         player_state = PlayerState.IDLE;
     }
-	
-    coyote_time = coyote_time_max; // Reset coyote time when landing. Is this the right place?
 }
 // Universal transition from ground to air (e.g., walking off a ledge)
 if (!_on_ground && (player_state == PlayerState.IDLE || player_state == PlayerState.RUN)) {
     player_state = PlayerState.AIR;
-    coyote_time = coyote_time_max; // Reset coyote time when in air - test if this works
 }
 #endregion
 
