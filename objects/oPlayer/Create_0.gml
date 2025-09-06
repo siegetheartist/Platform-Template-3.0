@@ -31,7 +31,7 @@ grav_max_wall = 5; // Maximum vertical speed while wall sliding
 ground_check_dist = 12; // Pixels below player to check for solid ground
 
 // Frames after leaving ground where jump is still allowed (coyote time)
-coyote_time_max = 10;
+coyote_time_max = 8;
 coyote_time = 0;
 
 // Jumping
@@ -39,7 +39,7 @@ jump_height_min = -3; // Minimum upward velocity when jump key is released early
 jump_height = -8; // Initial upward velocity for a full jump
 
 // Frames to buffer jump input before landing
-jump_buffer_max = 10; // Max frames to buffer a jump input
+jump_buffer_max = 4; // Max frames to buffer a jump input
 jump_buffer = 0;
 
 

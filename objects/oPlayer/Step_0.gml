@@ -56,8 +56,22 @@ if (_on_ground) {
 } else {
     coyote_time--;
 }
+// Wall grab timer
 if (wall_jump_gravity_bypass > 0) wall_jump_gravity_bypass--;
-//if (wall_jump_temp_hor_loss > 0) wall_jump_temp_hor_loss--; what does this do? do we still need this?
+// Temporary Horizontal Controll Loss on Wall Jump timer
+if (wall_jump_temp_hor_loss > 0) wall_jump_temp_hor_loss--; 
+#endregion
+
+
+#region JUMP LOGIC
+// We check for jump input here, before state transitions, to ensure that
+// a jump can be registered even in the brief window after leaving the ground (coyote time).
+if (scr_player_jump_input(_key_jump, _on_ground)) {
+    // If a jump was initiated, exit the current script to prevent other
+    // movement logic from interfering with the upward momentum.
+    // The state will be set correctly by the jump script itself.
+    return;
+}
 #endregion
 
 

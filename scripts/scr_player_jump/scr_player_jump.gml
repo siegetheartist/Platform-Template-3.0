@@ -9,7 +9,6 @@ function scr_player_jump(_jump_type, _wall_dir=0) {
     switch (_jump_type) {
         case "ground":
             vsp = jump_height;
-
             // After a ground jump, we transition to the AIR state.
             player_state = PlayerState.AIR;
             break;
