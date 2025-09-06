@@ -29,10 +29,8 @@ function scr_player_state_run(_dir, _key_jump) {
         }
     }
 
-    // Check for jump input. A ground jump should always be allowed.
-    if (_key_jump) {
-        // Execute the centralized jump function with the "ground" type.
-        scr_player_jump("ground");
-        player_state = PlayerState.AIR; // Transition to AIR after the jump
-    }
+    // We pass in the current jump input and the fact that we are on the ground.
+	if (scr_player_jump_input(_key_jump, true)) {
+	    player_state = PlayerState.AIR;
+	}
 }

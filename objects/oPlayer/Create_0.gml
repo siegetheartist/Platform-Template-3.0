@@ -32,7 +32,7 @@ ground_check_dist = 12; // Pixels below player to check for solid ground
 
 // Frames after leaving ground where jump is still allowed (coyote time)
 coyote_time_max = 10;
-coyote_time = coyote_time_max;
+coyote_time = 0;
 
 // Minimum jump height when releasing jump early
 jump_height_min = -3; // Minimum upward velocity when jump key is released early

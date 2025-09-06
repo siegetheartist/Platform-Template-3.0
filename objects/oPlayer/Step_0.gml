@@ -1,63 +1,61 @@
 #region INPUT AND VARIABLES
-// Declare all local variables used within this step event.
-var _key_left = 0;
-var _key_right = 0;
-var _key_jump = 0;
-var _key_jump_held = 0;
-var _dir = 0;
-var _on_ground = false;
-var _on_wall = 0;
-var _is_touching_wall = false;
-var _is_pressing_wall = false;
-var _is_ascending = false;
-var collision_tileset = layer_tilemap_get_id("t_Collision");
+// Execute the script that handles all input.
+var _player_input = scr_player_input();
 
-// Read player input only if control is enabled
-if (can_control && player_state != PlayerState.DEAD) {
-    _key_left = keyboard_check(ord("A"));
-    _key_right = keyboard_check(ord("D"));
-    _key_jump = keyboard_check_pressed(vk_space);
-    _key_jump_held = keyboard_check(vk_space);
-}
+// Declare and get local variables for the rest of the step event.
+// These variables are now retrieved from the _player_input struct.
+var _key_left = _player_input.key_left;
+var _key_right = _player_input.key_right;
+var _key_jump = _player_input.key_jump;
+var _key_jump_held = _player_input.key_jump_held;
+var _dir = _player_input.dir;
+
+// --- Collision Tileset ---
+var collision_tileset = layer_tilemap_get_id("t_Collision");
 
 // Check for wall jump delay. If active, zero out horizontal input.
 if (wall_jump_delay > 0) {
     wall_jump_delay--;
     _dir = 0;
-} else {
-    // Calculate horizontal input direction as normal.
-    _dir = _key_right - _key_left;
+}
+
+// --- Jump Buffer Logic --- Test if this works
+if (_key_jump && !place_meeting(x, y + 1, collision_tileset)) {
+    jump_buffer = jump_buffer_max;
 }
 #endregion
 
+
+#region COLLISION CHECKS
+// --- Ground Check ---
+var _on_ground = place_meeting(x, y + 1, collision_tileset);
+
+// --- Vertical State Checks ---
+var _is_ascending = vsp < 0;
+
+// --- Wall Check ---
+var _on_wall = place_meeting(x + 1, y, collision_tileset) - place_meeting(x - 1, y, collision_tileset);
+var _is_touching_wall = (_on_wall != 0);
+var _is_pressing_wall = (sign(_dir) == _on_wall) && (_dir != 0);
+#endregion
+
+
 #region TIMER MANAGEMENT
-// --- Invulnerability and Flash Timers ---
-if (invulnerable_timer > 0) {
-    invulnerable_timer--;
-}
-if (flash_timer > 0) {
-    flash_timer--;
-}
-// --- Jump Combo Timer ---
+// --- Player Timers ---
+if (invulnerable_timer > 0) invulnerable_timer--;
+if (flash_timer > 0) flash_timer--;
 if (jump_combo_timer > 0) {
     jump_combo_timer--;
 } else {
     consecutive_jumps = 0;
 }
+// --- Jump & Gravity Timers ---
+if (jump_buffer > 0) jump_buffer--;
+if (coyote_time > 0) coyote_time--;
+if (wall_jump_gravity_bypass > 0) wall_jump_gravity_bypass--;
+if (wall_jump_delay > 0) wall_jump_delay--;
 #endregion
 
-#region COLLISION CHECKS
-// --- Ground Check ---
-_on_ground = place_meeting(x, y + 1, collision_tileset);
-
-// --- Vertical State Checks ---
-_is_ascending = vsp < 0;
-
-// --- Wall Check ---
-_on_wall = place_meeting(x + 1, y, collision_tileset) - place_meeting(x - 1, y, collision_tileset);
-_is_touching_wall = (_on_wall != 0);
-_is_pressing_wall = (sign(_dir) == _on_wall) && (_dir != 0);
-#endregion
 
 #region STATE TRANSITIONS
 // Universal transition from air to ground
@@ -67,10 +65,13 @@ if (_on_ground && player_state == PlayerState.AIR) {
     } else {
         player_state = PlayerState.IDLE;
     }
+	
+    coyote_time = coyote_time_max; // Reset coyote time when landing. Is this the right place?
 }
 // Universal transition from ground to air (e.g., walking off a ledge)
 if (!_on_ground && (player_state == PlayerState.IDLE || player_state == PlayerState.RUN)) {
     player_state = PlayerState.AIR;
+    coyote_time = coyote_time_max; // Reset coyote time when in air - test if this works
 }
 #endregion
 

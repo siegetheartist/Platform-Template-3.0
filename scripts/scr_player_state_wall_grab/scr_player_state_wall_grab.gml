@@ -14,6 +14,7 @@ function scr_player_state_wall_grab(_on_wall, _is_pressing_wall, _key_jump) {
     // Check for a jump input. A wall jump can be performed from a grab.
     if (_key_jump) {
         scr_player_wall_jump(_on_wall);
+        return;
     }
 
     // Check if the player has let go of the directional input.
