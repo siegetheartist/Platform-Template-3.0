@@ -73,6 +73,14 @@ if (scr_player_jump_input(_key_jump, _on_ground)) {
 
 
 #region STATE TRANSITIONS
+// Transition from wall slide to ground
+if (_on_ground && player_state == PlayerState.WALL_SLIDE) {
+    if (_dir != 0) {
+        player_state = PlayerState.RUN;
+    } else {
+        player_state = PlayerState.IDLE;
+    }
+}
 // Universal transition from air to ground
 if (_on_ground && player_state == PlayerState.AIR) {
     if (_dir != 0) {
@@ -120,17 +128,14 @@ if (player_state != PlayerState.RUN && player_state != PlayerState.AIR) {
 }
 
 // Apply horizontal speed and resolve collision with the tilemap
-x += hsp;
-if (place_meeting(x, y, collision_tileset)) {
-    var _pixel_step = sign(hsp);
-    if (_pixel_step == 0) {
-        _pixel_step = 1;
-    }
-    while (place_meeting(x, y, collision_tileset)) {
-        x -= _pixel_step;
+if (place_meeting(x + hsp, y, collision_tileset)) {
+    while (!place_meeting(x + sign(hsp), y, collision_tileset)) {
+        x += sign(hsp);
     }
     hsp = 0;
 }
+x += hsp;
+
 
 // Apply vertical speed and resolve collision with the tilemap
 y += vsp;
