@@ -12,12 +12,17 @@ var _dir = _player_input.dir;
 
 // --- Collision Tileset ---
 var collision_tileset = layer_tilemap_get_id("t_Collision");
+var collision_slopes = layer_tilemap_get_id("t_Slopes"); // new layer to handle slopes
+var collision_layers = [collision_tileset, collision_slopes]; // new variable to hold all collidables
 
 // Check for Walljump Move-Loss timer (after a wall jump) If active, zero out horizontal input.
 // Do not move, as this affects _dir. If placed elsewhere, other code that overrides _dir will be effected.
 if (wall_jump_move_loss > 0) {
     wall_jump_move_loss--;
     _dir = 0;
+    if (wall_jump_move_loss <= 0) {
+        player_state = PlayerState.AIR;
+    }
 }
 
 // --- Jump Buffer Logic --- 
@@ -134,7 +139,22 @@ if (place_meeting(x + hsp, y, collision_tileset)) {
     }
     hsp = 0;
 }
-x += hsp;
+// Slope-aware movement
+if (_on_ground) {
+    // Estimate slope direction: -1 = up left, 1 = up right, 0 = flat
+    var left_ground = place_meeting(x - 1, y + 1, collision_tileset);
+    var right_ground = place_meeting(x + 1, y + 1, collision_tileset);
+    var slope = right_ground - left_ground;
+    var slope_factor = 0.5; // Tweak for smoothness
+    if (abs(slope) > 0) {
+        x += hsp;
+        y -= hsp * slope * slope_factor;
+    } else {
+        x += hsp;
+    }
+} else {
+    x += hsp;
+}
 
 
 // Apply vertical speed and resolve collision with the tilemap
