@@ -12,8 +12,8 @@ var _dir = _player_input.dir;
 
 // --- Collision Tileset ---
 var collision_tileset = layer_tilemap_get_id("t_Collision");
-var collision_slopes = layer_tilemap_get_id("t_Slopes"); // new layer to handle slopes
-var collision_layers = [collision_tileset, collision_slopes]; // new variable to hold all collidables
+// var collision_slopes = layer_tilemap_get_id("t_Slopes"); // new layer to handle slopes
+// var collision_layers = [collision_tileset, collision_slopes]; // new variable to hold all collidables
 
 // Check for Walljump Move-Loss timer (after a wall jump) If active, zero out horizontal input.
 // Do not move, as this affects _dir. If placed elsewhere, other code that overrides _dir will be effected.
@@ -126,22 +126,30 @@ switch (player_state) {
 }
 #endregion
 
+
 #region MOVEMENT AND COLLISION
 // Apply friction/deceleration if not moving or if control is locked
 if (player_state != PlayerState.RUN && player_state != PlayerState.AIR) {
     hsp = (hsp > 0) ? max(hsp - decel, 0) : min(hsp + decel, 0);
 }
 
-// Apply horizontal speed and resolve collision with the tilemap
+// --- Move horizontally until collision
 if (place_meeting(x + hsp, y, collision_tileset)) {
-    while (!place_meeting(x + sign(hsp), y, collision_tileset)) {
-        x += sign(hsp);
+    var _sub_pixel = .5;
+    var _pixel_step = _sub_pixel * sign(hsp);
+    while (!place_meeting(x + _pixel_step, y, collision_tileset)) {
+        x += _pixel_step;
     }
     hsp = 0;
 }
+
+// --- Commit to horizontal movement ---
+x += hsp;
+
+/*
 // Slope-aware movement
 if (_on_ground) {
-    // Estimate slope direction: -1 = up left, 1 = up right, 0 = flat
+    // Estimate slope direction: -1 = up left, 1 = up right, 0 = flatd
     var left_ground = place_meeting(x - 1, y + 1, collision_tileset);
     var right_ground = place_meeting(x + 1, y + 1, collision_tileset);
     var slope = right_ground - left_ground;
@@ -155,21 +163,23 @@ if (_on_ground) {
 } else {
     x += hsp;
 }
+*/
 
 
-// Apply vertical speed and resolve collision with the tilemap
-y += vsp;
-if (place_meeting(x, y, collision_tileset)) {
-    var _pixel_step = sign(vsp);
-    if (_pixel_step == 0) {
-        _pixel_step = -1;
-    }
-    while (place_meeting(x, y, collision_tileset)) {
-        y -= _pixel_step;
+// --- Move vertically until collision ---
+if (place_meeting(x, y + vsp, collision_tileset)) {
+    var _sub_pixel = .5;
+    var _pixel_step = _sub_pixel * sign(vsp);
+    while (!place_meeting(x, y + _pixel_step, collision_tileset)) {
+        y += _pixel_step;
     }
     vsp = 0;
 }
+
+// --- Commit Vertical Movement ---
+y += vsp;
 #endregion
+
 
 #region UPDATE VISUALS
 // Update facing direction based on input or momentum
@@ -179,6 +189,7 @@ if (_dir != 0) {
     facing_direction = sign(hsp);
 }
 #endregion
+
 
 #region HAZARD & ENEMY DAMAGE
 // --- Enemy/Hazard Collision and Damage ---

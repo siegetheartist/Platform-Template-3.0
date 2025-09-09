@@ -1,3 +1,6 @@
+//show_debug_message(string(layer_get_all_elements("Layer_Game_over")));
+//show_debug_message("After restart: [ 72,70,68,67,81,82 ]");
+
 // Add this timer to the top of your Step Event, before the other regions.
 if (respawn_grace_period > 0) {
     respawn_grace_period--;
@@ -53,21 +56,13 @@ switch (current_state) {
 
     case GAME_STATE.FADING_OUT:
         // The screen is fading to black. Do nothing until fade is complete.
-    
-        // === DEBUG: Confirm state change ===
-        show_debug_message("State is now FADING_OUT");
-    
         break;
 
     case GAME_STATE.FADE_COMPLETE:
-        // === DEBUG: Confirm state change ===
-        show_debug_message("Fade is complete. Performing action: " + next_action);
-    
         // The screen is black. Perform the queued action.
         switch (next_action) {
             case "respawn":
-                // === DEBUG: Check respawn coordinates ===
-                show_debug_message("Attempting respawn at: (" + string(global.checkpoint_x) + ", " + string(global.checkpoint_y) + ")");
+                //show_debug_message("Attempting respawn at: (" + string(global.checkpoint_x) + ", " + string(global.checkpoint_y) + ")");
     
                 // Respawn logic
                 var _old_player = instance_find(oPlayer, 0);
@@ -109,8 +104,7 @@ switch (current_state) {
         break;
 
     case GAME_STATE.FADING_IN:
-        // === DEBUG: Confirm state change ===
-        show_debug_message("State is now FADING_IN");
+        // show_debug_message("State is now FADING_IN");
     
         // The screen is fading back in. Do nothing until fade is complete.
         break;

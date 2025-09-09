@@ -3,6 +3,7 @@
 /// @arg {real} [_wall_dir] Optional. The direction of the wall (-1 or 1) for a wall jump.
 function scr_player_jump(_jump_type, _wall_dir=0) {
 	
+    
 	#region	JUMP SOUNDS
     /// Play the correct jump sound based on the player's consecutive jumps and manages the jump combo.
     consecutive_jumps++;
@@ -27,6 +28,8 @@ function scr_player_jump(_jump_type, _wall_dir=0) {
     audio_play_sound(_jump_sound_to_play, 10, false);
 	#endregion
 
+    
+    #region JUMP LOGIC
     // Apply the correct jump impulse based on the jump type.
     switch (_jump_type) {
         case "ground":
@@ -46,4 +49,7 @@ function scr_player_jump(_jump_type, _wall_dir=0) {
             player_state = PlayerState.AIR;
             break;
     }
+    #endregion
+    
+    
 }

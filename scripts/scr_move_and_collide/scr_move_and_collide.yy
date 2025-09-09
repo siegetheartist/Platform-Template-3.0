@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"scr_move_and_collide",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"scr_move_and_collide",
+  "parent":{
+    "name":"scr_player",
+    "path":"folders/Scripts/scr_player.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}
