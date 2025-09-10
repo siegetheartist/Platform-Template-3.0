@@ -27,7 +27,7 @@ function scr_player_jump(_jump_type, _wall_dir=0) {
     }
     audio_play_sound(_jump_sound_to_play, 10, false);
 	#endregion
-
+    
     
     #region JUMP LOGIC
     // Apply the correct jump impulse based on the jump type.

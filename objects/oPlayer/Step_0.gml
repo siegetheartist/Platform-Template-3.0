@@ -15,20 +15,7 @@ var collision_tileset = layer_tilemap_get_id("t_Collision");
 // var collision_slopes = layer_tilemap_get_id("t_Slopes"); // new layer to handle slopes
 // var collision_layers = [collision_tileset, collision_slopes]; // new variable to hold all collidables
 
-// Check for Walljump Move-Loss timer (after a wall jump) If active, zero out horizontal input.
-// Do not move, as this affects _dir. If placed elsewhere, other code that overrides _dir will be effected.
-if (wall_jump_move_loss > 0) {
-    wall_jump_move_loss--;
-    _dir = 0;
-    if (wall_jump_move_loss <= 0) {
-        player_state = PlayerState.AIR;
-    }
-}
 
-// --- Jump Buffer Logic --- 
-if (_key_jump && !place_meeting(x, y + 1, collision_tileset)) {
-    jump_buffer = jump_buffer_max;
-}
 #endregion
 
 
@@ -50,22 +37,29 @@ var _is_pressing_wall = (sign(_dir) == _on_wall) && (_dir != 0);
 // --- Player Timers ---
 if (invulnerable_timer > 0) invulnerable_timer--;
 if (flash_timer > 0) flash_timer--;
+    
+// Different sound for jumps (names need to be changed to match intent. Currently, jump combo timer sounds like we are performing double jumps, and we are not. Consecutive jumps seems like it would be a counter for double jumps, and it's not.
+// Suggest changing the names to something more easily understood. Like: jump_sound_counter_max and jump_sound_counter
 if (jump_combo_timer > 0) {
     jump_combo_timer--;
 } else {
     consecutive_jumps = 0;
 }
-// --- Jump & Gravity Timers ---
-if (jump_buffer > 0) jump_buffer--;
-if (_on_ground) {
-    coyote_time = coyote_time_max;
-} else {
-    coyote_time--;
-}
+
 // Wall grab timer
 if (wall_jump_gravity_bypass > 0) wall_jump_gravity_bypass--;
 // Wall jump move loss timer
 if (wall_jump_move_loss > 0) wall_jump_move_loss--; 
+    
+// Check for Walljump Move-Loss timer (after a wall jump) If active, zero out horizontal input.
+// Do not move, as this affects _dir. If placed elsewhere, other code that overrides _dir will be effected.
+if (wall_jump_move_loss > 0) {
+    wall_jump_move_loss--;
+    _dir = 0;
+    if (wall_jump_move_loss <= 0) {
+        player_state = PlayerState.AIR;
+    }
+}
 #endregion
 
 
@@ -76,6 +70,7 @@ if (wall_jump_move_loss > 0) wall_jump_move_loss--;
 if (scr_player_jump_input(_key_jump, _on_ground)) {
 }
 #endregion
+
 
 
 #region STATE TRANSITIONS
@@ -168,8 +163,6 @@ if (place_meeting(x + hsp, y, collision_tileset)) {
 x += hsp;
 
 
-
-
 // --- Move vertically until collision ---
 if (place_meeting(x, y + vsp, collision_tileset)) {
     var _sub_pixel = .5;
@@ -183,6 +176,7 @@ if (place_meeting(x, y + vsp, collision_tileset)) {
 // --- Commit Vertical Movement ---
 y += vsp;
 #endregion
+
 
 
 #region UPDATE VISUALS

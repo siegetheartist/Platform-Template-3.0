@@ -37,7 +37,7 @@ jump_height_min = -3; // Minimum upward velocity when jump key is released early
 jump_height = -8; // Initial upward velocity for a full jump
 
 // Frames to buffer jump input before landing
-jump_buffer_max = 4; // Max frames to buffer a jump input
+jump_buffer_max = 4; // Max frames to buffer a jump input (immediately derements 1 in the same frame. so add 1 to intended number)
 jump_buffer = 0;
 
 // Frames after leaving ground where jump is still allowed (coyote time)

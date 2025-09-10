@@ -2,6 +2,24 @@
 /// @arg {real} _key_jump Is the jump key pressed this frame?
 /// @arg {bool} _on_ground Is the player on the ground?
 function scr_player_jump_input(_key_jump, _on_ground) {
+    
+    // --- Jump Buffer Logic ---
+    // If jump key is pressed while not on the ground, activate jump buffer
+    if (_key_jump && !_on_ground) {
+        jump_buffer = jump_buffer_max;
+    }
+    // Decrement jump buffer
+    if (jump_buffer > 0) {
+        jump_buffer--;
+    }
+ 
+    // --- Coyote Time Logic ---
+    // If on ground, reset coyote time. Otherwise, decrement it.
+    if (_on_ground) {
+        coyote_time = coyote_time_max;
+    } else {
+        coyote_time--;
+    }
 	
     // A jump is allowed only if the player presses the jump key
 	// AND is either on the ground, or has an active jump buffer,
