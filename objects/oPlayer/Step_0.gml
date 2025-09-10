@@ -69,6 +69,7 @@ if (wall_jump_move_loss > 0) wall_jump_move_loss--;
 #endregion
 
 
+
 #region JUMP LOGIC
 // We check for jump input here, before state transitions, to ensure that
 // a jump can be registered even in the brief window after leaving the ground (coyote time).
@@ -127,6 +128,7 @@ switch (player_state) {
 #endregion
 
 
+
 #region MOVEMENT AND COLLISION
 // Apply friction/deceleration if not moving or if control is locked
 if (player_state != PlayerState.RUN && player_state != PlayerState.AIR) {
@@ -146,24 +148,7 @@ if (place_meeting(x + hsp, y, collision_tileset)) {
 // --- Commit to horizontal movement ---
 x += hsp;
 
-/*
-// Slope-aware movement
-if (_on_ground) {
-    // Estimate slope direction: -1 = up left, 1 = up right, 0 = flatd
-    var left_ground = place_meeting(x - 1, y + 1, collision_tileset);
-    var right_ground = place_meeting(x + 1, y + 1, collision_tileset);
-    var slope = right_ground - left_ground;
-    var slope_factor = 0.5; // Tweak for smoothness
-    if (abs(slope) > 0) {
-        x += hsp;
-        y -= hsp * slope * slope_factor;
-    } else {
-        x += hsp;
-    }
-} else {
-    x += hsp;
-}
-*/
+
 
 
 // --- Move vertically until collision ---
