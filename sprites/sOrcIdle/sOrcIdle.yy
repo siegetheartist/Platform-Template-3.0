@@ -3,7 +3,7 @@
   "%Name":"sOrcIdle",
   "bboxMode":2,
   "bbox_bottom":47,
-  "bbox_left":8,
+  "bbox_left":7,
   "bbox_right":40,
   "bbox_top":9,
   "collisionKind":1,

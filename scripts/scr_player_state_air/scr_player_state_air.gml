@@ -19,10 +19,6 @@ function scr_player_state_air(_key_jump_held, _on_wall, _is_touching_wall, _is_p
         vsp = clamp(vsp + grav, -grav_max, grav_max);
     }
 
-    // Apply horizontal air control
-    hsp += _dir * accel;
-    hsp = clamp(hsp, -max_hsp, max_hsp);
-
     // Check if the player can transition to the wall grab state.
     if (_is_touching_wall && _is_pressing_wall && vsp > 0) {
         player_state = PlayerState.WALL_GRAB;

@@ -64,8 +64,8 @@ wall_jump_gravity_bypass_max = 5; // Max frames to bypass gravity after wall int
 wall_jump_gravity_bypass = 0; // Current timer for gravity suppression
 
 // Timer for how long horizontal control is disabled after wall jump
-wall_jump_move_loss_max = 4; // Max frames for horizontal input lockout after wall jump
 wall_jump_move_loss = 0; // Current timer for wall jump input lockout
+wall_jump_move_loss_max = 4; // Max frames for horizontal input lockout after wall jump
 #endregion
 
 

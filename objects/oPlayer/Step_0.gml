@@ -101,6 +101,30 @@ if (!_on_ground && (player_state == PlayerState.IDLE || player_state == PlayerSt
 }
 #endregion
 
+
+
+#region HORIZONTAL MOVEMENT PHYSICS
+// This block handles the direct application of horizontal input (acceleration)
+// and general deceleration (friction) when no input is given.
+// State-specific overrides (like wall grab/slide setting hsp=0) will happen in the state scripts.
+ 
+// If player has horizontal input AND is not in a wall jump lockout
+if (_dir != 0 && wall_jump_move_loss <= 0) {
+    // Accelerate towards max speed in the input direction
+    hsp += _dir * accel;
+    hsp = clamp(hsp, -max_hsp, max_hsp);
+} else {
+    // If no horizontal input, or input is locked by wall jump, apply deceleration
+    if (abs(hsp) > decel) {
+        hsp -= sign(hsp) * decel;
+    } else {
+        hsp = 0; // Snap to zero
+    }
+}
+#endregion
+
+
+
 #region STATE MACHINE LOGIC
 // Execute the logic for the current state
 switch (player_state) {
@@ -130,11 +154,6 @@ switch (player_state) {
 
 
 #region MOVEMENT AND COLLISION
-// Apply friction/deceleration if not moving or if control is locked
-if (player_state != PlayerState.RUN && player_state != PlayerState.AIR) {
-    hsp = (hsp > 0) ? max(hsp - decel, 0) : min(hsp + decel, 0);
-}
-
 // --- Move horizontally until collision
 if (place_meeting(x + hsp, y, collision_tileset)) {
     var _sub_pixel = .5;

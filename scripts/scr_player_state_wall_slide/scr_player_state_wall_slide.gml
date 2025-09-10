@@ -24,7 +24,7 @@ function scr_player_state_wall_slide(_on_wall, _is_touching_wall, _is_pressing_w
 
     // Check for wall jump input.
     if (_key_jump) {
-        scr_player_wall_jump(_on_wall);
+        scr_player_jump("wall", _on_wall);
         return;
     }
 }

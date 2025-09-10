@@ -7,11 +7,6 @@ function scr_player_state_run(_dir) {
     sprite_index = sPlayerRun;
     image_speed = 1;
 
-    // Apply horizontal acceleration based on input.
-    hsp += _dir * accel;
-    // Clamp horizontal speed within limits.
-    hsp = clamp(hsp, -max_hsp, max_hsp);
-
     // Check for a lack of horizontal input.
     if (_dir == 0) { // If no input, switch to the IDLE state.
         player_state = PlayerState.IDLE;
