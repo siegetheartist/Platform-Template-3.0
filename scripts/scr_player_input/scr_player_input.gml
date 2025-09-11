@@ -11,11 +11,13 @@ function scr_player_input() {
         _input_data.key_right = keyboard_check(ord("D"));
         _input_data.key_jump = keyboard_check_pressed(vk_space);
         _input_data.key_jump_held = keyboard_check(vk_space);
-    } else {
+        _input_data.key_attack_pressed = keyboard_check_pressed(ord("J"));
+    } else {  // No input if not controllable or dead
         _input_data.key_left = 0;
         _input_data.key_right = 0;
         _input_data.key_jump = 0;
         _input_data.key_jump_held = 0;
+        _input_data.key_attack_pressed = 0;
     }
     _input_data.dir = _input_data.key_right - _input_data.key_left;
 

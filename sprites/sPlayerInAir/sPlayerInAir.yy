@@ -25,7 +25,7 @@
   ],
   "name":"sPlayerInAir",
   "nineSlice":null,
-  "origin":4,
+  "origin":7,
   "parent":{
     "name":"sPlayers",
     "path":"folders/Sprites/sPlayers.yy",
@@ -83,7 +83,7 @@
     "visibleRange":null,
     "volume":1.0,
     "xorigin":24,
-    "yorigin":24,
+    "yorigin":48,
   },
   "swatchColours":null,
   "swfPrecision":0.5,

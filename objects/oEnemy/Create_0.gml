@@ -16,6 +16,10 @@ current_dir = 1; // 1 is right, -1 is left (initial movement direction)
 grav = 0.4; // Gravity strength pulling the enemy down
 #endregion
 
+#region ENEMY STATS // NEW: Add health to enemies
+enemy_health = 10; // Default health for this enemy type. Children can override.
+#endregion
+
 #region ENEMY STATE AND BEHAVIOR SETTINGS
 // Define the different states for the enemy
 enum ENEMY_STATE {

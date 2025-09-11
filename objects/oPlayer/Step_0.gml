@@ -8,6 +8,7 @@ var _key_left = _player_input.key_left;
 var _key_right = _player_input.key_right;
 var _key_jump = _player_input.key_jump;
 var _key_jump_held = _player_input.key_jump_held;
+var _key_attack_pressed = _player_input.key_attack_pressed; // Get attack key input
 var _dir = _player_input.dir;
 
 // --- Collision Tileset ---
@@ -35,8 +36,9 @@ var _is_pressing_wall = (sign(_dir) == _on_wall) && (_dir != 0);
 
 #region TIMER MANAGEMENT
 // --- Player Timers ---
-if (invulnerable_timer > 0) invulnerable_timer--;
-if (flash_timer > 0) flash_timer--;
+if (invulnerable_timer > 0) { invulnerable_timer--; }
+if (flash_timer > 0) { flash_timer--; }
+if (attack_timer > 0) { attack_timer--; }
     
 // Different sound for jumps (names need to be changed to match intent. Currently, jump combo timer sounds like we are performing double jumps, and we are not. Consecutive jumps seems like it would be a counter for double jumps, and it's not.
 // Suggest changing the names to something more easily understood. Like: jump_sound_counter_max and jump_sound_counter
@@ -67,13 +69,18 @@ if (wall_jump_move_loss > 0) {
 #region JUMP LOGIC
 // We check for jump input here, before state transitions, to ensure that
 // a jump can be registered even in the brief window after leaving the ground (coyote time).
-if (scr_player_jump_input(_key_jump, _on_ground)) {
+if (scr_player_input_jump(_key_jump, _on_ground)) {
 }
 #endregion
 
 
 
+
+
 #region STATE TRANSITIONS
+// Attack Input Check (takes priority over other transitions) - Now calls a dedicated script
+scr_player_input_attack(_key_attack_pressed); // This script will handle the transition to ATTACK state
+
 // Transition from wall slide to ground
 if (_on_ground && player_state == PlayerState.WALL_SLIDE) {
     if (_dir != 0) {
@@ -91,7 +98,7 @@ if (_on_ground && player_state == PlayerState.AIR) {
     }
 }
 // Universal transition from ground to air (e.g., walking off a ledge)
-if (!_on_ground && (player_state == PlayerState.IDLE || player_state == PlayerState.RUN)) {
+if (!_on_ground && (player_state == PlayerState.IDLE || player_state == PlayerState.RUN) && player_state != PlayerState.ATTACK) {
     player_state = PlayerState.AIR;
 }
 #endregion
@@ -103,12 +110,12 @@ if (!_on_ground && (player_state == PlayerState.IDLE || player_state == PlayerSt
 // and general deceleration (friction) when no input is given.
 // State-specific overrides (like wall grab/slide setting hsp=0) will happen in the state scripts.
  
-// If player has horizontal input AND is not in a wall jump lockout
-if (_dir != 0 && wall_jump_move_loss <= 0) {
+// If player has horizontal input AND is not in a wall jump lockout AND not attacking
+if (_dir != 0 && wall_jump_move_loss <= 0 && player_state != PlayerState.ATTACK) {
     // Accelerate towards max speed in the input direction
     hsp += _dir * accel;
     hsp = clamp(hsp, -max_hsp, max_hsp);
-} else {
+} else if (player_state != PlayerState.ATTACK) { // Only decelerate if not attacking
     // If no horizontal input, or input is locked by wall jump, apply deceleration
     if (abs(hsp) > decel) {
         hsp -= sign(hsp) * decel;
@@ -137,6 +144,9 @@ switch (player_state) {
         break;
     case PlayerState.WALL_SLIDE:
         scr_player_state_wall_slide(_on_wall, _is_touching_wall, _is_pressing_wall, _key_jump);
+        break;
+    case PlayerState.ATTACK: 
+        scr_player_state_attack(_on_ground); // Pass _on_ground to determine return state
         break;
     case PlayerState.DEAD:
         // Add death logic here later
@@ -180,17 +190,21 @@ y += vsp;
 
 
 #region UPDATE VISUALS
-// Update facing direction based on input or momentum
-if (_dir != 0) {
-    facing_direction = _dir;
-} else if (hsp != 0) {
-    facing_direction = sign(hsp);
+// Update facing direction based on input or momentum, but not if attacking
+if (player_state != PlayerState.ATTACK) {
+    if (_dir != 0) {
+        facing_direction = _dir;
+    } else if (hsp != 0) {
+        facing_direction = sign(hsp);
+    }
 }
 #endregion
 
 
 #region HAZARD & ENEMY DAMAGE
 // --- Enemy/Hazard Collision and Damage ---
+// Note: Player taking damage is separate from player dealing damage.
+// Player dealing damage is handled by oPlayerAttackSlash.
 var _collided_enemy = instance_place(x, y, oEnemy);
 var _collided_hazard = place_meeting(x, y, oHazard);
 
@@ -217,3 +231,5 @@ if ((_collided_enemy != noone || _collided_hazard) && invulnerable_timer <= 0) {
 // Update previous image index for animation sound logic
 image_index_previous = image_index;
 #endregion
+
+player_state_previous = player_state;

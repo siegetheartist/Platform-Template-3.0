@@ -12,8 +12,8 @@ max_hsp = 3; // Maximum horizontal speed the player can reach
 vsp = 0; // Vertical speed (pixels per frame)
 
 // Acceleration and deceleration for smooth movement
-accel = 0.5; // Rate at which horizontal speed increases
-decel = 0.3; // Rate at which horizontal speed decreases
+accel = 0.3; // Rate at which horizontal speed increases
+decel = 0.5; // Rate at which horizontal speed decreases
 #endregion
 
 
@@ -92,9 +92,18 @@ enum PlayerState {
     AIR,
     WALL_GRAB,
     WALL_SLIDE,
+    ATTACK,
     DEAD
 }
 player_state = PlayerState.IDLE; // Initialize the player's state
+player_state_previous = PlayerState.IDLE; // NEW: Store the previous state for on-entry logic
+#endregion
+
+
+#region ATTACK MECHANICS
+attack_timer = 0; // Timer for the attack animation
+attack_duration = 30; // Duration of the attack state in frames (adjust as needed for sPlayerAttack sprite)
+current_attack_slash = noone; // Stores the ID of the created oPlayerAttackSlash instance
 #endregion
 
 
