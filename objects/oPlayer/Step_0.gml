@@ -111,11 +111,11 @@ if (!_on_ground && (player_state == PlayerState.IDLE || player_state == PlayerSt
 // State-specific overrides (like wall grab/slide setting hsp=0) will happen in the state scripts.
  
 // If player has horizontal input AND is not in a wall jump lockout AND not attacking
-if (_dir != 0 && wall_jump_move_loss <= 0 && player_state != PlayerState.ATTACK) {
+if (_dir != 0 && wall_jump_move_loss <= 0) {
     // Accelerate towards max speed in the input direction
     hsp += _dir * accel;
     hsp = clamp(hsp, -max_hsp, max_hsp);
-} else if (player_state != PlayerState.ATTACK) { // Only decelerate if not attacking
+} else { // Only decelerate if not attacking
     // If no horizontal input, or input is locked by wall jump, apply deceleration
     if (abs(hsp) > decel) {
         hsp -= sign(hsp) * decel;

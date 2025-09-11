@@ -7,8 +7,7 @@ function scr_player_state_attack(_on_ground) {
         sprite_index = sPlayerAttack;
         image_index = 0; // Reset animation frame
         image_speed = 1; // Start animation
-        hsp = 0; // Stop horizontal movement during attack
-        vsp = 0; // Stop vertical movement during attack
+ 
         audio_play_sound(sndPlayerAttack, 10, false); // Play attack sound (assuming sndPlayerAttack exists)
         
         // Create the attack slash object
