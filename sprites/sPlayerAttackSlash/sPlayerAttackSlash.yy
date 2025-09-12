@@ -21,6 +21,7 @@
   "height":64,
   "HTile":false,
   "layers":[
+    {"$GMImageLayer":"","%Name":"8af5ec8f-0581-4c59-b12e-6844aebf5150","blendMode":0,"displayName":"Layer 1","isLocked":false,"name":"8af5ec8f-0581-4c59-b12e-6844aebf5150","opacity":100.0,"resourceType":"GMImageLayer","resourceVersion":"2.0","visible":true,},
     {"$GMImageLayer":"","%Name":"8cff8e37-2262-4953-a5be-785474b0dfa7","blendMode":0,"displayName":"default","isLocked":false,"name":"8cff8e37-2262-4953-a5be-785474b0dfa7","opacity":100.0,"resourceType":"GMImageLayer","resourceVersion":"2.0","visible":true,},
   ],
   "name":"sPlayerAttackSlash",

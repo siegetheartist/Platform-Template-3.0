@@ -40,27 +40,42 @@ if (invulnerable_timer > 0) { invulnerable_timer--; }
 if (flash_timer > 0) { flash_timer--; }
 if (attack_timer > 0) { attack_timer--; }
     
-// Different sound for jumps (names need to be changed to match intent. Currently, jump combo timer sounds like we are performing double jumps, and we are not. Consecutive jumps seems like it would be a counter for double jumps, and it's not.
-// Suggest changing the names to something more easily understood. Like: jump_sound_counter_max and jump_sound_counter
+// Jump combo logic
 if (jump_combo_timer > 0) {
     jump_combo_timer--;
 } else {
     consecutive_jumps = 0;
 }
 
-// Wall grab timer
-if (wall_jump_gravity_bypass > 0) wall_jump_gravity_bypass--;
-// Wall jump move loss timer
-if (wall_jump_move_loss > 0) wall_jump_move_loss--; 
+// // Wall grab timer and wall jump gravity bypass
+if (wall_jump_gravity_bypass > 0) {
+    wall_jump_gravity_bypass--;
+}
     
-// Check for Walljump Move-Loss timer (after a wall jump) If active, zero out horizontal input.
-// Do not move, as this affects _dir. If placed elsewhere, other code that overrides _dir will be effected.
+// Wall jump move loss timer
 if (wall_jump_move_loss > 0) {
     wall_jump_move_loss--;
-    _dir = 0;
-    if (wall_jump_move_loss <= 0) {
+    _dir = 0; // Input is locked during wall jump move loss
+    // Only transition to AIR if not currently attacking when the move loss ends
+    if (wall_jump_move_loss <= 0 && player_state != PlayerState.ATTACK) {
         player_state = PlayerState.AIR;
     }
+}
+#endregion
+
+
+
+#region GENERAL VERTICAL MOVEMENT PHYSICS
+// Apply gravity to vertical speed, unless gravity bypass is active.
+if (wall_jump_gravity_bypass > 0) {
+    // wall_jump_gravity_bypass is decremented in Timer Management region
+} else if (player_state == PlayerState.WALL_SLIDE || player_state == PlayerState.WALL_GRAB) {
+// These states handle their own vertical movement/gravity, so skip default gravity.
+// For WALL_GRAB, vsp is explicitly set to 0 in scr_player_state_wall_grab.
+// For WALL_SLIDE, vsp is explicitly set in scr_player_state_wall_slide.
+} else {
+    // Apply normal gravity and clamp to max gravity
+    vsp = clamp(vsp + grav, -grav_max, grav_max);
 }
 #endregion
 
@@ -105,18 +120,15 @@ if (!_on_ground && (player_state == PlayerState.IDLE || player_state == PlayerSt
 
 
 
-#region HORIZONTAL MOVEMENT PHYSICS
-// This block handles the direct application of horizontal input (acceleration)
-// and general deceleration (friction) when no input is given.
-// State-specific overrides (like wall grab/slide setting hsp=0) will happen in the state scripts.
- 
-// If player has horizontal input AND is not in a wall jump lockout AND not attacking
-if (_dir != 0 && wall_jump_move_loss <= 0) {
+#region HORIZONTAL MOVEMENT PHYSICS (DEFAULT)
+// This block calculates the 'desired' hsp based on input, which can then be
+// modified by specific player states later in the state machine.
+if (_dir != 0) {
     // Accelerate towards max speed in the input direction
     hsp += _dir * accel;
     hsp = clamp(hsp, -max_hsp, max_hsp);
-} else { // Only decelerate if not attacking
-    // If no horizontal input, or input is locked by wall jump, apply deceleration
+} else {
+    // If no horizontal input, apply deceleration
     if (abs(hsp) > decel) {
         hsp -= sign(hsp) * decel;
     } else {
@@ -146,7 +158,7 @@ switch (player_state) {
         scr_player_state_wall_slide(_on_wall, _is_touching_wall, _is_pressing_wall, _key_jump);
         break;
     case PlayerState.ATTACK: 
-        scr_player_state_attack(_on_ground); // Pass _on_ground to determine return state
+        scr_player_state_attack(_on_ground); // Pass _on_ground to determine return state and modify hsp if needed
         break;
     case PlayerState.DEAD:
         // Add death logic here later
@@ -190,13 +202,11 @@ y += vsp;
 
 
 #region UPDATE VISUALS
-// Update facing direction based on input or momentum, but not if attacking
-if (player_state != PlayerState.ATTACK) {
-    if (_dir != 0) {
-        facing_direction = _dir;
-    } else if (hsp != 0) {
-        facing_direction = sign(hsp);
-    }
+// Update facing direction based on input or momentum
+if (_dir != 0) {
+    facing_direction = _dir;
+} else if (hsp != 0) {
+    facing_direction = sign(hsp);
 }
 #endregion
 

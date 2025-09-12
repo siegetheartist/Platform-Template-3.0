@@ -14,7 +14,7 @@ function scr_player_state_attack(_on_ground) {
         // Position it relative to the player, slightly in front based on facing_direction
         var _player_half_width = sprite_width / 2;
         var _slash_half_width = sprite_get_width(sPlayerAttackSlash) / 2; // Get the width of the slash sprite itself
-        var _desired_gap = 8; // The distance between the player's edge and the slash's edge
+        var _desired_gap = 0; // The distance between the player's edge and the slash's edge
         var _total_x_offset = _player_half_width + _desired_gap + _slash_half_width;
         
         var _slash_x = x + facing_direction * _total_x_offset;
@@ -27,8 +27,12 @@ function scr_player_state_attack(_on_ground) {
     }
  
     // --- Per-Frame Logic (while in ATTACK state) ---
-    // The attack_timer is decremented in oPlayer's Step_0.gml
-    
+    // If on ground, disable horizontal movement. If in air, maintain current hsp (handled by Step_0's default physics).
+    if (_on_ground) {
+        hsp = 0; // Temporarily disable horizontal movement when attacking on the ground
+    }
+    // vsp is handled by gravity in oPlayer's Step_0.gml
+ 
     // When attack animation is over
     if (attack_timer <= 0) {
         // Destroy the slash object if it still exists (should be handled by slash object itself but good failsafe)
@@ -39,11 +43,8 @@ function scr_player_state_attack(_on_ground) {
  
         // Transition back to an appropriate state based on whether the player is on the ground
         if (_on_ground) {
-            if (abs(hsp) > 0.1) { // If player has residual horizontal movement, go to RUN (or a minimum speed)
-                player_state = PlayerState.RUN;
-            } else { // Otherwise, go to IDLE
-                player_state = PlayerState.IDLE;
-            }
+            // After a ground attack, revert to IDLE since hsp was forced to 0.
+            player_state = PlayerState.IDLE;
         } else { // If not on ground, go to AIR
             player_state = PlayerState.AIR;
         }
