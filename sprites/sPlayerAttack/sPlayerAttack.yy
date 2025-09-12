@@ -21,6 +21,7 @@
   "height":64,
   "HTile":false,
   "layers":[
+    {"$GMImageLayer":"","%Name":"ad9b8710-eabd-4fbd-b8b5-4081c005eedd","blendMode":0,"displayName":"Layer 1","isLocked":false,"name":"ad9b8710-eabd-4fbd-b8b5-4081c005eedd","opacity":100.0,"resourceType":"GMImageLayer","resourceVersion":"2.0","visible":false,},
     {"$GMImageLayer":"","%Name":"1f90ead5-68d4-4139-8b33-8e6f38a1e16c","blendMode":0,"displayName":"default","isLocked":false,"name":"1f90ead5-68d4-4139-8b33-8e6f38a1e16c","opacity":100.0,"resourceType":"GMImageLayer","resourceVersion":"2.0","visible":true,},
   ],
   "name":"sPlayerAttack",

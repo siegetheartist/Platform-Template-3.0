@@ -203,12 +203,15 @@ y += vsp;
 
 #region UPDATE VISUALS
 // Update facing direction based on input or momentum
-if (_dir != 0) {
-    facing_direction = _dir;
-} else if (hsp != 0) {
-    facing_direction = sign(hsp);
+if (player_state != PlayerState.ATTACK) {
+    if (_dir != 0) {
+        facing_direction = _dir;
+    } else if (hsp != 0) {
+        facing_direction = sign(hsp);
+    }
 }
 #endregion
+
 
 
 #region HAZARD & ENEMY DAMAGE
