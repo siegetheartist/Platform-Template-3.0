@@ -22,13 +22,5 @@ if (sprite_index != noone) {
 #endregion
 
 
-// Draw Event (or Draw End if you want it on top of everything)
-draw_self(); // draw the player normally
 
-// Set border color and thickness
-draw_set_color(c_black);
-draw_set_alpha(1);
-
-// Draw the rectangle mask outline
-draw_rectangle(bbox_left, bbox_top, bbox_right, bbox_bottom, true);
 

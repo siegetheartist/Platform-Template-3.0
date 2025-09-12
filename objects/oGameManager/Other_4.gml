@@ -27,10 +27,6 @@ switch (room) {
     case rLevel1:
         audio_play_sound(sndLevel1, 10, true);
         break;
-    case rLevel2:
-        // Assuming you have a sndLevel2 asset
-        audio_play_sound(sndLevel2, 10, true);
-        break;
     case rStartMenu:
         // You can have a different music track for your menu screen
         audio_play_sound(sndMenuMusic, 10, true);

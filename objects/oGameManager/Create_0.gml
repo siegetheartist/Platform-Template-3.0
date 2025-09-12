@@ -1,5 +1,7 @@
-// This object handles global game state, transitions, and logic that affects the entire game.
 
+
+
+// This object handles global game state, transitions, and logic that affects the entire game.
 #region DEFAULT PLAYER RESPAWN POSITION
 // This must be declared in the Create Event of a persistent object.
 if (!variable_global_exists("checkpoint_x")) {

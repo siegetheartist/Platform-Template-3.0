@@ -14,6 +14,7 @@
     {"name":"inst_74538FD6","path":"rooms/rStartMenu/rStartMenu.yy",},
     {"name":"inst_DBF22D4","path":"roomui/RoomUI/RoomUI.yy",},
     {"name":"inst_25DD22CE","path":"roomui/RoomUI/RoomUI.yy",},
+    {"name":"inst_4DDA242C","path":"rooms/rStartMenu/rStartMenu.yy",},
   ],
   "isDnd":false,
   "layers":[
@@ -21,6 +22,7 @@
     {"$GMRInstanceLayer":"","%Name":"l_Controllers","depth":100,"effectEnabled":true,"effectType":null,"gridX":16,"gridY":16,"hierarchyFrozen":false,"inheritLayerDepth":false,"inheritLayerSettings":false,"inheritSubLayers":true,"inheritVisibility":true,"instances":[
         {"$GMRInstance":"v2","%Name":"inst_C1585F9","colour":4294967295,"frozen":false,"hasCreationCode":false,"ignore":false,"imageIndex":0,"imageSpeed":1.0,"inheritCode":false,"inheritedItemId":null,"inheritItemSettings":false,"isDnd":false,"name":"inst_C1585F9","objectId":{"name":"oHUD","path":"objects/oHUD/oHUD.yy",},"properties":[],"resourceType":"GMRInstance","resourceVersion":"2.0","rotation":0.0,"scaleX":1.0,"scaleY":1.0,"x":0.0,"y":192.0,},
         {"$GMRInstance":"v2","%Name":"inst_3404DF9D","colour":4294967295,"frozen":false,"hasCreationCode":false,"ignore":false,"imageIndex":0,"imageSpeed":1.0,"inheritCode":false,"inheritedItemId":null,"inheritItemSettings":false,"isDnd":false,"name":"inst_3404DF9D","objectId":{"name":"oGameManager","path":"objects/oGameManager/oGameManager.yy",},"properties":[],"resourceType":"GMRInstance","resourceVersion":"2.0","rotation":0.0,"scaleX":1.0,"scaleY":1.0,"x":0.0,"y":176.0,},
+        {"$GMRInstance":"v2","%Name":"inst_4DDA242C","colour":4294967295,"frozen":false,"hasCreationCode":false,"ignore":false,"imageIndex":0,"imageSpeed":1.0,"inheritCode":false,"inheritedItemId":null,"inheritItemSettings":false,"isDnd":false,"name":"inst_4DDA242C","objectId":{"name":"oDebugCollisionDraw","path":"objects/oDebugCollisionDraw/oDebugCollisionDraw.yy",},"properties":[],"resourceType":"GMRInstance","resourceVersion":"2.0","rotation":0.0,"scaleX":1.0,"scaleY":1.0,"x":0.0,"y":208.0,},
       ],"layers":[],"name":"l_Controllers","properties":[],"resourceType":"GMRInstanceLayer","resourceVersion":"2.0","userdefinedDepth":false,"visible":true,},
     {"$GMRAssetLayer":"","%Name":"Assets_1","assets":[
         {"$GMRTextItem":"v2","%Name":"text_72743837","alignment":1,"charSpacing":0.0,"colour":4294967295,"fontId":{"name":"fnt_Start_Title","path":"fonts/fnt_Start_Title/fnt_Start_Title.yy",},"frameH":0.0,"frameW":0.0,"frozen":false,"ignore":false,"inheritedItemId":null,"inheritItemSettings":false,"lineSpacing":0.0,"name":"text_72743837","paragraphSpacing":0.0,"resourceType":"GMRTextItem","resourceVersion":"2.0","rotation":0.0,"scaleX":1.0,"scaleY":1.0,"text":"Gotreks Run","wrap":false,"x":80.0,"xorigin":0.0,"y":48.0,"yorigin":0.0,},
