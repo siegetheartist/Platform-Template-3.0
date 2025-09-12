@@ -52,6 +52,7 @@
     {"id":{"name":"fnt_hud_default","path":"fonts/fnt_hud_default/fnt_hud_default.yy",},},
     {"id":{"name":"fnt_Start_Title","path":"fonts/fnt_Start_Title/fnt_Start_Title.yy",},},
     {"id":{"name":"o_45_degree_slope","path":"objects/o_45_degree_slope/o_45_degree_slope.yy",},},
+    {"id":{"name":"obj_debuf_collision_draw","path":"objects/obj_debuf_collision_draw/obj_debuf_collision_draw.yy",},},
     {"id":{"name":"oButton","path":"objects/oButton/oButton.yy",},},
     {"id":{"name":"oButtonBackToMenu","path":"objects/oButtonBackToMenu/oButtonBackToMenu.yy",},},
     {"id":{"name":"oButtonTryAgain","path":"objects/oButtonTryAgain/oButtonTryAgain.yy",},},

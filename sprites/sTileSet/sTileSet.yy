@@ -6,7 +6,7 @@
   "bbox_left":0,
   "bbox_right":79,
   "bbox_top":0,
-  "collisionKind":0,
+  "collisionKind":1,
   "collisionTolerance":0,
   "DynamicTexturePage":false,
   "edgeFiltering":false,
@@ -19,6 +19,7 @@
   "height":80,
   "HTile":false,
   "layers":[
+    {"$GMImageLayer":"","%Name":"70fa8a56-3c65-4854-91b0-4dba17992744","blendMode":0,"displayName":"Layer 1","isLocked":false,"name":"70fa8a56-3c65-4854-91b0-4dba17992744","opacity":100.0,"resourceType":"GMImageLayer","resourceVersion":"2.0","visible":true,},
     {"$GMImageLayer":"","%Name":"e8ea3590-ad12-482f-9a57-0fd6f5b747f0","blendMode":0,"displayName":"default","isLocked":false,"name":"e8ea3590-ad12-482f-9a57-0fd6f5b747f0","opacity":100.0,"resourceType":"GMImageLayer","resourceVersion":"2.0","visible":true,},
   ],
   "name":"sTileSet",

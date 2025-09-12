@@ -33,6 +33,7 @@
     {"name":"fnt_game_Over","order":1,"path":"fonts/fnt_game_Over/fnt_game_Over.yy",},
     {"name":"fnt_Start_Title","order":2,"path":"fonts/fnt_Start_Title/fnt_Start_Title.yy",},
     {"name":"o_45_degree_slope","order":20,"path":"objects/o_45_degree_slope/o_45_degree_slope.yy",},
+    {"name":"obj_debuf_collision_draw","order":22,"path":"objects/obj_debuf_collision_draw/obj_debuf_collision_draw.yy",},
     {"name":"oButtonBackToMenu","order":2,"path":"objects/oButtonBackToMenu/oButtonBackToMenu.yy",},
     {"name":"oButtonTryAgain","order":1,"path":"objects/oButtonTryAgain/oButtonTryAgain.yy",},
     {"name":"oCheckpoint","order":5,"path":"objects/oCheckpoint/oCheckpoint.yy",},
