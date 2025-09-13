@@ -111,7 +111,7 @@ current_attack_slash = noone; // Stores the ID of the created oPlayerAttackSlash
 facing_direction = 1; // 1 for right, -1 for left
 #endregion
 
-
+ 
 #region AUDIO VARIABLES
 // Keeps track of which running sound to play next for a "pit, pat" effect.
 current_step_sound = 0;

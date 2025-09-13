@@ -37,3 +37,8 @@ switch (room) {
         break;
 }
 #endregion
+
+// --- SPAWN CAMERA IF NONE EXISTS ---
+if (!instance_exists(oCamera)) {
+    instance_create_layer(0, 0, "l_Controllers", oCamera);
+}
