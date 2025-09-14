@@ -56,7 +56,7 @@ wall_grab_timer = 0;
 wall_grab_timer_max = 8; // Max frames to "hang" on wall before sliding
 
 // Wall jump
-wall_jump_horizontal_push_off = 4; // Horizontal push when jumping off a wall
+wall_jump_horizontal_push_off = 3; // Horizontal push when jumping off a wall
 wall_jump_height = -8; // Initial upward velocity for a wall jump
 
 // Timer to suppress gravity after wall jump or wall grab

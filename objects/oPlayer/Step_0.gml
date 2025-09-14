@@ -66,15 +66,15 @@ if (wall_jump_move_loss > 0) {
 
 
 #region GENERAL VERTICAL MOVEMENT PHYSICS
-// Apply gravity to vertical speed, unless gravity bypass is active.
-if (wall_jump_gravity_bypass > 0) {
-    // wall_jump_gravity_bypass is decremented in Timer Management region
-} else if (player_state == PlayerState.WALL_SLIDE || player_state == PlayerState.WALL_GRAB) {
-// These states handle their own vertical movement/gravity, so skip default gravity.
-// For WALL_GRAB, vsp is explicitly set to 0 in scr_player_state_wall_grab.
-// For WALL_SLIDE, vsp is explicitly set in scr_player_state_wall_slide.
+// Apply gravity to vertical speed.
+// Gravity is applied normally unless in a wall-interaction state that
+// specifically manages its own vertical speed (WALL_SLIDE or WALL_GRAB).
+if (player_state == PlayerState.WALL_SLIDE || player_state == PlayerState.WALL_GRAB) {
+    // These states handle their own vertical movement/gravity, so skip default gravity application here.
+    // For WALL_GRAB, vsp is explicitly set to 0 in scr_player_state_wall_grab.
+    // For WALL_SLIDE, vsp is explicitly set in scr_player_state_wall_slide.
 } else {
-    // Apply normal gravity and clamp to max gravity
+    // Apply normal gravity and clamp to max gravity for all other states (including AIR after any jump)
     vsp = clamp(vsp + grav, -grav_max, grav_max);
 }
 #endregion
