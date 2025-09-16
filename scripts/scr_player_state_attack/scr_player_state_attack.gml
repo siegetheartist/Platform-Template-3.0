@@ -35,7 +35,7 @@ function scr_player_state_attack(_on_ground) {
  
     // When attack animation is over
     if (attack_timer <= 0) {
-        // Destroy the slash object if it still exists (should be handled by slash object itself bjut good failsafe)
+        // Destroy the slash object if it still exists (should be handled by slash object itself but good failsafe)
         if (instance_exists(current_attack_slash)) {
             instance_destroy(current_attack_slash);
             current_attack_slash = noone;
