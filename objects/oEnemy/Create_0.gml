@@ -18,6 +18,17 @@ grav = 0.4; // Gravity strength pulling the enemy down
 
 #region ENEMY STATS // NEW: Add health to enemies
 enemy_health = 10; // Default health for this enemy type. Children can override.
+ 
+// Damage feedback variables
+flash_timer = 0; // Timer for visual damage indicator (blinking)
+flash_duration = 30; // How long the enemy sprite flashes after taking damage (0.5 seconds at 60 FPS)
+
+// Knockback variables (NEW)
+knockback_h_strength = 1;  // Horizontal knockback pixel amount
+knockback_v_strength = -1; // Vertical knockback pixel amount (negative for up)
+knockback_active = false;  // True when the enemy is currently in the knockback animation/movement
+knockback_cooldown_timer = 0; // Timer to prevent repeated knockbacks (2 seconds cooldown)
+knockback_cooldown_duration = 60; // 1 seconds at 60 FPS
 #endregion
 
 #region ENEMY STATE AND BEHAVIOR SETTINGS

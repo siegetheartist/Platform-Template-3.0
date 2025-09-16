@@ -12,6 +12,22 @@ if (ds_list_find_index(hit_enemies, other.id) == -1) {
     if (variable_instance_exists(other, "enemy_health")) {
         other.enemy_health -= damage;
         
+        // Activate flashing effect on hit enemy
+        other.flash_timer = other.flash_duration;
+        
+        // NEW: Apply knockback if cooldown allows
+        if (other.knockback_cooldown_timer <= 0) {
+            // Player instance (owner of the attack)
+            var _player_inst = owner;
+            if (instance_exists(_player_inst)) {
+                // Determine horizontal knockback direction (in the direction of the player's attack/facing)
+                other.hsp = _player_inst.facing_direction * other.knockback_h_strength;
+                other.vsp = other.knockback_v_strength; // Apply vertical knockback (negative for up)
+                other.knockback_active = true;
+                other.knockback_cooldown_timer = other.knockback_cooldown_duration; // Start cooldown
+            }
+        }
+ 
         // Play a sound when an enemy is hit (assuming sndEnemyHit exists)
         audio_play_sound(sndEnemyHit, 1, false);
  

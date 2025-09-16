@@ -12,6 +12,8 @@ patrol_hsp_max = 1.5; // Goblin patrols a bit faster than the default enemy
 chase_hsp_max = 4;    // Goblin chases faster than the default enemy
 alert_range = 180;    // Goblin has a slightly smaller alert range
 
+enemy_health = 2; // Default health for this enemy type. Children can override.
+
 //  Set Goblin-specific damage 
 enemy_damage = 1; // Goblin deals 1 damage to the player
 

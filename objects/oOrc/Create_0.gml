@@ -14,6 +14,8 @@ chase_hsp_max = 3.5;  // Orc chases faster, but maybe not as quick as goblin
 alert_range = 250;    // Orc has a larger alert range (can spot player from further away)
 deaggro_range = 300;  // Orc holds aggro longer
 
+enemy_health = 4; // Default health for this enemy type. Children can override.
+
 //  Set Orc-specific damage (NEW) 
 enemy_damage = 2; // Orc deals 2 damage to the player
 
