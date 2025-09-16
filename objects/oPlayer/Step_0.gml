@@ -106,6 +106,9 @@ if (_on_ground && player_state == PlayerState.WALL_SLIDE) {
 }
 // Universal transition from air to ground
 if (_on_ground && player_state == PlayerState.AIR) {
+    // NEW: Spawn dust cloud on landing
+    scr_spawn_dust_cloud(x, y, facing_direction);
+    
     if (_dir != 0) {
         player_state = PlayerState.RUN;
     } else {

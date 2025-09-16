@@ -15,6 +15,9 @@ function scr_player_state_air(_key_jump_held, _on_wall, _is_touching_wall, _is_p
     if (_is_touching_wall && _is_pressing_wall && vsp > 0 && wall_jump_gravity_bypass <= 0) {
         player_state = PlayerState.WALL_GRAB;
         wall_grab_timer = 0; // Reset the timer for the new grab
+        
+        // NEW: Spawn dust cloud on wall grab
+        scr_spawn_dust_cloud(x, y, -_on_wall, _on_wall);
     }
 
     // Handle variable jump height.

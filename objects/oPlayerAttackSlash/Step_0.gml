@@ -1,5 +1,3 @@
-/// @description Update slash animation and destroy when done
- 
 // Decrement timer
 timer--;
  
@@ -16,13 +14,4 @@ if (instance_exists(owner)) {
     x = owner.x + owner.facing_direction * _total_x_offset;
     y = owner.y; // Keep vertical position synced
     image_xscale = owner.facing_direction; // Keep direction synced with player
-} else {
-    // If owner is gone (e.g., player destroyed), destroy this slash as well
-    instance_destroy();
-    exit; // Exit to prevent further code execution for this instance
-}
- 
-// Destroy the slash when its duration is over
-if (timer <= 0) {
-    instance_destroy();
-}
+} 

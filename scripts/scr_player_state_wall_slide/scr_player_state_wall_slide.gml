@@ -27,4 +27,11 @@ function scr_player_state_wall_slide(_on_wall, _is_touching_wall, _is_pressing_w
         scr_player_jump("wall", _on_wall);
         return;
     }
+    
+    // NEW: Dust cloud spawning
+    wall_slide_dust_timer++;
+    if (wall_slide_dust_timer >= wall_slide_dust_timer_max) {
+        wall_slide_dust_timer = 0;
+        scr_spawn_dust_cloud(x, y, -_on_wall, _on_wall);
+    }
 }

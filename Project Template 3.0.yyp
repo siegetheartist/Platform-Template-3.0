@@ -90,6 +90,7 @@
     {"id":{"name":"scr_spawn_dust_cloud","path":"scripts/scr_spawn_dust_cloud/scr_spawn_dust_cloud.yy",},},
     {"id":{"name":"sndCheckpoint","path":"sounds/sndCheckpoint/sndCheckpoint.yy",},},
     {"id":{"name":"sndCrystalPickup","path":"sounds/sndCrystalPickup/sndCrystalPickup.yy",},},
+    {"id":{"name":"sndEnemyHit","path":"sounds/sndEnemyHit/sndEnemyHit.yy",},},
     {"id":{"name":"sndGoblinAlert","path":"sounds/sndGoblinAlert/sndGoblinAlert.yy",},},
     {"id":{"name":"sndGoblinChase","path":"sounds/sndGoblinChase/sndGoblinChase.yy",},},
     {"id":{"name":"sndGoblinTaunt","path":"sounds/sndGoblinTaunt/sndGoblinTaunt.yy",},},

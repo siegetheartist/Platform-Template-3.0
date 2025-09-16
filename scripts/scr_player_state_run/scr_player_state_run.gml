@@ -21,5 +21,7 @@ function scr_player_state_run(_dir) {
             audio_play_sound(sndPlayerStep02, 1, false);
             current_step_sound = 0; // Switch back
         }
+        // NEW: Spawn dust cloud on the same frames as the step sounds
+        scr_spawn_dust_cloud(x, y, facing_direction);
     }
 }
