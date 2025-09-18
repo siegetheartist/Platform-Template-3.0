@@ -1,4 +1,5 @@
-
+//  Enemy Parent Movement, AI, and Collision Logic 
+ 
 #region VARIABLES
 //  Get tilemap ID for collision 
 var collision_tileset = layer_tilemap_get_id("t_Collision"); // Get the ID of the collision tilemap layer
@@ -78,15 +79,20 @@ if (!knockback_active) {
             _player_is_in_front = (sign(_player_instance.x - x) == current_dir);
             _player_is_behind = (sign(_player_instance.x - x) == -current_dir);
  
-            // --- NEW: Player Detection and State Transition Logic (Ordered by Priority) ---
- 
+            // --- Player Detection and State Transition Logic (Ordered by Priority) --- 
+
             // 1. HIGHEST PRIORITY: Default Close Chase (100px, visible, ANY state)
             if (_distance_to_player < default_close_chase_distance && _line_of_sight_clear) {
                 enemy_state = ENEMY_STATE.CHASE;
                 current_dir = sign(_player_instance.x - x); // Face player immediately
             }
-            // 2. Next Priority: Sight-Based Detection (250px, front, visible, ANY state)
-            else if (_distance_to_player < sight_distance && _line_of_sight_clear && _player_is_in_front) {
+            // 1.5. ALERT to CHASE escalation (if ALREADY in ALERT and player is close AND in front)
+            else if (enemy_state == ENEMY_STATE.ALERT && _distance_to_player < default_close_chase_distance && _line_of_sight_clear && _player_is_in_front) {
+                enemy_state = ENEMY_STATE.CHASE;
+                current_dir = sign(_player_instance.x - x); // Face player immediately
+            }
+            // 2. Next Priority: Sight-Based Detection (250px, front, visible, NOT ALERT state)
+            else if (enemy_state != ENEMY_STATE.ALERT && _distance_to_player < sight_distance && _line_of_sight_clear && _player_is_in_front) {
                 enemy_state = ENEMY_STATE.CHASE;
                 current_dir = sign(_player_instance.x - x); // Face player immediately
             }
@@ -98,15 +104,14 @@ if (!knockback_active) {
             // 4. Lowest Priority: Behind Detection - Alert (150px, behind, visible, PATROL state ONLY)
             else if (enemy_state == ENEMY_STATE.PATROL && _distance_to_player < behind_alert_distance && _player_is_behind && _line_of_sight_clear && alert_cooldown_timer <= 0) {
                 enemy_state = ENEMY_STATE.ALERT;
-                current_dir = sign(_player_instance.x - x); // Turn to face player
+                // current_dir = sign(_player_instance.x - x); // Removed: Enemy should not turn in ALERT state
                 alert_timer = alert_timeout; // Start the alert countdown timer
             }
-            // --- END NEW DETECTION LOGIC ---
+            // --- END PLAYER DETECTION LOGIC ---
  
             // Now handle state-specific logic based on the *current* enemy_state (which might have just changed)
             switch (enemy_state) {
                 case ENEMY_STATE.PATROL:
-                    show_debug_message("State: Patrol");
                     hsp_max = patrol_hsp_max; // Set horizontal speed for patrolling
  
                     // NEW: Proactive Ledge Detection (only if not already stopping for another enemy)
@@ -156,14 +161,12 @@ if (!knockback_active) {
                     break;
  
                 case ENEMY_STATE.ALERT:
-                    show_debug_message("State: Alert");
                     hsp_max = 0; // Stop horizontal movement in ALERT state
  
-                    // Face player while in ALERT state
-                    current_dir = sign(_player_instance.x - x);
+
  
-                    // If player moves out of behind alert range OR alert timer runs out, revert to patrol
-                    if (_distance_to_player > behind_alert_distance) {
+                    // If player moves out of behind alert range OR line of sight is blocked OR alert timer runs out, revert to patrol
+                    if (_distance_to_player > behind_alert_distance || !_line_of_sight_clear) {
                         enemy_state = ENEMY_STATE.PATROL;
                         alert_cooldown_timer = alert_cooldown_time; // Start the cooldown timer
                     }
@@ -178,7 +181,6 @@ if (!knockback_active) {
                     break;
  
                 case ENEMY_STATE.CHASE:
-                    show_debug_message("State: Chase");
                     hsp_max = chase_hsp_max; // Set horizontal speed for chasing
                     // Always turn towards the player when chasing
                     current_dir = sign(_player_instance.x - x);
@@ -189,7 +191,7 @@ if (!knockback_active) {
                         (_distance_to_player < sight_distance && _line_of_sight_clear && _player_is_in_front) || 
                         (_distance_to_player < behind_chase_distance && _player_is_behind && _line_of_sight_clear);
  
-                    if (!_is_chase_condition_met && _distance_to_player > deaggro_distance_from_chase) {
+                    if (!_is_chase_condition_met || _distance_to_player > deaggro_distance_from_chase) {
                         enemy_state = ENEMY_STATE.TAUNT; // Player escaped, enter TAUNT state
                         taunt_timer = taunt_duration; // Start taunt countdown
                         // Keep current_dir to face where player was seen last/escaped
@@ -197,7 +199,6 @@ if (!knockback_active) {
                     break;
                 
                 case ENEMY_STATE.TAUNT: // NEW: Handle Taunt state
-                    show_debug_message("State: Taunt");
                     hsp_max = 0; // Enemy stops all horizontal movement while taunting
                     if (taunt_timer <= 0) {
                         enemy_state = ENEMY_STATE.PATROL; // Return to patrol after taunt

@@ -65,7 +65,7 @@ alert_timeout = 120; // The total time (in frames) before the enemy returns to p
 
 // New variables for the alert cooldown
 alert_cooldown_timer = 0; // A timer to prevent immediate re-alerting after de-aggro
-alert_cooldown_time = 1; // The total time (in frames) before a new alert can be triggered (e.g., 2 seconds)
+alert_cooldown_time = 60; // The total time (in frames) before a new alert can be triggered (e.g., 2 seconds)
 
 // Offset for edge detection check. These will be calculated by child objects
 // based on their specific sprite_width/height.
