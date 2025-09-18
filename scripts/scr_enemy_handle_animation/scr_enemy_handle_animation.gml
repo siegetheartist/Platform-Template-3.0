@@ -22,6 +22,10 @@ function scr_enemy_handle_animation() {
         case ENEMY_STATE.TAUNT: // NEW: Display taunt animation
             self.sprite_index = self.spr_taunt_specific; // Use the specific taunt sprite
             break;
+            
+        case ENEMY_STATE.WAIT_AND_TURN: // NEW: Display idle animation when waiting to turn
+            self.sprite_index = self.spr_idle_specific; // Use the specific idle sprite for this state
+            break;
     }
 
     // Flip the sprite horizontally based on the current direction.
@@ -33,7 +37,7 @@ function scr_enemy_handle_animation() {
 
     // Control animation speed based on horizontal movement.
     // If taunting, animation should usually play, but movement speed is 0.
-    if (self.hsp != 0 || self.enemy_state == ENEMY_STATE.TAUNT) { // Play animation if moving OR taunting
+    if (self.hsp != 0 || self.enemy_state == ENEMY_STATE.TAUNT || self.enemy_state == ENEMY_STATE.WAIT_AND_TURN) { // Play animation if moving OR taunting OR waiting to turn
         self.image_speed = 1; // Play animation
     } else {
         self.image_speed = 0; // Stop animation when not moving

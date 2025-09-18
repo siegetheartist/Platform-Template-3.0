@@ -17,5 +17,5 @@ function scr_enemy_init_sprites_and_offsets(_idle_sprite, _patrol_move_sprite, _
     // These calculations must happen AFTER sprite_index is set, so sprite_width/height are correct.
     // Using 'self.' to explicitly refer to the calling instance's properties.
     self._edge_check_offset = self.sprite_width / 2 + 2;   // Offset for horizontal edge check
-    self._ground_check_offset = self.sprite_height / 2 + 1; // Offset for vertical ground check
+    self._ground_check_offset = 1; // Offset for vertical ground check (1 pixel below the new bottom-center origin)
 }

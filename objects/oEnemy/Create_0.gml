@@ -37,7 +37,8 @@ enum ENEMY_STATE {
     PATROL, // Default state: walks back and forth
     ALERT,  // Player spotted, but not yet chasing (e.g., investigating)
     CHASE,   // Chasing state: moves towards the player
-    TAUNT    // NEW: Enemy is taunting after hitting the player
+    TAUNT,    // Enemy is taunting after hitting the player
+    WAIT_AND_TURN // Enemy stops, waits, then turns around
 }
 
 // Initialize the enemy's starting state
@@ -51,10 +52,12 @@ chase_hsp_max = 3;  // Default faster speed for chasing
 hsp_accel = 0.1; // How quickly the enemy speeds up horizontally
 hsp_decel = 0.3; // How quickly the enemy slows down horizontally
 
-// Define detection ranges for player interaction (children can override these)
-alert_range = 200; // Distance at which the enemy will enter ALERT state
-chase_range = 150; // Distance at which the enemy will enter CHASE state (must be < alert_range)
-deaggro_range = 250; // Distance at which the enemy will stop chasing/alerting and return to patrol
+// NEW: Consolidated detection ranges
+sight_distance = 250; // Distance for front-facing, line-of-sight detection (triggers CHASE)
+behind_alert_distance = 150; // Distance for player detection from behind (triggers ALERT)
+behind_chase_distance = 125; // Closer distance for player detection from behind (triggers CHASE)
+default_close_chase_distance = 100; // General close proximity detection (triggers CHASE regardless of direction/LOS)
+deaggro_distance_from_chase = 300; // Distance at which the enemy will stop chasing/alerting and return to patrol
 
 // New variables for the alert timeout
 alert_timer = 0; // The current countdown timer for the alert state
@@ -62,7 +65,7 @@ alert_timeout = 120; // The total time (in frames) before the enemy returns to p
 
 // New variables for the alert cooldown
 alert_cooldown_timer = 0; // A timer to prevent immediate re-alerting after de-aggro
-alert_cooldown_time = 120; // The total time (in frames) before a new alert can be triggered (e.g., 2 seconds)
+alert_cooldown_time = 1; // The total time (in frames) before a new alert can be triggered (e.g., 2 seconds)
 
 // Offset for edge detection check. These will be calculated by child objects
 // based on their specific sprite_width/height.
@@ -78,8 +81,15 @@ spr_patrol_move = -1; // Default sprite for moving during patrol/alert
 spr_chase_move = -1;  // Default sprite for moving during chase
 spr_taunt_specific = -1; // NEW: Stores the specific taunt sprite for this enemy type.
 
-//  ENEMY DAMAGE AND TAUNT SETTINGS (NEW) 
+//  ENEMY DAMAGE AND TAUNT SETTINGS
 enemy_damage = 1; // Default damage this enemy deals (children will override)
 taunt_timer = 0; // Timer for how long the enemy is in the TAUNT state
 taunt_duration = 60; // How long the enemy taunts (1 second at 60 FPS)
+
+
+// NEW: Patrol stopping variables
+patrol_stop_timer = 0; // Timer for the 1-second stop before turning
+patrol_stop_duration = 60; // 1 second at 60 FPS
+ledge_detect_distance = 48; // Distance from a ledge to trigger a stop and turn
+enemy_detect_distance = 24; // Distance from another enemy to trigger a stop and turn
 #endregion

@@ -11,8 +11,16 @@ scr_enemy_init_sprites_and_offsets(sOrcIdle, sOrcPatrol, sOrcChase, sOrcTaunt);
 // Example overrides - adjust these values as you design your Orc's unique stats
 patrol_hsp_max = 0.8; // Orc might be slower at patrolling than the default/goblin
 chase_hsp_max = 3.5;  // Orc chases faster, but maybe not as quick as goblin
-alert_range = 250;    // Orc has a larger alert range (can spot player from further away)
-deaggro_range = 300;  // Orc holds aggro longer
+
+
+
+// Define detection ranges for player interaction (children can override these)
+//alert_range = 200; // Distance at which the enemy will enter ALERT state
+//chase_range = 150; // Distance at which the enemy will enter CHASE state (must be < alert_range)
+//deaggro_range = 250; // Distance at which the enemy will stop chasing/alerting and return to patrol
+
+
+
 
 enemy_health = 4; // Default health for this enemy type. Children can override.
 
