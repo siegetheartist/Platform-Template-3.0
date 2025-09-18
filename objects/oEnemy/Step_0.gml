@@ -31,6 +31,10 @@ if (flash_timer > 0) {
 if (knockback_cooldown_timer > 0) {
     knockback_cooldown_timer--;
 }
+// NEW: Knockback Duration Timer Management
+if (knockback_duration_timer > 0) {
+    knockback_duration_timer--;
+}
  
 //  Patrol Stop Timer Management (NEW)
 if (patrol_stop_timer > 0) {
@@ -43,8 +47,9 @@ if (alert_cooldown_timer > 0) {
 }
 #endregion
  
-// State-dependent actions and movement calculation (only if not actively knocked back)
+// Only AI logic and target_hsp calculation happens if not actively knocked back.
 if (!knockback_active) {
+ 
     #region WAIT AND TURN LOGIC (PRIORITY OVER PLAYER DETECTION)
     // Handle WAIT_AND_TURN state first, as it's a temporary pause in other AI and detection.
     if (enemy_state == ENEMY_STATE.WAIT_AND_TURN) {
@@ -79,8 +84,8 @@ if (!knockback_active) {
             _player_is_in_front = (sign(_player_instance.x - x) == current_dir);
             _player_is_behind = (sign(_player_instance.x - x) == -current_dir);
  
-            // --- Player Detection and State Transition Logic (Ordered by Priority) --- 
-
+            // --- Player Detection and State Transition Logic (Ordered by Priority) ---
+ 
             // 1. HIGHEST PRIORITY: Default Close Chase (100px, visible, ANY state)
             if (_distance_to_player < default_close_chase_distance && _line_of_sight_clear) {
                 enemy_state = ENEMY_STATE.CHASE;
@@ -163,7 +168,7 @@ if (!knockback_active) {
                 case ENEMY_STATE.ALERT:
                     hsp_max = 0; // Stop horizontal movement in ALERT state
  
-
+                    // Removed: current_dir = sign(_player_instance.x - x); // Enemy should not turn in ALERT state
  
                     // If player moves out of behind alert range OR line of sight is blocked OR alert timer runs out, revert to patrol
                     if (_distance_to_player > behind_alert_distance || !_line_of_sight_clear) {
@@ -191,7 +196,7 @@ if (!knockback_active) {
                         (_distance_to_player < sight_distance && _line_of_sight_clear && _player_is_in_front) || 
                         (_distance_to_player < behind_chase_distance && _player_is_behind && _line_of_sight_clear);
  
-                    if (!_is_chase_condition_met || _distance_to_player > deaggro_distance_from_chase) {
+                    if (!_is_chase_condition_met || _distance_to_player > deaggro_distance_from_chase) { 
                         enemy_state = ENEMY_STATE.TAUNT; // Player escaped, enter TAUNT state
                         taunt_timer = taunt_duration; // Start taunt countdown
                         // Keep current_dir to face where player was seen last/escaped
@@ -214,7 +219,30 @@ if (!knockback_active) {
     }
     #endregion
  
-    #region MOVEMENT ACCELERATION / DECELERATION
+    #region EDGE DETECTION (Patrol Mode Only)
+    // Only perform edge detection when patrolling to prevent walking off platforms
+    if (enemy_state == ENEMY_STATE.PATROL) {
+        // Calculate the position to check for ground ahead
+        var _edge_check_x = x + (current_dir * _edge_check_offset);
+        var _edge_check_y = y + _ground_check_offset;
+ 
+        // If there is no solid tile at the edge position, reverse direction
+        if (!place_meeting(_edge_check_x, _edge_check_y, collision_tileset)) {
+            current_dir *= -1; // Change direction
+        }
+    }
+    #endregion
+} // End of !knockback_active block
+ 
+#region MOVEMENT ACCELERATION / DECELERATION
+if (knockback_active) {
+    // Apply knockback-specific friction/deceleration
+    if (abs(hsp) > knockback_h_friction) {
+        hsp -= sign(hsp) * knockback_h_friction;
+    } else {
+        hsp = 0; // Snap to zero if movement is minimal
+    }
+} else { // Normal AI movement
     // Calculate the target horizontal speed based on current direction and dynamic max speed
     _target_hsp = current_dir * hsp_max;
  
@@ -237,22 +265,8 @@ if (!knockback_active) {
             }
         }
     }
-    #endregion
- 
-    #region EDGE DETECTION (Patrol Mode Only)
-    // Only perform edge detection when patrolling to prevent walking off platforms
-    if (enemy_state == ENEMY_STATE.PATROL) {
-        // Calculate the position to check for ground ahead
-        var _edge_check_x = x + (current_dir * _edge_check_offset);
-        var _edge_check_y = y + _ground_check_offset;
- 
-        // If there is no solid tile at the edge position, reverse direction
-        if (!place_meeting(_edge_check_x, _edge_check_y, collision_tileset)) {
-            current_dir *= -1; // Change direction
-        }
-    }
-    #endregion
-} // End of !knockback_active block
+}
+#endregion
  
 // Apply gravity to vertical speed (always applies, even if knocked back)
 vsp += grav;
@@ -261,36 +275,23 @@ vsp = clamp(vsp, -vsp_max, vsp_max);
  
 // Check if knockback should end (if it was active)
 if (knockback_active) {
-    // If on ground and no longer moving significantly, end knockback
-    // Or if vsp is positive (falling) and has hit ground, end knockback
-    if (vsp >= 0 && place_meeting(x, y + 1, collision_tileset) && abs(hsp) < 1) {
+    // Knockback duration has expired
+    if (knockback_duration_timer <= 0) {
         knockback_active = false;
         hsp = 0; // Snap to stop any residual knockback hsp
         vsp = 0; // Snap to stop any residual knockback vsp
  
-        // --- NEW: Re-evaluate AI direction immediately after knockback ends. ---
+        // --- Re-evaluate AI direction immediately after knockback ends. ---
         // This ensures the enemy resumes facing their target (player) if applicable.
         _player_instance = instance_find(oPlayer, 0); // Re-find player
         if (instance_exists(_player_instance)) {
-            if (enemy_state == ENEMY_STATE.CHASE || enemy_state == ENEMY_STATE.ALERT) {
-                // If player is still within alert/chase range, face player
-                if (_player_instance.x < x) {
-                    current_dir = -1; // Face left towards player
-                } else {
-                    current_dir = 1; // Face right towards player
-                }
-            }
-            // For PATROL state, the current_dir will remain as it was,
-            // which is generally desired for patrolling until an edge is hit.
-        } else {
-            // If no player exists, and in patrol, ensure current_dir is a valid patrol direction
-            if (enemy_state == ENEMY_STATE.PATROL && current_dir == 0) {
-                current_dir = 1; // Default to facing right in patrol mode if somehow 0
+            // Only update direction to face player if in CHASE state
+            if (enemy_state == ENEMY_STATE.CHASE) { 
+                current_dir = sign(_player_instance.x - x); // Face player
             }
         }
-        // --- END NEW ---
     }
-}
+} 
  
 #region HORIZONTAL COLLISION
 // Apply horizontal movement
@@ -327,7 +328,8 @@ if (place_meeting(x, y, oEnemy)) { // If colliding with any instance of oEnemy (
     }
  
     // Push the enemy back one pixel in the opposite direction of its original movement
-    // This immediately separates them to prevent re-collision in the next step.
+    // This immediately separates them to prevent re-collision in the next step. (Should be current_dir not original_move_dir if not changing dir during knockback)
+    // No, _original_move_dir here is the direction of collision. It should still be correct.
     x -= _original_move_dir; 
 }
 #endregion
@@ -339,7 +341,8 @@ if (place_meeting(x, y, oEnemy)) { // If colliding with any instance of oEnemy (
 var _is_on_ground_before_move = place_meeting(x, y + 1, collision_tileset);
  
 // If on ground, explicitly set vsp to 0 before applying frame's movement to prevent micro-vibrations
-if (_is_on_ground_before_move) {
+// UNLESS the enemy is currently being knocked back, in which case the knockback's vsp should apply.
+if (_is_on_ground_before_move && !knockback_active) {
     vsp = 0;
 }
  

@@ -24,8 +24,12 @@ behind_chase_distance = 105; // Closer distance for player detection from behind
 default_close_chase_distance = 80; // General close proximity detection (triggers CHASE regardless of direction/LOS)
 deaggro_distance_from_chase = 240; // Distance at which the enemy will stop chasing/alerting and return to patrol
 
+// Amount of knockback
+knockback_h_strength = 4;  // Horizontal knockback pixel amount (Increased for more effect)
+knockback_v_strength = -3; // Vertical knockback pixel amount (Increased for more effect)
+
 // Enemy Stas
-enemy_health = 2; // Default health for this enemy type. Children can override.
-enemy_damage = 1; // Goblin deals 1 damage to the player
+enemy_health = 2; // Health
+enemy_damage = 1; // Damage
 #endregion
 

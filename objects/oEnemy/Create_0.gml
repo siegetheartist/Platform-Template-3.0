@@ -24,11 +24,14 @@ flash_timer = 0; // Timer for visual damage indicator (blinking)
 flash_duration = 30; // How long the enemy sprite flashes after taking damage (0.5 seconds at 60 FPS)
 
 // Knockback variables (NEW)
-knockback_h_strength = 1;  // Horizontal knockback pixel amount
-knockback_v_strength = -1; // Vertical knockback pixel amount (negative for up)
+knockback_h_strength = 3;  // Horizontal knockback pixel amount (Increased for more effect)
+knockback_v_strength = -2; // Vertical knockback pixel amount (Increased for more effect)
 knockback_active = false;  // True when the enemy is currently in the knockback animation/movement
-knockback_cooldown_timer = 0; // Timer to prevent repeated knockbacks (2 seconds cooldown)
-knockback_cooldown_duration = 60; // 1 seconds at 60 FPS
+knockback_cooldown_timer = 0; // Timer to prevent repeated knockbacks (1 second cooldown)
+knockback_cooldown_duration = 60; // 1 second at 60 FPS
+knockback_duration = 15; // NEW: Duration of the knockback effect (e.g., 0.25 seconds)
+knockback_duration_timer = 0; // NEW: Current countdown for knockback duration
+knockback_h_friction = 0.2; // NEW: Horizontal friction applied during knockback
 #endregion
 
 #region ENEMY STATE AND BEHAVIOR SETTINGS

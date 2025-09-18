@@ -20,10 +20,12 @@ if (ds_list_find_index(hit_enemies, other.id) == -1) {
             // Player instance (owner of the attack)
             var _player_inst = owner;
             if (instance_exists(_player_inst)) {
+                show_debug_message("_player_inst = " + string(owner));
                 // Determine horizontal knockback direction (in the direction of the player's attack/facing)
                 other.hsp = _player_inst.facing_direction * other.knockback_h_strength;
                 other.vsp = other.knockback_v_strength; // Apply vertical knockback (negative for up)
                 other.knockback_active = true;
+                other.knockback_duration_timer = other.knockback_duration; // NEW: Start knockback duration timer
                 other.knockback_cooldown_timer = other.knockback_cooldown_duration; // Start cooldown
             }
         }
