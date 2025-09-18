@@ -49,15 +49,15 @@ patrol_hsp_max = 1; // Default slower speed for patrolling
 chase_hsp_max = 3;  // Default faster speed for chasing
 
 // Acceleration and deceleration values for smoother movement
-hsp_accel = 0.1; // How quickly the enemy speeds up horizontally
-hsp_decel = 0.3; // How quickly the enemy slows down horizontally
+hsp_accel = 0.08; // How quickly the enemy speeds up horizontally
+hsp_decel = 0.8; // How quickly the enemy slows down horizontally
 
 // NEW: Consolidated detection ranges
-sight_distance = 250; // Distance for front-facing, line-of-sight detection (triggers CHASE)
+sight_distance = 200; // Distance for front-facing, line-of-sight detection (triggers CHASE)
 behind_alert_distance = 150; // Distance for player detection from behind (triggers ALERT)
 behind_chase_distance = 125; // Closer distance for player detection from behind (triggers CHASE)
 default_close_chase_distance = 100; // General close proximity detection (triggers CHASE regardless of direction/LOS)
-deaggro_distance_from_chase = 300; // Distance at which the enemy will stop chasing/alerting and return to patrol
+deaggro_distance_from_chase = 250; // Distance at which the enemy will stop chasing/alerting and return to patrol
 
 // New variables for the alert timeout
 alert_timer = 0; // The current countdown timer for the alert state

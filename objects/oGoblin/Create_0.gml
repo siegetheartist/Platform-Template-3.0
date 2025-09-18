@@ -7,21 +7,25 @@ event_inherited();
 // Calls the function with the specific sprite assets for the Goblin, including the taunt sprite.
 scr_enemy_init_sprites_and_offsets(sGoblinIdle, sGoblinPatrol, sGoblinChase, sGoblinTaunt); // NEW: Added sGoblinTaunt
 
-//  Override parent values for Goblin's behavior (optional) 
-patrol_hsp_max = 1.5; // Goblin patrols a bit faster than the default enemy
-chase_hsp_max = 4;    // Goblin chases faster than the default enemy
 
+#region PARENT OVERRIDES for Goblin's behavior
+// Define movement speeds for different states
+patrol_hsp_max = 1; // Default slower speed for patrolling
+chase_hsp_max = 2.75;  // Default faster speed for chasing
 
-// Define detection ranges for player interaction (children can override these)
-//alert_range = 200; // Distance at which the enemy will enter ALERT state
-//chase_range = 150; // Distance at which the enemy will enter CHASE state (must be < alert_range)
-//deaggro_range = 250; // Distance at which the enemy will stop chasing/alerting and return to patrol
+// Acceleration and deceleration values for smoother movement
+hsp_accel = 0.1; // How quickly the enemy speeds up horizontally
+// hsp_decel = 0.4; // How quickly the enemy slows down horizontally
 
+// Detection ranges 
+sight_distance = 175; // Distance for front-facing, line-of-sight detection (triggers CHASE)
+behind_alert_distance = 125; // Distance for player detection from behind (triggers ALERT)
+behind_chase_distance = 105; // Closer distance for player detection from behind (triggers CHASE)
+default_close_chase_distance = 80; // General close proximity detection (triggers CHASE regardless of direction/LOS)
+deaggro_distance_from_chase = 240; // Distance at which the enemy will stop chasing/alerting and return to patrol
 
+// Enemy Stas
 enemy_health = 2; // Default health for this enemy type. Children can override.
-
-//  Set Goblin-specific damage 
 enemy_damage = 1; // Goblin deals 1 damage to the player
+#endregion
 
-// You can override any other variable defined in oEnemy's Create event here
-// For example: health = 50; attack_damage = 10; etc.
