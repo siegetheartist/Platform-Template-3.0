@@ -9,7 +9,7 @@
   "bitRate":128,
   "compression":3,
   "conversionMode":0,
-  "duration":1.0,
+  "duration":1.5318367,
   "name":"sndGoblinTaunt",
   "parent":{
     "name":"sndGoblin",
@@ -21,5 +21,5 @@
   "sampleRate":44100,
   "soundFile":"sndGoblinTaunt.wav",
   "type":1,
-  "volume":1.0,
+  "volume":0.48,
 }

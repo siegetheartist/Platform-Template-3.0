@@ -16,22 +16,24 @@ current_dir = 1; // 1 is right, -1 is left (initial movement direction)
 grav = 0.4; // Gravity strength pulling the enemy down
 #endregion
 
-#region ENEMY STATS // NEW: Add health to enemies
-enemy_health = 10; // Default health for this enemy type. Children can override.
+#region ENEMY STATS
+// Enemy health
+max_enemy_health = 10; // Default maximum health for this enemy type. Children can override.
+enemy_health = max_enemy_health; // Current health, initialized to max.
  
 // Damage feedback variables
 flash_timer = 0; // Timer for visual damage indicator (blinking)
 flash_duration = 30; // How long the enemy sprite flashes after taking damage (0.5 seconds at 60 FPS)
 
-// Knockback variables (NEW)
+// Knockback variables
 knockback_h_strength = 3;  // Horizontal knockback pixel amount (Increased for more effect)
 knockback_v_strength = -2; // Vertical knockback pixel amount (Increased for more effect)
 knockback_active = false;  // True when the enemy is currently in the knockback animation/movement
 knockback_cooldown_timer = 0; // Timer to prevent repeated knockbacks (1 second cooldown)
 knockback_cooldown_duration = 60; // 1 second at 60 FPS
-knockback_duration = 15; // NEW: Duration of the knockback effect (e.g., 0.25 seconds)
-knockback_duration_timer = 0; // NEW: Current countdown for knockback duration
-knockback_h_friction = 0.2; // NEW: Horizontal friction applied during knockback
+knockback_duration = 15; // Duration of the knockback effect (e.g., 0.25 seconds)
+knockback_duration_timer = 0; // Current countdown for knockback duration
+knockback_h_friction = 0.2; // Horizontal friction applied during knockback
 #endregion
 
 #region ENEMY STATE AND BEHAVIOR SETTINGS
@@ -46,6 +48,8 @@ enum ENEMY_STATE {
 
 // Initialize the enemy's starting state
 enemy_state = ENEMY_STATE.PATROL; // Sets the initial behavior state
+enemy_state_previous = ENEMY_STATE.PATROL; // NEW: Store previous state for sound logic
+sound_played_for_current_state = false; // NEW: Flag to prevent sound spamming on state entry
 
 // Define movement speeds for different states (children can override these)
 patrol_hsp_max = 1; // Default slower speed for patrolling
@@ -55,18 +59,18 @@ chase_hsp_max = 3;  // Default faster speed for chasing
 hsp_accel = 0.08; // How quickly the enemy speeds up horizontally
 hsp_decel = 0.8; // How quickly the enemy slows down horizontally
 
-// NEW: Consolidated detection ranges
+// Consolidated detection ranges
 sight_distance = 200; // Distance for front-facing, line-of-sight detection (triggers CHASE)
 behind_alert_distance = 150; // Distance for player detection from behind (triggers ALERT)
 behind_chase_distance = 125; // Closer distance for player detection from behind (triggers CHASE)
 default_close_chase_distance = 100; // General close proximity detection (triggers CHASE regardless of direction/LOS)
 deaggro_distance_from_chase = 250; // Distance at which the enemy will stop chasing/alerting and return to patrol
 
-// New variables for the alert timeout
+// Alert timeout
 alert_timer = 0; // The current countdown timer for the alert state
 alert_timeout = 120; // The total time (in frames) before the enemy returns to patrol (e.g., 2 seconds at 60 FPS)
 
-// New variables for the alert cooldown
+// Alert cooldown
 alert_cooldown_timer = 0; // A timer to prevent immediate re-alerting after de-aggro
 alert_cooldown_time = 60; // The total time (in frames) before a new alert can be triggered (e.g., 2 seconds)
 
@@ -90,9 +94,17 @@ taunt_timer = 0; // Timer for how long the enemy is in the TAUNT state
 taunt_duration = 60; // How long the enemy taunts (1 second at 60 FPS)
 
 
-// NEW: Patrol stopping variables
+// Patrol stopping
 patrol_stop_timer = 0; // Timer for the 1-second stop before turning
 patrol_stop_duration = 60; // 1 second at 60 FPS
 ledge_detect_distance = 48; // Distance from a ledge to trigger a stop and turn
 enemy_detect_distance = 24; // Distance from another enemy to trigger a stop and turn
+#endregion
+
+#region AUDIO SETTINGS (NEW)
+snd_alert = noone;
+snd_chase = noone;
+snd_taunt = noone;
+snd_hit = noone;
+snd_death = noone;
 #endregion

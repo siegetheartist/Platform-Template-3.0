@@ -75,6 +75,27 @@ switch (current_state) {
                 _new_player.can_control = false;
                 _new_player.player_health = max_player_health; // Reset health
                 _new_player.player_state = PlayerState.IDLE; // Reset the state
+    
+    
+                // Reset health for all enemies
+                with (oEnemy) {
+                    enemy_health = max_enemy_health;
+                    flash_timer = 0; // Stop any flashing effect
+                    knockback_active = false; // Stop any active knockback
+                    knockback_duration_timer = 0; // Reset knockback duration
+                    knockback_cooldown_timer = 0; // Reset knockback cooldown
+                    // Optionally reset enemy_state to PATROL or initial state:
+                    enemy_state = ENEMY_STATE.PATROL;
+                    enemy_state_previous = ENEMY_STATE.PATROL;
+                    sound_played_for_current_state = false;
+                    hsp = 0;
+                    vsp = 0;
+                    x = start_x; // Reset position to start_x
+                    y = start_y; // Reset position to start_y
+                    current_dir = 1; // Reset direction to default (e.g., right)
+                    taunt_timer = 0; // Reset taunt timer
+                    alert_timer = 0; // Reset alert timer
+                }
                 
                 // Set a grace period to prevent immediate death
                 respawn_grace_period = 10; // 10 frames of invulnerability

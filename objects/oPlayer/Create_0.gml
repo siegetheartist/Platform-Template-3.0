@@ -6,7 +6,7 @@ can_control = (room != rStartMenu);
 #region BASE MOVEMENT 
 // Horizontal speedS
 hsp = 0; // Horizontal speed (pixels per frame)
-max_hsp = 3; // Maximum horizontal speed the player can reach
+max_hsp = 2.60; // Maximum horizontal speed the player can reach (Original speed 3)
 
 // vertical speedS
 vsp = 0; // Vertical speed (pixels per frame)
@@ -34,7 +34,7 @@ ground_check_dist = 12; // Pixels below player to check for solid ground
 
 // Jumping
 jump_height_min = -3; // Minimum upward velocity when jump key is released early
-jump_height = -8; // Initial upward velocity for a full jump
+jump_height = -7; // Initial upward velocity for a full jump
 
 // Frames to buffer jump input before landing
 jump_buffer_max = 4; // Max frames to buffer a jump input (immediately derements 1 in the same frame. so add 1 to intended number)
@@ -73,7 +73,7 @@ wall_slide_dust_timer_max = 8; // Adjust for desired frequency
 
 
 #region PLAYER HEALTH AND INVULNERABILITY
-player_health = 3; // Player's current health, starts at 3
+player_health = oGameManager.max_player_health; // Player's current health, starts at 4
 invulnerable_timer = 0; // Timer for player invulnerability frames
 invulnerable_duration = 60; // How many frames player is invulnerable after taking damage (1 second at 60 FPS)
 flash_timer = 0; // Timer for visual damage indicator (blinking)

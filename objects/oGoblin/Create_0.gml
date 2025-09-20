@@ -25,11 +25,20 @@ default_close_chase_distance = 80; // General close proximity detection (trigger
 deaggro_distance_from_chase = 240; // Distance at which the enemy will stop chasing/alerting and return to patrol
 
 // Amount of knockback
-knockback_h_strength = 4;  // Horizontal knockback pixel amount (Increased for more effect)
-knockback_v_strength = -3; // Vertical knockback pixel amount (Increased for more effect)
+knockback_h_strength = 4.0;  // Horizontal knockback pixel amount (Increased for more effect)
+knockback_v_strength = -3.0; // Vertical knockback pixel amount (Increased for more effect)
 
 // Enemy Stas
-enemy_health = 2; // Health
+max_enemy_health = 2; // Health
+enemy_health = max_enemy_health; // Initialize current health to its max
 enemy_damage = 1; // Damage
+#endregion
+
+#region GOBLIN SPECIFIC SOUNDS (NEW)
+snd_alert = sndGoblinAlert;
+snd_chase = sndGoblinChase;
+snd_taunt = sndGoblinTaunt;
+snd_hit = sndGoblinHit;
+snd_death = sndGoblinDeath;
 #endregion
 

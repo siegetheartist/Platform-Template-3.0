@@ -1,0 +1,25 @@
+{
+  "$GMSound":"",
+  "%Name":"sndOrcChase",
+  "audioGroupId":{
+    "name":"audiogroup_default",
+    "path":"audiogroups/audiogroup_default",
+  },
+  "bitDepth":1,
+  "bitRate":128,
+  "compression":3,
+  "conversionMode":0,
+  "duration":1.7240816,
+  "name":"sndOrcChase",
+  "parent":{
+    "name":"sndOrc",
+    "path":"folders/Sounds/sndOrc.yy",
+  },
+  "preload":false,
+  "resourceType":"GMSound",
+  "resourceVersion":"2.0",
+  "sampleRate":44100,
+  "soundFile":"sndOrcChase.mp3",
+  "type":1,
+  "volume":0.26,
+}

@@ -2,7 +2,8 @@
  
 #region VARIABLES
 //  Get tilemap ID for collision 
-var collision_tileset = layer_tilemap_get_id("t_Collision"); // Get the ID of the collision tilemap layer
+var _main_tileset = layer_tilemap_get_id("t_Collision"); // Get the ID of the collision tilemap layer
+var collision_tileset = [_main_tileset, oInvisibleBlock]; // Get the ID of the collision tilemap layer
  
 // Declare all local variables used within this step event
 var _player_instance = noone; // Reference to the player object
@@ -46,6 +47,15 @@ if (alert_cooldown_timer > 0) {
     alert_cooldown_timer--;
 }
 #endregion
+
+
+#region STATE SOUND LOGIC (NEW)
+// Reset sound_played_for_current_state if the enemy's state has changed
+if (enemy_state != enemy_state_previous) {
+    sound_played_for_current_state = false;
+}
+#endregion
+ 
  
 // Only AI logic and target_hsp calculation happens if not actively knocked back.
 if (!knockback_active) {
@@ -64,7 +74,7 @@ if (!knockback_active) {
     // Only proceed with player detection and AI if not in WAIT_AND_TURN state
     else {
         #region PLAYER DETECTION & STATE TRANSITION
-        // Find the player object (assuming it's named oPlayer)
+        // Find the player object
         _player_instance = instance_find(oPlayer, 0); // Finds the first instance of oPlayer
  
         if (instance_exists(_player_instance)) {
@@ -72,8 +82,8 @@ if (!knockback_active) {
             _distance_to_player = point_distance(x, y, _player_instance.x, _player_instance.y);
             
             // Calculate a more appropriate Y-coordinate for Line of Sight checks (e.g., center of sprite)
-            var _enemy_los_y = y - (sprite_height / 2); // Enemy's vertical center
-            var _player_los_y = _player_instance.y - (_player_instance.sprite_height / 2); // Player's vertical center
+            var _enemy_los_y = y - 2; // Enemy's vertical center
+            var _player_los_y = _player_instance.y - 2; // Player's vertical center
             
             // Check for line of sight to the player using the collision tilemap
             // The line should be from the enemy's vertical center to the player's vertical center,
@@ -167,8 +177,12 @@ if (!knockback_active) {
  
                 case ENEMY_STATE.ALERT:
                     hsp_max = 0; // Stop horizontal movement in ALERT state
- 
-                    // Removed: current_dir = sign(_player_instance.x - x); // Enemy should not turn in ALERT state
+                     
+                    // Play alert sound
+                    if (!sound_played_for_current_state && snd_alert != noone) {
+                        audio_play_sound(snd_alert, 10, false);
+                        sound_played_for_current_state = true;
+                    }
  
                     // If player moves out of behind alert range OR line of sight is blocked OR alert timer runs out, revert to patrol
                     if (_distance_to_player > behind_alert_distance || !_line_of_sight_clear) {
@@ -187,6 +201,13 @@ if (!knockback_active) {
  
                 case ENEMY_STATE.CHASE:
                     hsp_max = chase_hsp_max; // Set horizontal speed for chasing
+                    
+                    // Play chase sound
+                    if (!sound_played_for_current_state && snd_chase != noone) {
+                        audio_play_sound(snd_chase, 10, false);
+                        sound_played_for_current_state = true;
+                    }
+                
                     // Always turn towards the player when chasing
                     current_dir = sign(_player_instance.x - x);
                     
@@ -203,8 +224,15 @@ if (!knockback_active) {
                     }
                     break;
                 
-                case ENEMY_STATE.TAUNT: // NEW: Handle Taunt state
+                case ENEMY_STATE.TAUNT: // Handle Taunt state
                     hsp_max = 0; // Enemy stops all horizontal movement while taunting
+                    
+                    // Play taunt sound
+                    if (!sound_played_for_current_state && snd_taunt != noone) {
+                        audio_play_sound(snd_taunt, 10, false);
+                        sound_played_for_current_state = true;
+                    }
+ 
                     if (taunt_timer <= 0) {
                         enemy_state = ENEMY_STATE.PATROL; // Return to patrol after taunt
                         alert_cooldown_timer = alert_cooldown_time; // Start cooldown before re-alerting
@@ -314,7 +342,8 @@ if (place_meeting(x, y, collision_tileset)) {
         current_dir *= -1; // Reverse direction (bounce off tilemap wall)
     }
 }
- 
+
+/* DON'T REMEMBER WHY I WANTED TO AVOID ENEMY COLISIONS, BUT THIS IS THE CODE IN CASE I WANT TO REVERT
 // Resolve horizontal collision with other bad entities/enemies (oEnemy, parent object)
 // This will make enemies bounce off each other without getting stuck.
 if (place_meeting(x, y, oEnemy)) { // If colliding with any instance of oEnemy (including children)
@@ -331,7 +360,7 @@ if (place_meeting(x, y, oEnemy)) { // If colliding with any instance of oEnemy (
     // This immediately separates them to prevent re-collision in the next step. (Should be current_dir not original_move_dir if not changing dir during knockback)
     // No, _original_move_dir here is the direction of collision. It should still be correct.
     x -= _original_move_dir; 
-}
+}*/
 #endregion
  
 #region VERTICAL COLLISION
@@ -363,3 +392,6 @@ if (place_meeting(x, y, collision_tileset)) {
     vsp = 0; // Ensure vsp is zero after resolving collision
 }
 #endregion
+ 
+// Update previous state for next frame's sound logic
+enemy_state_previous = enemy_state;

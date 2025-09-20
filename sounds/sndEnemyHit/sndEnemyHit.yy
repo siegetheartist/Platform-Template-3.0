@@ -12,8 +12,8 @@
   "duration":0.964966,
   "name":"sndEnemyHit",
   "parent":{
-    "name":"sndPlayer",
-    "path":"folders/Sounds/sndPlayer.yy",
+    "name":"Sounds",
+    "path":"folders/Sounds.yy",
   },
   "preload":false,
   "resourceType":"GMSound",
@@ -21,5 +21,5 @@
   "sampleRate":44100,
   "soundFile":"sndEnemyHit.wav",
   "type":0,
-  "volume":0.3,
+  "volume":0.33,
 }

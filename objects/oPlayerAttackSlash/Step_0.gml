@@ -9,7 +9,7 @@ if (instance_exists(owner)) {
     // This ensures the slash's edge is a consistent distance from the player's edge.
     var _player_half_width = sprite_get_width(sPlayerAttack) / 2;
     var _slash_half_width = sprite_get_width(sPlayerAttackSlash) / 2; // 'sprite_width' here refers to oPlayerAttackSlash's own sprite_width
-    var _desired_gap = -24; // The distance between the player's edge and the slash's edge
+    var _desired_gap = -34 // The distance between the player's edge and the slash's edge
     var _total_x_offset = _player_half_width + _desired_gap + _slash_half_width;
     x = owner.x + owner.facing_direction * _total_x_offset;
     y = owner.y; // Keep vertical position synced

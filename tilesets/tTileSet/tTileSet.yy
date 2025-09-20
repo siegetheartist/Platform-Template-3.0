@@ -6,9 +6,10 @@
     {"$GMAutoTileSet":"","%Name":"autotile_2","closed_edge":false,"name":"autotile_2","resourceType":"GMAutoTileSet","resourceVersion":"2.0","tiles":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,],},
   ],
   "macroPageTiles":{
-    "SerialiseHeight":0,
-    "SerialiseWidth":0,
-    "TileSerialiseData":[],
+    "SerialiseHeight":2,
+    "SerialiseWidth":7,
+    "TileCompressedData":[-8,0,6,1,3,0,268435459,268435458,268435457,],
+    "TileDataFormat":1,
   },
   "name":"tTileSet",
   "out_columns":5,

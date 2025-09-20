@@ -1,0 +1,25 @@
+{
+  "$GMSound":"",
+  "%Name":"sndGoblinHit",
+  "audioGroupId":{
+    "name":"audiogroup_default",
+    "path":"audiogroups/audiogroup_default",
+  },
+  "bitDepth":1,
+  "bitRate":128,
+  "compression":3,
+  "conversionMode":0,
+  "duration":0.5046485,
+  "name":"sndGoblinHit",
+  "parent":{
+    "name":"sndGoblin",
+    "path":"folders/Sounds/sndGoblin.yy",
+  },
+  "preload":false,
+  "resourceType":"GMSound",
+  "resourceVersion":"2.0",
+  "sampleRate":44100,
+  "soundFile":"sndGoblinHit.mp3",
+  "type":1,
+  "volume":0.74,
+}

@@ -8,8 +8,8 @@
   "name":"oDustCloud",
   "overriddenProperties":[],
   "parent":{
-    "name":"Objects",
-    "path":"folders/Objects.yy",
+    "name":"Visual Effects",
+    "path":"folders/Objects/Visual Effects.yy",
   },
   "parentObjectId":null,
   "persistent":false,
