@@ -5,8 +5,8 @@
   "isDnD":false,
   "name":"scr_player_jump",
   "parent":{
-    "name":"scr_player",
-    "path":"folders/Scripts/scr_player.yy",
+    "name":"scrPlayer",
+    "path":"folders/Scripts/scrPlayer.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

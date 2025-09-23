@@ -3,6 +3,11 @@
 ///              Assumes 'enemy_state', 'hsp', 'current_dir', 'spr_idle_specific', 'spr_patrol_move', and 'spr_chase_move' are defined on the calling instance.
 
 function scr_enemy_handle_animation() {
+    // NEW: If a hit animation is currently playing, defer to that and skip normal animation logic.
+    if (self.is_hit_animating) {
+        exit;
+    }
+    
     #region ANIMATION & SPRITE ORIENTATION
     // Set the sprite based on the enemy's current state.
     switch (self.enemy_state) { // Using self. to be explicit about instance variables
@@ -19,12 +24,17 @@ function scr_enemy_handle_animation() {
             self.sprite_index = self.spr_chase_move; // Use specific chase/attack sprite
             break;
         
-        case ENEMY_STATE.TAUNT: // NEW: Display taunt animation
+        case ENEMY_STATE.TAUNT: // Display taunt animation
             self.sprite_index = self.spr_taunt_specific; // Use the specific taunt sprite
             break;
             
-        case ENEMY_STATE.WAIT_AND_TURN: // NEW: Display idle animation when waiting to turn
+        case ENEMY_STATE.WAIT_AND_TURN: // Display idle animation when waiting to turn
             self.sprite_index = self.spr_idle_specific; // Use the specific idle sprite for this state
+        break;
+            
+        case ENEMY_STATE.ATTACK: // NEW: Display attack animation
+            self.sprite_index = self.spr_attack_specific;
+            self.image_speed = 1; // Always play attack animation
             break;
     }
 
@@ -37,7 +47,10 @@ function scr_enemy_handle_animation() {
 
     // Control animation speed based on horizontal movement.
     // If taunting, animation should usually play, but movement speed is 0.
-    if (self.hsp != 0 || self.enemy_state == ENEMY_STATE.TAUNT || self.enemy_state == ENEMY_STATE.WAIT_AND_TURN) { // Play animation if moving OR taunting OR waiting to turn
+    if (self.hsp != 0 
+        || self.enemy_state == ENEMY_STATE.TAUNT 
+        || self.enemy_state == ENEMY_STATE.WAIT_AND_TURN 
+        || self.enemy_state == ENEMY_STATE.ATTACK) { // Play animation if moving OR taunting OR waiting to turn OR attacking
         self.image_speed = 1; // Play animation
     } else {
         self.image_speed = 0; // Stop animation when not moving

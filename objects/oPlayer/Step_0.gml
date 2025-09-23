@@ -40,6 +40,10 @@ if (invulnerable_timer > 0) { invulnerable_timer--; }
 if (flash_timer > 0) { flash_timer--; }
 if (attack_timer > 0) { attack_timer--; }
     
+// NEW: Knockback Timers
+if (knockback_cooldown_timer > 0) { knockback_cooldown_timer--; }
+if (knockback_duration_timer > 0) { knockback_duration_timer--; }
+    
 // Jump combo logic
 if (jump_combo_timer > 0) {
     jump_combo_timer--;
@@ -67,15 +71,18 @@ if (wall_jump_move_loss > 0) {
 
 #region GENERAL VERTICAL MOVEMENT PHYSICS
 // Apply gravity to vertical speed.
-// Gravity is applied normally unless in a wall-interaction state that
-// specifically manages its own vertical speed (WALL_SLIDE or WALL_GRAB).
+vsp += grav;
+// Clamp vertical speed to prevent it from exceeding max falling speed.
+vsp = min(vsp, grav_max);
+// No upper clamp for vsp when knocked back, allowing full upward impulse.
+// Otherwise, clamp to normal max upward speed for regular jumps.
+if (!knockback_active) {
+    vsp = max(vsp, -grav_max);
+}
+ 
+// Wall slide and wall grab states handle their own vertical movement, overriding default gravity.
 if (player_state == PlayerState.WALL_SLIDE || player_state == PlayerState.WALL_GRAB) {
-    // These states handle their own vertical movement/gravity, so skip default gravity application here.
-    // For WALL_GRAB, vsp is explicitly set to 0 in scr_player_state_wall_grab.
-    // For WALL_SLIDE, vsp is explicitly set in scr_player_state_wall_slide.
-} else {
-    // Apply normal gravity and clamp to max gravity for all other states (including AIR after any jump)
-    vsp = clamp(vsp + grav, -grav_max, grav_max);
+    // These states handle their own vertical movement/gravity.
 }
 #endregion
 
@@ -116,26 +123,40 @@ if (_on_ground && player_state == PlayerState.AIR) {
     }
 }
 // Universal transition from ground to air (e.g., walking off a ledge)
-if (!_on_ground && (player_state == PlayerState.IDLE || player_state == PlayerState.RUN) && player_state != PlayerState.ATTACK) {
+// Also ensure we don't transition if actively in knockback.
+if (!_on_ground && (player_state == PlayerState.IDLE || player_state == PlayerState.RUN) && player_state != PlayerState.ATTACK && !knockback_active) {
     player_state = PlayerState.AIR;
 }
 #endregion
 
 
 
-#region HORIZONTAL MOVEMENT PHYSICS (DEFAULT)
-// This block calculates the 'desired' hsp based on input, which can then be
-// modified by specific player states later in the state machine.
-if (_dir != 0) {
-    // Accelerate towards max speed in the input direction
-    hsp += _dir * accel;
-    hsp = clamp(hsp, -max_hsp, max_hsp);
-} else {
-    // If no horizontal input, apply deceleration
-    if (abs(hsp) > decel) {
-        hsp -= sign(hsp) * decel;
+#region HORIZONTAL MOVEMENT PHYSICS (DEFAULT AND KNOCKBACK)
+if (knockback_active) {
+    // Apply knockback-specific friction/deceleration
+    if (abs(hsp) > knockback_h_friction) {
+        hsp -= sign(hsp) * knockback_h_friction;
     } else {
         hsp = 0; // Snap to zero
+    }
+    // End knockback if duration timer runs out
+    if (knockback_duration_timer <= 0) {
+        knockback_active = false;
+        hsp = 0; // Stop any residual knockback hsp
+        vsp = 0; // Stop any residual knockback vsp
+    }
+} else { // Normal movement physics if not knocked back
+    if (_dir != 0) {
+        // Accelerate towards max speed in the input direction
+        hsp += _dir * accel;
+        hsp = clamp(hsp, -max_hsp, max_hsp);
+    } else {
+        // If no horizontal input, apply deceleration
+        if (abs(hsp) > decel) {
+            hsp -= sign(hsp) * decel;
+        } else {
+            hsp = 0; // Snap to zero
+        }
     }
 }
 #endregion
@@ -206,7 +227,7 @@ y += vsp;
 
 #region UPDATE VISUALS
 // Update facing direction based on input or momentum
-if (player_state != PlayerState.ATTACK) {
+if (player_state != PlayerState.ATTACK && !knockback_active) { // Prevent changing direction during attack or knockback
     if (_dir != 0) {
         facing_direction = _dir;
     } else if (hsp != 0) {
@@ -239,6 +260,11 @@ if ((_collided_enemy != noone || _collided_hazard) && invulnerable_timer <= 0) {
         player_health -= _damage_taken;
         invulnerable_timer = invulnerable_duration;
         flash_timer = flash_duration;
+                
+        // NEW: Apply knockback to player if hit by an enemy (not hazards)
+        if (_collided_enemy != noone) {
+            scr_status_effect_knockback(id, _collided_enemy.x, knockback_h_strength, knockback_v_strength);
+        }
     }
 }
 #endregion

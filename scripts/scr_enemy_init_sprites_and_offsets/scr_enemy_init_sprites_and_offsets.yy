@@ -5,8 +5,8 @@
   "isDnD":false,
   "name":"scr_enemy_init_sprites_and_offsets",
   "parent":{
-    "name":"Scripts",
-    "path":"folders/Scripts.yy",
+    "name":"scrEnemies",
+    "path":"folders/Scripts/scrEnemies.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

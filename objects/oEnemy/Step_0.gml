@@ -46,9 +46,22 @@ if (patrol_stop_timer > 0) {
 if (alert_cooldown_timer > 0) {
     alert_cooldown_timer--;
 }
+ 
+// NEW: Attack Timer Management
+if (attack_timer > 0) {
+    attack_timer--;
+}
+ 
+// NEW: Attack Cooldown Timer Management
+if (attack_cooldown_timer > 0) {
+    attack_cooldown_timer--;
+    if (attack_cooldown_timer <= 0) {
+        can_attack_player = true;
+    }
+}
 #endregion
-
-
+ 
+ 
 #region STATE SOUND LOGIC (NEW)
 // Reset sound_played_for_current_state if the enemy's state has changed
 if (enemy_state != enemy_state_previous) {
@@ -63,7 +76,7 @@ if (!knockback_active) {
     #region WAIT AND TURN LOGIC (PRIORITY OVER PLAYER DETECTION)
     // Handle WAIT_AND_TURN state first, as it's a temporary pause in other AI and detection.
     if (enemy_state == ENEMY_STATE.WAIT_AND_TURN) {
-        hsp_max = 0; // Ensure no horizontal movement while waiting
+        hsp_max = 0; // Ensure no horizontal movement while waitinglol
         if (patrol_stop_timer <= 0) {
             current_dir *= -1; // Reverse direction after waiting
             enemy_state = ENEMY_STATE.PATROL; // Resume patrolling
@@ -73,7 +86,7 @@ if (!knockback_active) {
  
     // Only proceed with player detection and AI if not in WAIT_AND_TURN state
     else {
-        #region PLAYER DETECTION & STATE TRANSITION
+        // PLAYER DETECTION & STATE TRANSITION
         // Find the player object
         _player_instance = instance_find(oPlayer, 0); // Finds the first instance of oPlayer
  
@@ -81,13 +94,12 @@ if (!knockback_active) {
             // Calculate the distance to the player
             _distance_to_player = point_distance(x, y, _player_instance.x, _player_instance.y);
             
-            // Calculate a more appropriate Y-coordinate for Line of Sight checks (e.g., center of sprite)
-            var _enemy_los_y = y - 2; // Enemy's vertical center
-            var _player_los_y = _player_instance.y - 2; // Player's vertical center
+            // Calculate a Y-coordinate for Line of Sight checks 
+            var _enemy_los_y = y - 2; // Enemy's vertical center bottom -2
+            var _player_los_y = _player_instance.y - 2; // Player's vertical center bottom -2
             
             // Check for line of sight to the player using the collision tilemap
-            // The line should be from the enemy's vertical center to the player's vertical center,
-            // avoiding collision with the ground they are standing on.
+            // The line should be from the enemy's feet to the player feet,
             _line_of_sight_clear = !collision_line(x, _enemy_los_y, _player_instance.x, _player_los_y, collision_tileset, false, true);
  
             // Determine if player is in front or behind based on enemy's current_dir
@@ -95,32 +107,59 @@ if (!knockback_active) {
             _player_is_behind = (sign(_player_instance.x - x) == -current_dir);
  
             // --- Player Detection and State Transition Logic (Ordered by Priority) ---
- 
-            // 1. HIGHEST PRIORITY: Default Close Chase (100px, visible, ANY state)
-            if (_distance_to_player < default_close_chase_distance && _line_of_sight_clear) {
-                enemy_state = ENEMY_STATE.CHASE;
-                current_dir = sign(_player_instance.x - x); // Face player immediately
+            
+            // NEW: Check for attack opportunity if conditions met and not currently attacking
+            if (enemy_state != ENEMY_STATE.ATTACK && can_attack_player && _line_of_sight_clear) {
+                // Player must be within attack range (children will define 'attack_range')
+                if (_distance_to_player < attack_range) {
+                    // Determine attack direction and initiate
+                    current_dir = sign(_player_instance.x - x); // Face player
+                    enemy_state = ENEMY_STATE.ATTACK;
+                    
+                    // On-entry logic for attack
+                    hsp = current_dir * attack_h_speed; // Set initial horizontal speed
+                    vsp = attack_v_speed;              // Set initial vertical speed (negative for upward)
+                    image_index = 0;                   // Start attack animation from beginning
+                    attack_timer = attack_duration;    // Start attack duration timer
+                    
+                    if (snd_attack != noone) {
+                        audio_play_sound(snd_attack, 10, false);
+                    }
+                    
+                    can_attack_player = false;           // Go on cooldown
+                    attack_cooldown_timer = attack_cooldown_duration;
+                }
             }
-            // 1.5. ALERT to CHASE escalation (if ALREADY in ALERT and player is close AND in front)
-            else if (enemy_state == ENEMY_STATE.ALERT && _distance_to_player < default_close_chase_distance && _line_of_sight_clear && _player_is_in_front) {
-                enemy_state = ENEMY_STATE.CHASE;
-                current_dir = sign(_player_instance.x - x); // Face player immediately
-            }
-            // 2. Next Priority: Sight-Based Detection (250px, front, visible, NOT ALERT state)
-            else if (enemy_state != ENEMY_STATE.ALERT && _distance_to_player < sight_distance && _line_of_sight_clear && _player_is_in_front) {
-                enemy_state = ENEMY_STATE.CHASE;
-                current_dir = sign(_player_instance.x - x); // Face player immediately
-            }
-            // 3. Next Priority: Behind Detection - Chase (125px, behind, visible, ANY state)
-            else if (_distance_to_player < behind_chase_distance && _player_is_behind && _line_of_sight_clear) {
-                enemy_state = ENEMY_STATE.CHASE;
-                current_dir = sign(_player_instance.x - x); // Turn to face player immediately
-            }
-            // 4. Lowest Priority: Behind Detection - Alert (150px, behind, visible, PATROL state ONLY)
-            else if (enemy_state == ENEMY_STATE.PATROL && _distance_to_player < behind_alert_distance && _player_is_behind && _line_of_sight_clear && alert_cooldown_timer <= 0) {
-                enemy_state = ENEMY_STATE.ALERT;
-                // current_dir = sign(_player_instance.x - x); // Removed: Enemy should not turn in ALERT state
-                alert_timer = alert_timeout; // Start the alert countdown timer
+            
+            // --- Original state transition logic (now adjusted to prioritize ATTACK) ---
+            // If not in ATTACK state, proceed with other state transitions
+            if (enemy_state != ENEMY_STATE.ATTACK) {
+                // 1. HIGHEST PRIORITY: Default Close Chase (100px, visible, ANY state)
+                if (_distance_to_player < default_close_chase_distance && _line_of_sight_clear) {
+                    enemy_state = ENEMY_STATE.CHASE;
+                    current_dir = sign(_player_instance.x - x); // Face player immediately
+                }
+                // 1.5. ALERT to CHASE escalation (if ALREADY in ALERT and player is close AND in front)
+                else if (enemy_state == ENEMY_STATE.ALERT && _distance_to_player < default_close_chase_distance && _line_of_sight_clear && _player_is_in_front) {
+                    enemy_state = ENEMY_STATE.CHASE;
+                    current_dir = sign(_player_instance.x - x); // Face player immediately
+                }
+                // 2. Next Priority: Sight-Based Detection (250px, front, visible, NOT ALERT state)
+                else if (enemy_state != ENEMY_STATE.ALERT && _distance_to_player < sight_distance && _line_of_sight_clear && _player_is_in_front) {
+                    enemy_state = ENEMY_STATE.CHASE;
+                    current_dir = sign(_player_instance.x - x); // Face player immediately
+                }
+                // 3. Next Priority: Behind Detection - Chase (125px, behind, visible, ANY state)
+                else if (_distance_to_player < behind_chase_distance && _player_is_behind && _line_of_sight_clear) {
+                    enemy_state = ENEMY_STATE.CHASE;
+                    current_dir = sign(_player_instance.x - x); // Turn to face player immediately
+                }
+                // 4. Lowest Priority: Behind Detection - Alert (150px, behind, visible, PATROL state ONLY)
+                else if (enemy_state == ENEMY_STATE.PATROL && _distance_to_player < behind_alert_distance && _player_is_behind && _line_of_sight_clear && alert_cooldown_timer <= 0) {
+                    enemy_state = ENEMY_STATE.ALERT;
+                    // current_dir = sign(_player_instance.x - x); // Removed: Enemy should not turn in ALERT state
+                    alert_timer = alert_timeout; // Start the alert countdown timer
+                }
             }
             // --- END PLAYER DETECTION LOGIC ---
  
@@ -238,6 +277,23 @@ if (!knockback_active) {
                         alert_cooldown_timer = alert_cooldown_time; // Start cooldown before re-alerting
                     }
                     break;
+                    
+                case ENEMY_STATE.ATTACK: // NEW
+                    hsp_max = 0; // Enemy's horizontal speed is governed by initial impulse, not hsp_max.
+                    // Gravity and collisions still apply, affecting vsp.
+        
+                    if (attack_timer <= 0) {
+                        // Attack animation/duration is over, transition back to CHASE or PATROL
+                        // Check player distance again to decide next state
+                        var _player_exists_after_attack = instance_exists(_player_instance);
+                        if (_player_exists_after_attack && point_distance(x, y, _player_instance.x, _player_instance.y) < deaggro_distance_from_chase) {
+                            enemy_state = ENEMY_STATE.CHASE;
+                        } else {
+                            enemy_state = ENEMY_STATE.PATROL;
+                        }
+                        sound_played_for_current_state = false; // Reset for new state
+                    }
+                    break;
             }
         } else {
             // If no player exists, ensure the enemy is in patrol mode
@@ -245,22 +301,21 @@ if (!knockback_active) {
             hsp_max = patrol_hsp_max;
         }
     }
-    #endregion
- 
-    #region EDGE DETECTION (Patrol Mode Only)
-    // Only perform edge detection when patrolling to prevent walking off platforms
-    if (enemy_state == ENEMY_STATE.PATROL) {
-        // Calculate the position to check for ground ahead
-        var _edge_check_x = x + (current_dir * _edge_check_offset);
-        var _edge_check_y = y + _ground_check_offset;
- 
-        // If there is no solid tile at the edge position, reverse direction
-        if (!place_meeting(_edge_check_x, _edge_check_y, collision_tileset)) {
-            current_dir *= -1; // Change direction
-        }
-    }
-    #endregion
 } // End of !knockback_active block
+ 
+#region EDGE DETECTION (Patrol Mode Only)
+// Only perform edge detection when patrolling to prevent walking off platforms
+if (enemy_state == ENEMY_STATE.PATROL) {
+    // Calculate the position to check for ground ahead
+    var _edge_check_x = x + (current_dir * _edge_check_offset);
+    var _edge_check_y = y + _ground_check_offset;
+ 
+    // If there is no solid tile at the edge position, reverse direction
+    if (!place_meeting(_edge_check_x, _edge_check_y, collision_tileset)) {
+        current_dir *= -1; // Change direction
+    }
+}
+#endregion
  
 #region MOVEMENT ACCELERATION / DECELERATION
 if (knockback_active) {
@@ -270,6 +325,10 @@ if (knockback_active) {
     } else {
         hsp = 0; // Snap to zero if movement is minimal
     }
+} else if (enemy_state == ENEMY_STATE.ATTACK) {
+    // In ATTACK state, hsp is set directly on state entry. 
+    // No further acceleration/deceleration needed from this general block.
+    // Only gravity and collision resolution will affect hsp/vsp.
 } else { // Normal AI movement
     // Calculate the target horizontal speed based on current direction and dynamic max speed
     _target_hsp = current_dir * hsp_max;
@@ -342,25 +401,6 @@ if (place_meeting(x, y, collision_tileset)) {
         current_dir *= -1; // Reverse direction (bounce off tilemap wall)
     }
 }
-
-/* DON'T REMEMBER WHY I WANTED TO AVOID ENEMY COLISIONS, BUT THIS IS THE CODE IN CASE I WANT TO REVERT
-// Resolve horizontal collision with other bad entities/enemies (oEnemy, parent object)
-// This will make enemies bounce off each other without getting stuck.
-if (place_meeting(x, y, oEnemy)) { // If colliding with any instance of oEnemy (including children)
-    // Store the original intended direction of movement before reversing
-    var _original_move_dir = sign(hsp); // Use current hsp to determine direction of collision
-    if (_original_move_dir == 0) _original_move_dir = current_dir; // Fallback if hsp was 0
- 
-    hsp = 0; // Stop horizontal movement immediately
-    if (!knockback_active) { // Only reverse direction if not actively knocked back
-        current_dir *= -1; // Reverse direction (will start moving in new direction next frame)
-    }
- 
-    // Push the enemy back one pixel in the opposite direction of its original movement
-    // This immediately separates them to prevent re-collision in the next step. (Should be current_dir not original_move_dir if not changing dir during knockback)
-    // No, _original_move_dir here is the direction of collision. It should still be correct.
-    x -= _original_move_dir; 
-}*/
 #endregion
  
 #region VERTICAL COLLISION
@@ -369,9 +409,9 @@ if (place_meeting(x, y, oEnemy)) { // If colliding with any instance of oEnemy (
 // Check if currently on ground BEFORE applying movement for this frame
 var _is_on_ground_before_move = place_meeting(x, y + 1, collision_tileset);
  
-// If on ground, explicitly set vsp to 0 before applying frame's movement to prevent micro-vibrations
-// UNLESS the enemy is currently being knocked back, in which case the knockback's vsp should apply.
-if (_is_on_ground_before_move && !knockback_active) {
+// If on ground, explicitly set vsp to 0 before applying movement for this frame
+// UNLESS the enemy is currently being knocked back, OR is in the ATTACK state initiating a leap.
+if (_is_on_ground_before_move && !knockback_active && enemy_state != ENEMY_STATE.ATTACK) {
     vsp = 0;
 }
  

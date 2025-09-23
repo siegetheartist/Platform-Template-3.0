@@ -20,21 +20,29 @@ if (ds_list_find_index(hit_enemies, other.id) == -1) {
         
         // Activate flashing effect on hit enemy
         other.flash_timer = other.flash_duration;
-        
-        // Apply knockback if cooldown allows
-        if (other.knockback_cooldown_timer <= 0) {
-            // Player instance (owner of the attack)
-            var _player_inst = owner;
-            if (instance_exists(_player_inst)) {
-                // Determine horizontal knockback direction (in the direction of the player's attack/facing)
-                other.hsp = _player_inst.facing_direction * other.knockback_h_strength;
-                other.vsp = other.knockback_v_strength; // Apply vertical knockback (negative for up)
-                other.knockback_active = true;
-                other.knockback_duration_timer = other.knockback_duration; // Start knockback duration timer
-                other.knockback_cooldown_timer = other.knockback_cooldown_duration; // Start cooldown
+                
+        // NEW: Initiate hit animation if a specific hit sprite is assigned
+        if (other.spr_hit_specific != -1) {
+            // Store current animation state to revert to it later
+            other.original_sprite_index = other.sprite_index;
+            other.original_image_speed = other.image_speed;
+            other.original_image_index = other.image_index;
+            
+            // Set the hit animation sprite and start it
+            other.sprite_index = other.spr_hit_specific;
+            other.image_index = 0; // Start hit animation from the beginning
+            other.image_speed = 1; // Play hit animation at normal speed
+            other.is_hit_animating = true; // Flag to indicate hit animation is active
+            // Set enemy's image_xscale to match the player's attack direction
+            if (instance_exists(owner)) {
+                other.image_xscale = owner.facing_direction;
             }
         }
- 
+        
+        // Apply knockback if cooldown allows
+        if (instance_exists(owner)) { // Ensure the player (owner) still exists to get its position
+            scr_status_effect_knockback(other, owner.x, other.knockback_h_strength, other.knockback_v_strength);
+        }
 
         
         // Determine horizontal position based on player's attack direction

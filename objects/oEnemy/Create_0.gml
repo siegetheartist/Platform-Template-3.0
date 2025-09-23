@@ -43,7 +43,8 @@ enum ENEMY_STATE {
     ALERT,  // Player spotted, but not yet chasing (e.g., investigating)
     CHASE,   // Chasing state: moves towards the player
     TAUNT,    // Enemy is taunting after hitting the player
-    WAIT_AND_TURN // Enemy stops, waits, then turns around
+    WAIT_AND_TURN, // Enemy stops, waits, then turns around
+    ATTACK
 }
 
 // Initialize the enemy's starting state
@@ -87,18 +88,35 @@ spr_idle_specific = -1; // Stores the specific idle sprite for this enemy type.
 spr_patrol_move = -1; // Default sprite for moving during patrol/alert
 spr_chase_move = -1;  // Default sprite for moving during chase
 spr_taunt_specific = -1; // NEW: Stores the specific taunt sprite for this enemy type.
+spr_attack_specific = -1; // NEW: Specific attack animation sprite
 
 //  ENEMY DAMAGE AND TAUNT SETTINGS
 enemy_damage = 1; // Default damage this enemy deals (children will override)
 taunt_timer = 0; // Timer for how long the enemy is in the TAUNT state
 taunt_duration = 60; // How long the enemy taunts (1 second at 60 FPS)
-
+ 
+// NEW: Attack properties (children will override)
+attack_range = 0;         // Distance to trigger an attack
+attack_h_speed = 0;       // Horizontal speed applied during attack
+attack_v_speed = 0;       // Vertical speed applied during attack (negative for jump)
+attack_duration = 0;      // How long the attack state lasts (frames)
+attack_timer = 0;         // Current countdown for the attack duration
+attack_cooldown_timer = 0;
+attack_cooldown_duration = 0;
+can_attack_player = true; // Set to false when on cooldown
 
 // Patrol stopping
 patrol_stop_timer = 0; // Timer for the 1-second stop before turning
 patrol_stop_duration = 60; // 1 second at 60 FPS
 ledge_detect_distance = 48; // Distance from a ledge to trigger a stop and turn
 enemy_detect_distance = 24; // Distance from another enemy to trigger a stop and turn
+
+// NEW: Variables for hit animation
+spr_hit_specific = -1; // Specific hit animation sprite for this enemy type. Children will override.
+is_hit_animating = false; // Flag to indicate if the enemy is currently playing a hit animation.
+original_sprite_index = noone; // Stores the sprite_index before playing the hit animation.
+original_image_speed = 1; // Stores the image_speed before playing the hit animation.
+original_image_index = 0; // Stores the image_index before playing the hit animation.
 #endregion
 
 #region AUDIO SETTINGS (NEW)
@@ -107,4 +125,5 @@ snd_chase = noone;
 snd_taunt = noone;
 snd_hit = noone;
 snd_death = noone;
+snd_attack = noone;
 #endregion

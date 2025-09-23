@@ -6,7 +6,7 @@ can_control = (room != rStartMenu);
 #region BASE MOVEMENT 
 // Horizontal speedS
 hsp = 0; // Horizontal speed (pixels per frame)
-max_hsp = 2.60; // Maximum horizontal speed the player can reach (Original speed 3)
+max_hsp = 2.75; // Maximum horizontal speed the player can reach (Original speed 3)
 
 // vertical speedS
 vsp = 0; // Vertical speed (pixels per frame)
@@ -33,15 +33,15 @@ grav_max_wall = 5; // Maximum vertical speed while wall sliding
 ground_check_dist = 12; // Pixels below player to check for solid ground
 
 // Jumping
-jump_height_min = -3; // Minimum upward velocity when jump key is released early
-jump_height = -7; // Initial upward velocity for a full jump
+jump_height_min = -2.5; // Minimum upward velocity when jump key is released early
+jump_height = -7.5; // Initial upward velocity for a full jump
 
 // Frames to buffer jump input before landing
 jump_buffer_max = 4; // Max frames to buffer a jump input (immediately derements 1 in the same frame. so add 1 to intended number)
 jump_buffer = 0;
 
 // Frames after leaving ground where jump is still allowed (coyote time)
-coyote_time_max = 8;
+coyote_time_max = 6;
 coyote_time = 0;
 // Jump combo variables
 consecutive_jumps = 0; // Tracks the number of consecutive jumps for variable sounds
@@ -56,7 +56,7 @@ wall_grab_timer = 0;
 wall_grab_timer_max = 8; // Max frames to "hang" on wall before sliding
 
 // Wall jump
-wall_jump_horizontal_push_off = 3; // Horizontal push when jumping off a wall
+wall_jump_horizontal_push_off = 2; // Horizontal push when jumping off a wall
 wall_jump_height = -8; // Initial upward velocity for a wall jump
 
 // Timer to suppress gravity after wall jump or wall grab
@@ -78,6 +78,18 @@ invulnerable_timer = 0; // Timer for player invulnerability frames
 invulnerable_duration = 60; // How many frames player is invulnerable after taking damage (1 second at 60 FPS)
 flash_timer = 0; // Timer for visual damage indicator (blinking)
 flash_duration = 30; // How long the player sprite flashes after taking damage (0.5 seconds at 60 FPS)
+#endregion
+
+
+#region PLAYER KNOCKBACK (NEW)
+knockback_h_strength = 2.5;  // Horizontal knockback pixel amount for player
+knockback_v_strength = 0;   // Vertical knockback pixel amount for player (negative for up)
+knockback_active = false;    // True when the player is currently in the knockback state
+knockback_duration = 10;     // Duration of the player's knockback effect (e.g., 0.16 seconds)
+knockback_duration_timer = 0; // Current countdown for knockback duration
+knockback_cooldown_duration = 20; // Cooldown before another knockback can be applied (to prevent spamming)
+knockback_cooldown_timer = 0; // Current countdown for knockback cooldown
+knockback_h_friction = 0.3;  // Horizontal friction applied during player knockback
 #endregion
 
 
