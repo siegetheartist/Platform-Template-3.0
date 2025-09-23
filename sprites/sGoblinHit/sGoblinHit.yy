@@ -26,8 +26,8 @@
   "nineSlice":null,
   "origin":7,
   "parent":{
-    "name":"sGoblins",
-    "path":"folders/Sprites/sGoblins.yy",
+    "name":"sprGoblins",
+    "path":"folders/Sprites/sprGoblins.yy",
   },
   "preMultiplyAlpha":false,
   "resourceType":"GMSprite",

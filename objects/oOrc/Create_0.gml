@@ -26,7 +26,7 @@ behind_chase_distance = 105; // Closer distance for player detection from behind
 default_close_chase_distance = 80; // General close proximity detection (triggers CHASE regardless of direction/LOS)
 deaggro_distance_from_chase = 240; // Distance at which the enemy will stop chasing/alerting and return to patrol
 
-// Amount of knockback
+// Amount of knockback (when this enemy *receives* knockback)
 knockback_h_strength = 3.25;  // Horizontal knockback pixel amount (Increased for more effect)
 knockback_v_strength = -2.5; // Vertical knockback pixel amount (Increased for more effect)
 
@@ -41,6 +41,10 @@ attack_h_speed = 0;
 attack_v_speed = 0;        
 attack_duration = 0;      
 attack_cooldown_duration = 0; 
+
+// NEW: Knockback inflicted by Orc's attack (currently 0 as no attack defined)
+attack_knockback_h_strength = 0;  // Horizontal knockback inflicted by orc's attack
+attack_knockback_v_strength = 0; // Vertical knockback inflicted by orc's attack
 #endregion
 
 #region ORC SPECIFIC SOUNDS

@@ -28,8 +28,8 @@
   "nineSlice":null,
   "origin":7,
   "parent":{
-    "name":"sGoblins",
-    "path":"folders/Sprites/sGoblins.yy",
+    "name":"sprGoblins",
+    "path":"folders/Sprites/sprGoblins.yy",
   },
   "preMultiplyAlpha":false,
   "resourceType":"GMSprite",
@@ -73,7 +73,9 @@
     "timeUnits":1,
     "tracks":[
       {"$GMSpriteFramesTrack":"","builtinName":0,"events":[],"inheritsTrackColour":true,"interpolation":1,"isCreationTrack":false,"keyframes":{"$KeyframeStore<SpriteFrameKeyframe>":"","Keyframes":[
-            {"$Keyframe<SpriteFrameKeyframe>":"","Channels":{"0":{"$SpriteFrameKeyframe":"","Id":{"name":"1a2372d9-3c53-46a3-a5ef-5cd708a3c5a8","path":"sprites/sGoblinDeath/sGoblinDeath.yy",},"resourceType":"SpriteFrameKeyframe","resourceVersion":"2.0",},},"Disabled":false,"id":"61d491b5-0baa-4008-95a8-f85100505274","IsCreationKey":false,"Key":0.0,"Length":1.0,"resourceType":"Keyframe<SpriteFrameKeyframe>","resourceVersion":"2.0","Stretch":false,},
+            {"$Keyframe<SpriteFrameKeyframe>":"","Channels":{
+                "0":{"$SpriteFrameKeyframe":"","Id":{"name":"1a2372d9-3c53-46a3-a5ef-5cd708a3c5a8","path":"sprites/sGoblinDeath/sGoblinDeath.yy",},"resourceType":"SpriteFrameKeyframe","resourceVersion":"2.0",},
+              },"Disabled":false,"id":"61d491b5-0baa-4008-95a8-f85100505274","IsCreationKey":false,"Key":0.0,"Length":1.0,"resourceType":"Keyframe<SpriteFrameKeyframe>","resourceVersion":"2.0","Stretch":false,},
           ],"resourceType":"KeyframeStore<SpriteFrameKeyframe>","resourceVersion":"2.0",},"modifiers":[],"name":"frames","resourceType":"GMSpriteFramesTrack","resourceVersion":"2.0","spriteId":null,"trackColour":0,"tracks":[],"traits":0,},
     ],
     "visibleRange":null,

@@ -41,7 +41,8 @@ if (ds_list_find_index(hit_enemies, other.id) == -1) {
         
         // Apply knockback if cooldown allows
         if (instance_exists(owner)) { // Ensure the player (owner) still exists to get its position
-            scr_status_effect_knockback(other, owner.x, other.knockback_h_strength, other.knockback_v_strength);
+            // Use THIS ATTACK'S (self) knockback strengths, not the enemy's (other) 'receiving' strengths.
+            scr_status_effect_knockback(other, owner.x, self.knockback_h_strength, self.knockback_v_strength);
         }
 
         

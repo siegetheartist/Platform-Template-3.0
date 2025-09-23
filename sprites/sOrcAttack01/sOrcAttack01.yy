@@ -26,8 +26,8 @@
   "nineSlice":null,
   "origin":7,
   "parent":{
-    "name":"sOrcs",
-    "path":"folders/Sprites/sOrcs.yy",
+    "name":"sprOrcs",
+    "path":"folders/Sprites/sprOrcs.yy",
   },
   "preMultiplyAlpha":false,
   "resourceType":"GMSprite",

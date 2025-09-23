@@ -12,9 +12,10 @@ var _key_attack_pressed = _player_input.key_attack_pressed; // Get attack key in
 var _dir = _player_input.dir;
 
 // --- Collision Tileset ---
-var collision_tileset = layer_tilemap_get_id("t_Collision");
-// var collision_slopes = layer_tilemap_get_id("t_Slopes"); // new layer to handle slopes
-// var collision_layers = [collision_tileset, collision_slopes]; // new variable to hold all collidables
+// var collision_tileset = layer_tilemap_get_id("t_Collision");
+var collision_cave01 = layer_tilemap_get_id("t_Collision");
+var collision_slopes = layer_tilemap_get_id("t_Slopes"); // new layer to handle slopes
+var collision_tileset = [collision_cave01, collision_slopes, objBreakableWall]; // new variable to hold all collidables
 
 
 #endregion
@@ -70,19 +71,18 @@ if (wall_jump_move_loss > 0) {
 
 
 #region GENERAL VERTICAL MOVEMENT PHYSICS
-// Apply gravity to vertical speed.
-vsp += grav;
-// Clamp vertical speed to prevent it from exceeding max falling speed.
-vsp = min(vsp, grav_max);
-// No upper clamp for vsp when knocked back, allowing full upward impulse.
-// Otherwise, clamp to normal max upward speed for regular jumps.
-if (!knockback_active) {
-    vsp = max(vsp, -grav_max);
-}
- 
 // Wall slide and wall grab states handle their own vertical movement, overriding default gravity.
-if (player_state == PlayerState.WALL_SLIDE || player_state == PlayerState.WALL_GRAB) {
-    // These states handle their own vertical movement/gravity.
+// Therefore, only apply general gravity if not in those states.
+if (player_state != PlayerState.WALL_SLIDE && player_state != PlayerState.WALL_GRAB) {
+    // Apply gravity to vertical speed.
+    vsp += grav;
+    // Clamp vertical speed to prevent it from exceeding max falling speed.
+    vsp = min(vsp, grav_max);
+    // No upper clamp for vsp when knocked back, allowing full upward impulse.
+    // Otherwise, clamp to normal max upward speed for regular jumps.
+    if (!knockback_active) {
+        vsp = max(vsp, -grav_max);
+    }
 }
 #endregion
 
@@ -243,15 +243,12 @@ if (player_state != PlayerState.ATTACK && !knockback_active) { // Prevent changi
 // Note: Player taking damage is separate from player dealing damage.
 // Player dealing damage is handled by oPlayerAttackSlash.
 var _collided_enemy = instance_place(x, y, oEnemy);
-var _collided_hazard = place_meeting(x, y, oHazard);
 
-if ((_collided_enemy != noone || _collided_hazard) && invulnerable_timer <= 0) {
+if ((_collided_enemy != noone) && invulnerable_timer <= 0) { // Condition updated to only check for enemy collision here
     var _damage_taken = 0;
     if (_collided_enemy != noone) {
         _damage_taken = _collided_enemy.enemy_damage;
-    } else if (_collided_hazard) {
-        _damage_taken = 1;
-    }
+    } 
 
     if (_damage_taken > 0) {
         if (player_health - _damage_taken > 0) {
@@ -261,9 +258,11 @@ if ((_collided_enemy != noone || _collided_hazard) && invulnerable_timer <= 0) {
         invulnerable_timer = invulnerable_duration;
         flash_timer = flash_duration;
                 
-        // NEW: Apply knockback to player if hit by an enemy (not hazards)
+        // Apply knockback to player if hit by an enemy (not hazards)
         if (_collided_enemy != noone) {
-            scr_status_effect_knockback(id, _collided_enemy.x, knockback_h_strength, knockback_v_strength);
+            // Use the _collided_enemy's 'attack_knockback_h_strength' and 'attack_knockback_v_strength'
+            // This means the enemy's attack itself defines the knockback inflicted.
+            scr_status_effect_knockback(id, _collided_enemy.x, _collided_enemy.attack_knockback_h_strength, _collided_enemy.attack_knockback_v_strength);
         }
     }
 }
