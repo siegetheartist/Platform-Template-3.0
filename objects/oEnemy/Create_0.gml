@@ -25,9 +25,9 @@ enemy_health = max_enemy_health; // Current health, initialized to max.
 flash_timer = 0; // Timer for visual damage indicator (blinking)
 flash_duration = 30; // How long the enemy sprite flashes after taking damage (0.5 seconds at 60 FPS)
 
-// Knockback variables (for when this enemy *receives* knockback)
-knockback_h_strength = 3;  // Horizontal knockback pixel amount (Increased for more effect)
-knockback_v_strength = -2; // Vertical knockback pixel amount (Increased for more effect)
+// Knockback resistance (how much this enemy *resists* incoming knockback - multiplier)
+knockback_h_resistance = 1.0;  // 1.0 = full knockback, 0.75 = 25% reduction
+knockback_v_resistance = 1.0; // 1.0 = full knockback, 0.75 = 25% reduction
 knockback_active = false;  // True when the enemy is currently in the knockback animation/movement
 knockback_cooldown_timer = 0; // Timer to prevent repeated knockbacks (1 second cooldown)
 knockback_cooldown_duration = 60; // 1 second at 60 FPS
@@ -35,9 +35,9 @@ knockback_duration = 15; // Duration of the knockback effect (e.g., 0.25 seconds
 knockback_duration_timer = 0; // Current countdown for knockback duration
 knockback_h_friction = 0.2; // Horizontal friction applied during knockback
  
-// NEW: Knockback variables (for when this enemy *inflicts* knockback with its attacks)
-attack_knockback_h_strength = 0; // Horizontal knockback amount inflicted by this enemy's attack
-attack_knockback_v_strength = 0; // Vertical knockback amount inflicted by this enemy's attack (negative for up)
+// Knockback inflicted by this enemy's attacks (strength)
+knockback_h_strength = 0; // Horizontal knockback amount inflicted by this enemy's attack
+knockback_v_strength = 0; // Vertical knockback amount inflicted by this enemy's attack (negative for up)
 #endregion
 
 #region ENEMY STATE AND BEHAVIOR SETTINGS

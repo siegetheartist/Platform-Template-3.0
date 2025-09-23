@@ -26,16 +26,16 @@ behind_chase_distance = 105; // Closer distance for player detection from behind
 default_close_chase_distance = 80; // General close proximity detection (triggers CHASE regardless of direction/LOS)
 deaggro_distance_from_chase = 240; // Distance at which the enemy will stop chasing/alerting and return to patrol
 
-// Amount of knockback (when this enemy *receives* knockback)
-knockback_h_strength = 4.5;  // Horizontal knockback pixel amount (Increased for more effect)
-knockback_v_strength = -3.0; // Vertical knockback pixel amount (Increased for more effect)
+// Amount of knockback resistance (when this enemy *receives* knockback)
+knockback_h_resistance = 1.0;  // Goblin takes full knockback
+knockback_v_resistance = 1.0; // Goblin takes full knockback
 
 // Enemy Stas
 max_enemy_health = 2; // Health
 enemy_health = max_enemy_health; // Initialize current health to its max
 enemy_damage = 1; // Damage
 
-// NEW: Attack specific overrides for Goblin's leap attack
+// NEW: Attack properties (children will override) - Default to 0 for no attack
 attack_range = 48;          // Goblin attacks if player is within 48px
 attack_h_speed = 3;         // Horizontal speed of the leap
 attack_v_speed = -4;       // Vertical speed of the leap (negative for upward)
@@ -43,8 +43,8 @@ attack_duration = 20;       // How long the attack state lasts (frames)
 attack_cooldown_duration = 60; // 1 second cooldown after attack
 
 // NEW: Knockback inflicted by Goblin's attack
-attack_knockback_h_strength = 6;  // Horizontal knockback inflicted by goblin's attack
-attack_knockback_v_strength = -3; // Vertical knockback inflicted by goblin's attack
+knockback_h_strength = 3;  // Horizontal knockback inflicted by goblin's attack
+knockback_v_strength = -0; // Vertical knockback inflicted by goblin's attack
 #endregion
 
 #region GOBLIN SPECIFIC SOUNDS

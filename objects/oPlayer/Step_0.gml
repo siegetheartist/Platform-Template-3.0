@@ -12,12 +12,9 @@ var _key_attack_pressed = _player_input.key_attack_pressed; // Get attack key in
 var _dir = _player_input.dir;
 
 // --- Collision Tileset ---
-// var collision_tileset = layer_tilemap_get_id("t_Collision");
-var collision_cave01 = layer_tilemap_get_id("t_Collision");
+var collision_cave01 = layer_tilemap_get_id("t_Collision"); // main room titleset
 var collision_slopes = layer_tilemap_get_id("t_Slopes"); // new layer to handle slopes
 var collision_tileset = [collision_cave01, collision_slopes, objBreakableWall]; // new variable to hold all collidables
-
-
 #endregion
 
 
@@ -260,9 +257,9 @@ if ((_collided_enemy != noone) && invulnerable_timer <= 0) { // Condition update
                 
         // Apply knockback to player if hit by an enemy (not hazards)
         if (_collided_enemy != noone) {
-            // Use the _collided_enemy's 'attack_knockback_h_strength' and 'attack_knockback_v_strength'
-            // This means the enemy's attack itself defines the knockback inflicted.
-            scr_status_effect_knockback(id, _collided_enemy.x, _collided_enemy.attack_knockback_h_strength, _collided_enemy.attack_knockback_v_strength);
+            // Use the _collided_enemy's 'knockback_h_strength' and 'knockback_v_strength'
+            // These are the raw inflicting values from the enemy's attack.
+            scr_status_effect_knockback(id, _collided_enemy.x, _collided_enemy.knockback_h_strength, _collided_enemy.knockback_v_strength);
         }
     }
 }

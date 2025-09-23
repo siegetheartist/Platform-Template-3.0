@@ -8,7 +8,7 @@
     "TileSerialiseData":[],
   },
   "name":"t_slopes",
-  "out_columns":2,
+  "out_columns":4,
   "out_tilehborder":2,
   "out_tilevborder":2,
   "parent":{
@@ -18,8 +18,8 @@
   "resourceType":"GMTileSet",
   "resourceVersion":"2.0",
   "spriteId":{
-    "name":"Sprite35",
-    "path":"sprites/Sprite35/Sprite35.yy",
+    "name":"sprSlopeTileset",
+    "path":"sprites/sprSlopeTileset/sprSlopeTileset.yy",
   },
   "spriteNoExport":false,
   "textureGroupId":{
@@ -34,5 +34,5 @@
   "tileWidth":16,
   "tilexoff":0,
   "tileyoff":0,
-  "tile_count":3,
+  "tile_count":14,
 }

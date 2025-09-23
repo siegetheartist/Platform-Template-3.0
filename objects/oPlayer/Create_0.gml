@@ -82,8 +82,8 @@ flash_duration = 30; // How long the player sprite flashes after taking damage (
 
 
 #region PLAYER KNOCKBACK (NEW)
-knockback_h_strength = 2.5;  // Horizontal knockback pixel amount for player
-knockback_v_strength = 0;   // Vertical knockback pixel amount for player (negative for up)
+knockback_h_resistance = 1.0;  // Horizontal knockback resistance multiplier for player
+knockback_v_resistance = 1.0;   // Vertical knockback resistance multiplier for player
 knockback_active = false;    // True when the player is currently in the knockback state
 knockback_duration = 10;     // Duration of the player's knockback effect (e.g., 0.16 seconds)
 knockback_duration_timer = 0; // Current countdown for knockback duration

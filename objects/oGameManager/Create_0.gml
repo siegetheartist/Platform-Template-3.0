@@ -17,7 +17,7 @@ enum GAME_STATE {
     FADING_OUT,  // Fading screen to black
     FADE_COMPLETE,// Screen is black, perform action
     FADING_IN,   // Fading screen back to clear
-    GAME_OVER,   // Game has ended
+    GAME_OVER   // Game has ended
 }
 
 current_state = GAME_STATE.IDLE; // Start in the normal running state.
@@ -98,3 +98,6 @@ function initiateNextLevel() {
     initiate_fader_out();
 }
 #endregion
+
+// Each game session generates a different sequence of random numbers.
+randomize();

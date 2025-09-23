@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"scr_hazard_vertical_movement",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"scr_hazard_vertical_movement",
+  "parent":{
+    "name":"scrHazards",
+    "path":"folders/Scripts/scrHazards.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

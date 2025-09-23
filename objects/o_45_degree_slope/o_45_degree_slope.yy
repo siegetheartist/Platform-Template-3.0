@@ -27,10 +27,7 @@
   "resourceType":"GMObject",
   "resourceVersion":"2.0",
   "solid":false,
-  "spriteId":{
-    "name":"s_45_degree_slope",
-    "path":"sprites/s_45_degree_slope/s_45_degree_slope.yy",
-  },
+  "spriteId":null,
   "spriteMaskId":null,
   "visible":true,
 }
