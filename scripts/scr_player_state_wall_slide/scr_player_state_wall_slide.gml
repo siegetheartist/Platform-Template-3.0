@@ -5,6 +5,17 @@
 /// @arg {boolean} _key_jump Is the jump key pressed this frame?
 
 function scr_player_state_wall_slide(_on_wall, _is_touching_wall, _is_pressing_wall, _key_jump) {
+    
+    if (player_state = PlayerState.WALL_SLIDE) {
+        if (audio_is_playing(sndPlayerWallSlide)) {
+        	
+        } else {
+        	audio_play_sound(sndPlayerWallSlide, 10, false);
+        }
+    } else {
+        audio_stop_sound(sndPlayerWallSlide);
+    }
+
     // Set the sprite and image speed for the wall slide state.
     sprite_index = sPlayerOnWall;
     image_speed = 0;
@@ -35,3 +46,4 @@ function scr_player_state_wall_slide(_on_wall, _is_touching_wall, _is_pressing_w
         scr_spawn_dust_cloud(x, y, -_on_wall, _on_wall);
     }
 }
+

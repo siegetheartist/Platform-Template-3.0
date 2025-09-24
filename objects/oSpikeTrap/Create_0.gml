@@ -20,9 +20,9 @@ vmove_timer = 0; // Generic timer for state durations
 vmove_up_distance = 24; // Pixels to move up from y_start
 vmove_windup_frames = 20; // Frames for initial warning oscillation
 vmove_windup_oscillation_amount = 2; // Pixels (amplitude) for visual oscillation during windup
-vmove_move_up_lerp_factor = 0.1; // Lerp factor (0-1) for speed to move up
+vmove_move_up_lerp_factor = 0.3; // Lerp factor (0-1) for speed to move up
 vmove_hold_up_frames = 25; // Fixed frames to hold at top
-vmove_move_down_lerp_factor = 0.05; // Lerp factor (0-1) for speed to move down
+vmove_move_down_lerp_factor = 0.03; // Lerp factor (0-1) for speed to move down
 
 // Randomized pause duration options (will be used if vmove_randomize_pause_duration is true)
 // Min value used as default when randomized option is turned off

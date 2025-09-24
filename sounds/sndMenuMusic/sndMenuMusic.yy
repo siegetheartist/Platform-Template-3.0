@@ -14,8 +14,8 @@
   "exportDir":"",
   "name":"sndMenuMusic",
   "parent":{
-    "name":"sndLevels",
-    "path":"folders/Sounds/sndLevels.yy",
+    "name":"sndRoomSoundTracks",
+    "path":"folders/Sounds/sndRoomSoundTracks.yy",
   },
   "preload":false,
   "resourceType":"GMSound",

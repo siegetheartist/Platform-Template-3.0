@@ -108,11 +108,24 @@ if (_on_ground && player_state == PlayerState.WALL_SLIDE) {
         player_state = PlayerState.IDLE;
     }
 }
+
+
 // Universal transition from air to ground
 if (_on_ground && player_state == PlayerState.AIR) {
     // NEW: Spawn dust cloud on landing
     scr_spawn_dust_cloud(x, y, facing_direction);
+
+    // Check if the player was truly in an AIR state in the previous frame
+    // to prevent playing the landing sound immediately after initiating a jump.
+    if (player_state_previous == PlayerState.AIR) {
+        // Play landing sound
+        audio_play_sound(sndPlayerJumpLanding, 10, false);
+        
+        // Spawn dust cloud on landing
+        scr_spawn_dust_cloud(x, y, facing_direction);
+    }
     
+    // Transition to appropriate ground state
     if (_dir != 0) {
         player_state = PlayerState.RUN;
     } else {
@@ -269,5 +282,6 @@ if ((_collided_enemy != noone) && invulnerable_timer <= 0) { // Condition update
 // Update previous image index for animation sound logic
 image_index_previous = image_index;
 #endregion
+
 
 player_state_previous = player_state;
