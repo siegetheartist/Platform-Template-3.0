@@ -9,10 +9,10 @@ if (!instance_exists(target)) {
     }
 }
 
+// Set listener for 3D sounds. Necessary for Spike trap emmitters to work
 if (instance_exists(target)) {
     // This tells the audio engine where the "ears" are.
     audio_listener_position(oPlayer.x, oPlayer.y, 0);
-	// show_debug_message("Listener position: " + string(oPlayer.x));
 }
 
  

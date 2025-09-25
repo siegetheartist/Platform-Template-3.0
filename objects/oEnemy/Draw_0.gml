@@ -19,7 +19,7 @@ if (sprite_index != noone) {
 
 #region ALARM INDICATOR DRAWING
 // Only draw the exclamation mark if the enemy is in ALERT or CHASE state
-if (enemy_state == ENEMY_STATE.ALERT || enemy_state == ENEMY_STATE.CHASE) {
+if (enemy_state == ENEMY_STATE.ALERT) { // || enemy_state == ENEMY_STATE.CHASE
     // Check if the exclamation sprite has been assigned by a child
     if (exclamation_sprite != -1) {
         var _draw_color = c_white; // Default color for the exclamation mark
@@ -27,9 +27,9 @@ if (enemy_state == ENEMY_STATE.ALERT || enemy_state == ENEMY_STATE.CHASE) {
         // Set color based on state
         if (enemy_state == ENEMY_STATE.ALERT) {
             _draw_color = c_yellow; // Yellow for alert state
-        } else if (enemy_state == ENEMY_STATE.CHASE) {
-            _draw_color = c_red;    // Red for chase state
-        }
+        } // else if (enemy_state == ENEMY_STATE.CHASE) {
+            // _draw_color = c_red;    // Red for chase state
+        // }
         
         // Draw the exclamation sprite above the enemy's head
         // Adjust the Y offset (-sprite_height - 10) to position it correctly above your enemy sprite

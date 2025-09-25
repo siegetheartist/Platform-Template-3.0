@@ -1,10 +1,12 @@
 /// @description Hazard Object Initialization
+#region STATS
 hazard_damage = 1; // Damage dealt to player on collision
 hazard_knockback_h_strength = 0; // No horizontal knockback for spikes, only vertical
 hazard_knockback_v_strength = -4; // Upward knockback for spikes (negative for up)
+#endregion
 
 
-// --- Vertical Movement (NEW) ---
+#region MOVEMENT
 enum HazardVerticalMoveState {
     PAUSE,
     WINDUP,
@@ -28,7 +30,7 @@ vmove_move_down_lerp_factor = 0.03; // Lerp factor (0-1) for speed to move down
 // Min value used as default when randomized option is turned off
 vmove_pause_frames_min = 60; // Minimum frames to pause before windup (randomized option) 
 vmove_pause_frames_max = 90; // Maximum frames to pause before windup (randomized option)
-vmove_randomize_pause_duration = false; // NEW: Toggle for random pause duration (default: off)
+vmove_randomize_pause_duration = false; // Toggle for random pause duration (default: off)
  
  
 // Internal tracking variables
@@ -41,16 +43,18 @@ if (vmove_randomize_pause_duration) {
 } else {
     vmove_timer = vmove_pause_frames_min; // Use the min value as the fixed duration
 }
+#endregion
 
 
-
+#region SOUNDS
 // Sounds for vertical movement
-snd_move_up = sndSpikeTrapThrust;
-snd_move_down = sndSpikeTrapCrank;
+snd_start = sndSpikeTrapStart;
+snd_rise = sndSpikeTrapThrust;
+snd_desend = sndSpikeTrapCrank;
 
 // Define falloff properties
-falloff_ref = 40;  // Sound is at full volume inside this pixel radius
-falloff_max = 300; // Sound is silent beyond this pixel radius
+falloff_ref = 100;  // Sound is at full volume inside this pixel radius
+falloff_max = 500; // Sound is silent beyond this pixel radius
 falloff_factor = 1; // 1 = linear falloff
 
 // Create an audio emitter for this specific trap
@@ -64,14 +68,4 @@ audio_emitter_falloff(spike_emitter, falloff_ref, falloff_max, falloff_factor);
 
 // Select falloff model
 audio_falloff_set_model(audio_falloff_exponent_distance_scaled);
-
-// Set listener orientation
-// audio_listener_orientation(0, 0, 1, 0, -1, 0);
-
-// audio_emitter_velocity(spike_emitter, hspeed, vspeed, 0);
-
-
-
-
-
-
+#endregion

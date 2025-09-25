@@ -7,9 +7,10 @@
 ///              - vmove_windup_frames, vmove_windup_oscillation_amount
 ///              - vmove_move_up_lerp_factor, vmove_hold_up_frames,
 ///              - vmove_move_down_lerp_factor, vmove_pause_frames_min, vmove_pause_frames_max, vmove_randomize_pause_duration
-/// @arg {asset.GMSound} snd_move_up The sound to play when the hazard starts moving up.
-/// @arg {asset.GMSound} snd_move_down The sound to play when the hazard starts moving down.
-function scr_hazard_vertical_movement(snd_move_up, snd_move_down) {
+/// @arg {asset.GMSound} snd_start The warning sound to play when the hazard is about to rise.
+/// @arg {asset.GMSound} snd_rise The sound to play when the hazard starts moving up.
+/// @arg {asset.GMSound} snd_desend The sound to play when the hazard starts moving down.
+function scr_hazard_vertical_movement(snd_start, snd_rise, snd_desend) {
     var _inst = self; // Reference self for clarity
  
     switch (_inst.vmove_state) {
@@ -20,6 +21,11 @@ function scr_hazard_vertical_movement(snd_move_up, snd_move_down) {
             if (_inst.vmove_timer <= 0) {
                 _inst.vmove_state = HazardVerticalMoveState.WINDUP;
                 _inst.vmove_timer = _inst.vmove_windup_frames; // Reset timer for next windup
+                
+                // Play spike trap starting emitter sound
+                if (snd_start != noone) {
+                    audio_play_sound_on(spike_emitter, snd_start, false, 1); 
+                }
             }
             break;
  
@@ -32,10 +38,9 @@ function scr_hazard_vertical_movement(snd_move_up, snd_move_down) {
                 _inst.vmove_state = HazardVerticalMoveState.MOVING_UP;
                 _inst.y = _inst.y_start; // Ensure it starts from y_start before lerping up
                 
-                // Play audio queue going up FROM THE EMITTER
-                if (snd_move_up != noone) {
-                    // Update the emitter's 3D position to match the trap's current position
-                    audio_play_sound_on(spike_emitter, snd_move_up, false, 1);
+                // Play spike trap moviing up emitter sound
+                if (snd_rise != noone) {
+                    audio_play_sound_on(spike_emitter, snd_rise, false, 1);
                 }
             }
             break;
@@ -58,10 +63,9 @@ function scr_hazard_vertical_movement(snd_move_up, snd_move_down) {
             if (_inst.vmove_timer <= 0) {
                 _inst.vmove_state = HazardVerticalMoveState.MOVING_DOWN;
                 
-                // Play audio queue going down FROM THE EMITTER
-                if (snd_move_down != noone) {
-                    // Update the emitter's 3D position to match the trap's current position
-                    audio_play_sound_on(spike_emitter, snd_move_down, false, 1);
+                // Play spike trap moving down emitter sound
+                if (snd_desend != noone) {
+                    audio_play_sound_on(spike_emitter, snd_desend, false, 1);
                 }
             }
             break;
