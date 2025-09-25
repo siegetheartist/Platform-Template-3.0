@@ -29,8 +29,8 @@
   "nineSlice":null,
   "origin":0,
   "parent":{
-    "name":"sprBreakables",
-    "path":"folders/Sprites/sprBreakables.yy",
+    "name":"sprDestructables",
+    "path":"folders/Sprites/sprDestructables.yy",
   },
   "preMultiplyAlpha":false,
   "resourceType":"GMSprite",

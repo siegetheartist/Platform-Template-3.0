@@ -10,7 +10,7 @@
   "compression":3,
   "compressionQuality":4,
   "conversionMode":0,
-  "duration":0.22156462,
+  "duration":0.10031746,
   "exportDir":"",
   "name":"sndPlayerJumpLanding",
   "parent":{
@@ -22,5 +22,5 @@
   "resourceVersion":"2.0",
   "sampleRate":44100,
   "soundFile":"sndPlayerJumpLanding.mp3",
-  "volume":0.5,
+  "volume":1.0,
 }

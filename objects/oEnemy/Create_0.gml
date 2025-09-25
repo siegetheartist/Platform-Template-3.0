@@ -23,7 +23,7 @@ enemy_health = max_enemy_health; // Current health, initialized to max.
  
 // Damage feedback variables
 flash_timer = 0; // Timer for visual damage indicator (blinking)
-flash_duration = 30; // How long the enemy sprite flashes after taking damage (0.5 seconds at 60 FPS)
+flash_duration = 10; // How long the enemy sprite flashes after taking damage (0.5 seconds at 60 FPS)
 
 // Knockback resistance (how much this enemy *resists* incoming knockback - multiplier)
 knockback_h_resistance = 1.0;  // 1.0 = full knockback, 0.75 = 25% reduction

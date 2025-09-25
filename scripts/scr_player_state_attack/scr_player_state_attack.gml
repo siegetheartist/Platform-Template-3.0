@@ -4,11 +4,16 @@ function scr_player_state_attack(_on_ground) {
     // --- On-Entry Logic (first frame of the ATTACK state) ---
     // This code runs only once when the player transitions into the ATTACK state.
     if (player_state_previous != PlayerState.ATTACK) {
-        sprite_index = sPlayerAttack;
-        image_index = 0; // Reset animation frame
-        image_speed = 1; // Start animation
- 
-        audio_play_sound(sndPlayerAttack, 10, false); // Play attack sound (assuming sndPlayerAttack exists)
+        
+        // Set sprites
+        if (!_on_ground) {
+        	sprite_index = sPlayerAirAttack;
+        } else {
+            sprite_index = sPlayerAttack;
+        }
+        
+        // Play attack sound
+        audio_play_sound(sndPlayerAttack, 10, false); 
         
         // Create the attack slash object
         // Position it relative to the player, slightly in front based on facing_direction
@@ -35,11 +40,7 @@ function scr_player_state_attack(_on_ground) {
  
     // When attack animation is over
     if (attack_timer <= 0) {
-        // Destroy the slash object if it still exists (should be handled by slash object itself but good failsafe)
-        if (instance_exists(current_attack_slash)) {
-            instance_destroy(current_attack_slash);
-            current_attack_slash = noone;
-        }
+
  
         // Transition back to an appropriate state based on whether the player is on the ground
         if (_on_ground) {

@@ -6,8 +6,8 @@
   "name":"oInvisibleBlock",
   "overriddenProperties":[],
   "parent":{
-    "name":"Enemies & Hazards",
-    "path":"folders/Objects/Enemies & Hazards.yy",
+    "name":"Objects",
+    "path":"folders/Objects.yy",
   },
   "parentObjectId":null,
   "persistent":false,

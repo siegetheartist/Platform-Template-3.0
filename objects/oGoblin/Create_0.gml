@@ -36,9 +36,9 @@ enemy_health = max_enemy_health; // Initialize current health to its max
 enemy_damage = 1; // Damage
 
 // NEW: Attack properties (children will override) - Default to 0 for no attack
-attack_range = 48;          // Goblin attacks if player is within 48px
+attack_range = 96;          // Goblin attacks if player is within 48px
 attack_h_speed = 3;         // Horizontal speed of the leap
-attack_v_speed = -4;       // Vertical speed of the leap (negative for upward)
+attack_v_speed = -6;       // Vertical speed of the leap (negative for upward)
 attack_duration = 20;       // How long the attack state lasts (frames)
 attack_cooldown_duration = 60; // 1 second cooldown after attack
 

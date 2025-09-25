@@ -6,13 +6,12 @@
 
 function scr_player_state_wall_slide(_on_wall, _is_touching_wall, _is_pressing_wall, _key_jump) {
     
-    if (player_state = PlayerState.WALL_SLIDE) {
-        if (audio_is_playing(sndPlayerWallSlide)) {
-        	
-        } else {
-        	audio_play_sound(sndPlayerWallSlide, 10, false);
+    // Play wall slide sound
+    if (player_state == PlayerState.WALL_SLIDE) {
+        if (!audio_is_playing(sndPlayerWallSlide)) {
+            audio_play_sound(sndPlayerWallSlide, 10, false);
         }
-    } else {
+    } else if (audio_is_playing(sndPlayerWallSlide)) {
         audio_stop_sound(sndPlayerWallSlide);
     }
 
@@ -36,10 +35,9 @@ function scr_player_state_wall_slide(_on_wall, _is_touching_wall, _is_pressing_w
     // Check for wall jump input.
     if (_key_jump) {
         scr_player_jump("wall", _on_wall);
-        return;
     }
     
-    // NEW: Dust cloud spawning
+    // Dust cloud spawning
     wall_slide_dust_timer++;
     if (wall_slide_dust_timer >= wall_slide_dust_timer_max) {
         wall_slide_dust_timer = 0;

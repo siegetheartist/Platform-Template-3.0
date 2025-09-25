@@ -18,6 +18,4 @@ if (other.invulnerable_timer <= 0) {
     // Apply knockback to the player using the hazard's defined knockback strengths
     // The attacker's x is this hazard's x. For vertical-only knockback, the direction will be automatically handled based on current player position but horizontal component is zero.
     scr_status_effect_knockback(other, x, self.hazard_knockback_h_strength, self.hazard_knockback_v_strength);
-    
-    // If player health drops to 0 or below, the oGameManager will handle death in its Step event.
 }

@@ -1,6 +1,3 @@
-// Decrement timer
-timer--;
- 
 // Update position and direction relative to the player
 // This ensures the slash stays with the player if they move (though player movement is frozen during attack)
 if (instance_exists(owner)) {

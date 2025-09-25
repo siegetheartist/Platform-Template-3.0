@@ -14,8 +14,8 @@
   "exportDir":"",
   "name":"sndWallBreaking",
   "parent":{
-    "name":"sndBreakables",
-    "path":"folders/Sounds/sndBreakables.yy",
+    "name":"sndDestructables",
+    "path":"folders/Sounds/sndDestructables.yy",
   },
   "preload":false,
   "resourceType":"GMSound",

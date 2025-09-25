@@ -6,8 +6,8 @@
   "name":"objWallParticles",
   "overriddenProperties":[],
   "parent":{
-    "name":"objBreakables",
-    "path":"folders/Objects/objBreakables.yy",
+    "name":"objDestructables",
+    "path":"folders/Objects/objDestructables.yy",
   },
   "parentObjectId":null,
   "persistent":false,

@@ -1,3 +1,4 @@
+
 // --- SAFETY CHECK ---
 if (!instance_exists(target)) {
     // Optionally, you can try to reacquire the player if it respawns later
@@ -7,6 +8,13 @@ if (!instance_exists(target)) {
         exit; // Skip camera logic this frame
     }
 }
+
+if (instance_exists(target)) {
+    // This tells the audio engine where the "ears" are.
+    audio_listener_position(oPlayer.x, oPlayer.y, 0);
+	// show_debug_message("Listener position: " + string(oPlayer.x));
+}
+
  
 // --- HORIZONTAL ANCHORING & THRESHOLD LOGIC ---
 // 1. Calculate the player's X position relative to the camera's current center.

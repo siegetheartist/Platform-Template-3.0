@@ -17,7 +17,8 @@ function scr_spawn_dust_cloud(_x, _y, _direction, _on_wall = 0) {
     // Special logic for wall dust clouds
     if (_on_wall != 0) {
         // Offset the dust cloud to the corner of the player sprite
-        _dust_cloud.x += (12 * _on_wall);
+        _dust_cloud.x += 0; // was: (12 * _on_wall)
+        _dust_cloud.y += 6;
 
         // Rotate the dust cloud
         _dust_cloud.image_angle = 90 * -_on_wall;

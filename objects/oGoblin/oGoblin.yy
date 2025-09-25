@@ -10,8 +10,8 @@
   "name":"oGoblin",
   "overriddenProperties":[],
   "parent":{
-    "name":"Enemies & Hazards",
-    "path":"folders/Objects/Enemies & Hazards.yy",
+    "name":"Enemies",
+    "path":"folders/Objects/Enemies.yy",
   },
   "parentObjectId":{
     "name":"oEnemy",

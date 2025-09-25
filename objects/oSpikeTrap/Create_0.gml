@@ -41,3 +41,37 @@ if (vmove_randomize_pause_duration) {
 } else {
     vmove_timer = vmove_pause_frames_min; // Use the min value as the fixed duration
 }
+
+
+
+// Sounds for vertical movement
+snd_move_up = sndSpikeTrapThrust;
+snd_move_down = sndSpikeTrapCrank;
+
+// Define falloff properties
+falloff_ref = 40;  // Sound is at full volume inside this pixel radius
+falloff_max = 300; // Sound is silent beyond this pixel radius
+falloff_factor = 1; // 1 = linear falloff
+
+// Create an audio emitter for this specific trap
+spike_emitter = audio_emitter_create();
+
+// Set emmiter position
+audio_emitter_position(spike_emitter, x, y, 0);
+
+// Assign these properties to our new emitter
+audio_emitter_falloff(spike_emitter, falloff_ref, falloff_max, falloff_factor);
+
+// Select falloff model
+audio_falloff_set_model(audio_falloff_exponent_distance_scaled);
+
+// Set listener orientation
+// audio_listener_orientation(0, 0, 1, 0, -1, 0);
+
+// audio_emitter_velocity(spike_emitter, hspeed, vspeed, 0);
+
+
+
+
+
+

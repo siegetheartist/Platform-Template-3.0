@@ -1,7 +1,7 @@
 {
   "$GMSprite":"v2",
   "%Name":"sPlayerAttack",
-  "bboxMode":0,
+  "bboxMode":2,
   "bbox_bottom":63,
   "bbox_left":11,
   "bbox_right":57,
@@ -27,8 +27,8 @@
   "nineSlice":null,
   "origin":7,
   "parent":{
-    "name":"sPlayer",
-    "path":"folders/Sprites/sPlayer.yy",
+    "name":"sprPlayer",
+    "path":"folders/Sprites/sprPlayer.yy",
   },
   "preMultiplyAlpha":false,
   "resourceType":"GMSprite",

@@ -1,0 +1,26 @@
+{
+  "$GMSound":"v2",
+  "%Name":"sndSpikeTrapCrank",
+  "audioGroupId":{
+    "name":"audiogroup_default",
+    "path":"audiogroups/audiogroup_default",
+  },
+  "bitDepth":1,
+  "channelFormat":2,
+  "compression":3,
+  "compressionQuality":4,
+  "conversionMode":0,
+  "duration":3.0077097,
+  "exportDir":"",
+  "name":"sndSpikeTrapCrank",
+  "parent":{
+    "name":"sndHazards",
+    "path":"folders/Sounds/sndHazards.yy",
+  },
+  "preload":false,
+  "resourceType":"GMSound",
+  "resourceVersion":"2.0",
+  "sampleRate":44100,
+  "soundFile":"sndSpikeTrapCrank.mp3",
+  "volume":0.54,
+}

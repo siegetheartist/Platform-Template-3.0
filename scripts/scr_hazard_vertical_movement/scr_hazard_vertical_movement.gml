@@ -7,7 +7,9 @@
 ///              - vmove_windup_frames, vmove_windup_oscillation_amount
 ///              - vmove_move_up_lerp_factor, vmove_hold_up_frames,
 ///              - vmove_move_down_lerp_factor, vmove_pause_frames_min, vmove_pause_frames_max, vmove_randomize_pause_duration
-function scr_hazard_vertical_movement() {
+/// @arg {asset.GMSound} snd_move_up The sound to play when the hazard starts moving up.
+/// @arg {asset.GMSound} snd_move_down The sound to play when the hazard starts moving down.
+function scr_hazard_vertical_movement(snd_move_up, snd_move_down) {
     var _inst = self; // Reference self for clarity
  
     switch (_inst.vmove_state) {
@@ -29,6 +31,12 @@ function scr_hazard_vertical_movement() {
             if (_inst.vmove_timer <= 0) {
                 _inst.vmove_state = HazardVerticalMoveState.MOVING_UP;
                 _inst.y = _inst.y_start; // Ensure it starts from y_start before lerping up
+                
+                // Play audio queue going up FROM THE EMITTER
+                if (snd_move_up != noone) {
+                    // Update the emitter's 3D position to match the trap's current position
+                    audio_play_sound_on(spike_emitter, snd_move_up, false, 1);
+                }
             }
             break;
  
@@ -49,6 +57,12 @@ function scr_hazard_vertical_movement() {
             _inst.y = _inst.y_target_up;
             if (_inst.vmove_timer <= 0) {
                 _inst.vmove_state = HazardVerticalMoveState.MOVING_DOWN;
+                
+                // Play audio queue going down FROM THE EMITTER
+                if (snd_move_down != noone) {
+                    // Update the emitter's 3D position to match the trap's current position
+                    audio_play_sound_on(spike_emitter, snd_move_down, false, 1);
+                }
             }
             break;
  

@@ -30,8 +30,8 @@
   "nineSlice":null,
   "origin":7,
   "parent":{
-    "name":"sPlayer",
-    "path":"folders/Sprites/sPlayer.yy",
+    "name":"sprPlayer",
+    "path":"folders/Sprites/sprPlayer.yy",
   },
   "preMultiplyAlpha":false,
   "resourceType":"GMSprite",

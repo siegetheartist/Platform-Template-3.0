@@ -10,7 +10,7 @@
   "compression":3,
   "compressionQuality":4,
   "conversionMode":0,
-  "duration":0.12811792,
+  "duration":0.10031746,
   "exportDir":"",
   "name":"sndPlayerWallGrab",
   "parent":{
