@@ -14,7 +14,8 @@ var _dir = _player_input.dir;
 // --- Collision Tileset ---
 var collision_cave01 = layer_tilemap_get_id("t_Collision"); // main room titleset
 var collision_slopes = layer_tilemap_get_id("tl_slopes"); // new layer to handle slopes
-var collision_tileset = [collision_cave01, collision_slopes, objDestructableWall]; // new variable to hold all collidables
+// var collision_platforms = layer_tilemap_get_id("il_platforms"); // platforms
+var collision_tileset = [collision_cave01, collision_slopes, objDestructableWall, objTimedPlatform]; // new variable to hold all collidables
 #endregion
 
 
@@ -247,36 +248,21 @@ if (player_state != PlayerState.ATTACK && !knockback_active) { // Prevent changi
 #endregion
 
 
-
 #region HAZARD & ENEMY DAMAGE
 // --- Enemy/Hazard Collision and Damage ---
-// Note: Player taking damage is separate from player dealing damage.
-// Player dealing damage is handled by oPlayerAttackSlash.
 var _collided_enemy = instance_place(x, y, oEnemy);
-
-if ((_collided_enemy != noone) && invulnerable_timer <= 0) { // Condition updated to only check for enemy collision here
-    var _damage_taken = 0;
-    if (_collided_enemy != noone) {
-        _damage_taken = _collided_enemy.enemy_damage;
-    } 
+if ((_collided_enemy != noone) && invulnerable_timer <= 0) {
+    var _damage_taken = _collided_enemy.enemy_damage;
 
     if (_damage_taken > 0) {
-        if (player_health - _damage_taken > 0) {
-            audio_play_sound(sndPlayerTakesDamage, 10, false);
-        }
-        player_health -= _damage_taken;
-        invulnerable_timer = invulnerable_duration;
-        flash_timer = flash_duration;
-                
-        // Apply knockback to player if hit by an enemy (not hazards)
-        if (_collided_enemy != noone) {
-            // Use the _collided_enemy's 'knockback_h_strength' and 'knockback_v_strength'
-            // These are the raw inflicting values from the enemy's attack.
-            scr_status_effect_knockback(id, _collided_enemy.x, _collided_enemy.knockback_h_strength, _collided_enemy.knockback_v_strength);
-        }
+        scr_apply_damage(id, _damage_taken, "player_health", sndPlayerTakesDamage);
+        scr_apply_invulnerability(id);
+        scr_apply_flash(id);
+        scr_status_effect_knockback(id, _collided_enemy.x, _collided_enemy.knockback_h_strength, _collided_enemy.knockback_v_strength);
     }
 }
 #endregion
+
 
 #region MISC LOGIC
 // Update previous image index for animation sound logic

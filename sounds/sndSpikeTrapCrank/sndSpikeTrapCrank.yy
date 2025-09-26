@@ -22,5 +22,5 @@
   "resourceVersion":"2.0",
   "sampleRate":44100,
   "soundFile":"sndSpikeTrapCrank.mp3",
-  "volume":0.54,
+  "volume":0.8,
 }

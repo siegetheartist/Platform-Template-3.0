@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"scr_apply_flash",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"scr_apply_flash",
+  "parent":{
+    "name":"scrDamage",
+    "path":"folders/Scripts/scrDamage.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

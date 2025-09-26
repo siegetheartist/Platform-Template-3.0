@@ -23,7 +23,7 @@ function scr_player_state_attack(_on_ground) {
         var _total_x_offset = _player_half_width + _desired_gap + _slash_half_width;
         
         var _slash_x = x + facing_direction * _total_x_offset;
-        current_attack_slash = instance_create_layer(_slash_x, y, "l_Player", oPlayerAttackSlash);
+        current_attack_slash = instance_create_layer(_slash_x, y, "il_player", oPlayerAttackSlash);
         if (instance_exists(current_attack_slash)) {
             current_attack_slash.owner = id; // Set the owner to this player instance
             current_attack_slash.image_xscale = facing_direction; // Match player's direction

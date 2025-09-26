@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"scr_draw_self_flash",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"scr_draw_self_flash",
+  "parent":{
+    "name":"scrDamage",
+    "path":"folders/Scripts/scrDamage.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

@@ -20,10 +20,13 @@ grav = 0.4; // Gravity strength pulling the enemy down
 // Enemy health
 max_enemy_health = 10; // Default maximum health for this enemy type. Children can override.
 enemy_health = max_enemy_health; // Current health, initialized to max.
- 
-// Damage feedback variables
-flash_timer = 0; // Timer for visual damage indicator (blinking)
-flash_duration = 10; // How long the enemy sprite flashes after taking damage (0.5 seconds at 60 FPS)
+
+// Enemy damage
+enemy_damage = 1; // Default damage this enemy deals (children will override)
+
+// In oEnemy Create Event
+invulnerable_timer = 0;
+invulnerable_duration = 30; // This is about 0.5 seconds, you can adjust as needed.
 
 // Knockback resistance (how much this enemy *resists* incoming knockback - multiplier)
 knockback_h_resistance = 1.0;  // 1.0 = full knockback, 0.75 = 25% reduction
@@ -94,8 +97,7 @@ spr_chase_move = -1;  // Default sprite for moving during chase
 spr_taunt_specific = -1; // NEW: Stores the specific taunt sprite for this enemy type.
 spr_attack_specific = -1; // NEW: Specific attack animation sprite
 
-//  ENEMY DAMAGE AND TAUNT SETTINGS
-enemy_damage = 1; // Default damage this enemy deals (children will override)
+//  TAUNT SETTINGS
 taunt_timer = 0; // Timer for how long the enemy is in the TAUNT state
 taunt_duration = 60; // How long the enemy taunts (1 second at 60 FPS)
  
@@ -114,6 +116,10 @@ patrol_stop_timer = 0; // Timer for the 1-second stop before turning
 patrol_stop_duration = 60; // 1 second at 60 FPS
 ledge_detect_distance = 48; // Distance from a ledge to trigger a stop and turn
 enemy_detect_distance = 24; // Distance from another enemy to trigger a stop and turn
+
+// Damage feedback variables
+flash_timer = 0; // Timer for visual damage indicator (blinking)
+flash_duration = 10; // How long the enemy sprite flashes after taking damage (0.5 seconds at 60 FPS)
 
 // NEW: Variables for hit animation
 spr_hit_specific = -1; // Specific hit animation sprite for this enemy type. Children will override.

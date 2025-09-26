@@ -9,12 +9,6 @@ if (!instance_exists(target)) {
     }
 }
 
-// Set listener for 3D sounds. Necessary for Spike trap emmitters to work
-if (instance_exists(target)) {
-    // This tells the audio engine where the "ears" are.
-    audio_listener_position(oPlayer.x, oPlayer.y, 0);
-}
-
  
 // --- HORIZONTAL ANCHORING & THRESHOLD LOGIC ---
 // 1. Calculate the player's X position relative to the camera's current center.

@@ -6,8 +6,8 @@
   "name":"oInvisibleBlock",
   "overriddenProperties":[],
   "parent":{
-    "name":"Objects",
-    "path":"folders/Objects.yy",
+    "name":"objEnvironment",
+    "path":"folders/Objects/objEnvironment.yy",
   },
   "parentObjectId":null,
   "persistent":false,

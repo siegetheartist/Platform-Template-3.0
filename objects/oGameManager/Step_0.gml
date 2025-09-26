@@ -1,5 +1,9 @@
-//show_debug_message(string(layer_get_all_elements("Layer_Game_over")));
-//show_debug_message("After restart: [ 72,70,68,67,81,82 ]");
+// Set listener for 3D sounds. Necessary for Spike trap emmitters to work
+if (instance_exists(oPlayer)) {
+    // This tells the audio engine where the "ears" are.
+    audio_listener_position(oPlayer.x, oPlayer.y, 0);
+}
+
 
 // Add this timer to the top of your Step Event, before the other regions.
 if (respawn_grace_period > 0) {
@@ -71,7 +75,7 @@ switch (current_state) {
                 }
                 
                 // Create a new player instance at the last checkpoint's location.
-                var _new_player = instance_create_layer(global.checkpoint_x, global.checkpoint_y, "l_Player", oPlayer);
+                var _new_player = instance_create_layer(global.checkpoint_x, global.checkpoint_y, "il_player", oPlayer);
                 _new_player.can_control = false;
                 _new_player.player_health = max_player_health; // Reset health
                 _new_player.player_state = PlayerState.IDLE; // Reset the state

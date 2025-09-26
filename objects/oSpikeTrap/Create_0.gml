@@ -19,7 +19,7 @@ vmove_state = HazardVerticalMoveState.PAUSE; // Initial state
 vmove_timer = 0; // Generic timer for state durations
  
 // Configuration for vertical movement (set defaults, can be overridden per instance in room editor)
-vmove_up_distance = 24; // Pixels to move up from y_start
+vmove_up_distance = 40; // Pixels to move up from y_start
 vmove_windup_frames = 20; // Frames for initial warning oscillation
 vmove_windup_oscillation_amount = 2; // Pixels (amplitude) for visual oscillation during windup
 vmove_move_up_lerp_factor = 0.3; // Lerp factor (0-1) for speed to move up
@@ -53,7 +53,7 @@ snd_rise = sndSpikeTrapThrust;
 snd_desend = sndSpikeTrapCrank;
 
 // Define falloff properties
-falloff_ref = 100;  // Sound is at full volume inside this pixel radius
+falloff_ref = 150;  // Sound is at full volume inside this pixel radius
 falloff_max = 500; // Sound is silent beyond this pixel radius
 falloff_factor = 1; // 1 = linear falloff
 

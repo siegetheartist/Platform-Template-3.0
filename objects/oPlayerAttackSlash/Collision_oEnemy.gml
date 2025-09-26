@@ -7,19 +7,9 @@ if (ds_list_find_index(hit_enemies, other.id) == -1) {
     // Add the enemy to the hit list to prevent multiple hits from one slash
     ds_list_add(hit_enemies, other.id);
  
-    // Apply damage to the enemy
-    // Assuming oEnemy has an 'enemy_health' variable (added in oEnemy/Create_0.gml)
     if (variable_instance_exists(other, "enemy_health")) {
-        other.enemy_health -= damage;
-        
-        // Play damage sound if defined for this enemy type (NEW)
-        if (variable_instance_exists(other, "snd_hit") && other.snd_hit != noone) {
-            audio_play_sound(other.snd_hit, 1, false);
-        }
-        audio_play_sound(sndEnemyHit, 1, false);
-        
-        // Activate flashing effect on hit enemy
-        other.flash_timer = other.flash_duration;
+        scr_apply_damage(other, damage, "enemy_health", sndEnemyHit);
+        scr_apply_flash(other);
                 
         // NEW: Initiate hit animation if a specific hit sprite is assigned
         if (other.spr_hit_specific != -1) {

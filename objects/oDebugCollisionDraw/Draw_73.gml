@@ -156,4 +156,24 @@ if (global.debug_collision) {
         draw_set_color(_prev_color);
     }
     
+    // --- Spatial sound range for oSpikeTrap ---
+    with (objTimedPlatform) {
+        // Preserve draw settings for other debug elements, reset at end of this loop
+        var _prev_alpha = draw_get_alpha();
+        var _prev_color = draw_get_color();
+ 
+        // Visualize full volume zone
+        draw_set_alpha(0.20); // Set to 20% opacity
+        draw_set_color(c_lime); 
+        draw_circle(x, y, falloff_ref, false);
+ 
+        // Visualize fade-out boundary
+        draw_set_alpha(0.60); // Set to 60% opacity
+        draw_set_color(c_red); 
+        draw_circle(x, y, falloff_max, true);
+        
+        draw_set_alpha(_prev_alpha);
+        draw_set_color(_prev_color);
+    }
+    
 }

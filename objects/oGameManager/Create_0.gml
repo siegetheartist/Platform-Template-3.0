@@ -9,6 +9,10 @@ if (!variable_global_exists("checkpoint_y")) {
 }
 #endregion
 
+#region 3D AUDIO
+// Set orientation of listener to be correctly upright. (default is 0,0,1,  0,1,0)
+audio_listener_orientation(0, 0, 1, 0, -1, 0);
+#endregion
 
 #region STATE MACHINE
 
