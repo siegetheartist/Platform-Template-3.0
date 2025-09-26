@@ -15,7 +15,7 @@ var _dir = _player_input.dir;
 var collision_cave01 = layer_tilemap_get_id("t_Collision"); // main room titleset
 var collision_slopes = layer_tilemap_get_id("tl_slopes"); // new layer to handle slopes
 // var collision_platforms = layer_tilemap_get_id("il_platforms"); // platforms
-var collision_tileset = [collision_cave01, collision_slopes, objDestructableWall, objTimedPlatform]; // new variable to hold all collidables
+var collision_tileset = [collision_cave01, collision_slopes, objDestructableWall, objTimedPlatform, oInvisibleBlock]; // new variable to hold all collidables
 #endregion
 
 
