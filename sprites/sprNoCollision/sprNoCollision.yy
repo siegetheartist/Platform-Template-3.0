@@ -1,7 +1,7 @@
 {
   "$GMSprite":"v2",
   "%Name":"sprNoCollision",
-  "bboxMode":0,
+  "bboxMode":2,
   "bbox_bottom":0,
   "bbox_left":0,
   "bbox_right":0,
@@ -23,7 +23,7 @@
   ],
   "name":"sprNoCollision",
   "nineSlice":null,
-  "origin":0,
+  "origin":1,
   "parent":{
     "name":"sprEnvironment",
     "path":"folders/Sprites/sprEnvironment.yy",
@@ -77,7 +77,7 @@
     ],
     "visibleRange":null,
     "volume":1.0,
-    "xorigin":0,
+    "xorigin":32,
     "yorigin":0,
   },
   "swatchColours":null,
