@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"scr_shake_object",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"scr_shake_object",
+  "parent":{
+    "name":"scrHazards",
+    "path":"folders/Scripts/scrHazards.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}
