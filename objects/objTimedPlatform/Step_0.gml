@@ -1,4 +1,5 @@
 /// @description Timed platform state logic
+scr_shake(id);
 
 // Run code based on the current state
 switch (state) {
@@ -35,6 +36,10 @@ switch (state) {
         } else if (break_timer <= 40) {
             image_index = 1; // First break frame
             
+            // Start shaking once when entering this phase 
+            if (!is_shaking) {
+                scr_shake_initialize(id, 3, 40, true);
+            }
         }
         break;
 

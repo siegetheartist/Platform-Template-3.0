@@ -1,9 +1,9 @@
 {
   "$GMScript":"v1",
-  "%Name":"scr_shake_object",
+  "%Name":"scr_shake",
   "isCompatibility":false,
   "isDnD":false,
-  "name":"scr_shake_object",
+  "name":"scr_shake",
   "parent":{
     "name":"scrHazards",
     "path":"folders/Scripts/scrHazards.yy",

@@ -48,3 +48,18 @@ audio_emitter_falloff(platform_emitter, falloff_ref, falloff_max, falloff_factor
 // Select falloff model
 audio_falloff_set_model(audio_falloff_exponent_distance_scaled);
 #endregion
+
+
+#region SHAKE OBJECT
+// -- Shake Variables --
+is_shaking = false; // Flag to indicate if the object is currently shaking
+shake_timer = 0; // Current countdown for the shake duration
+shake_duration_max = 0; // The initial duration, used for decaying magnitude
+shake_magnitude = 0; // The maximum offset in pixels for the shake
+shake_horizontal = true; // True for horizontal shake, false for vertical
+// original_x and original_y are set by scr_shake_initialize when it's called.
+// Initialize them to the object's starting position for good measure.
+original_x = x;
+original_y = y;
+#endregion
+
