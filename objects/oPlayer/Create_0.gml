@@ -1,6 +1,6 @@
 #region CINEMATIC CONTROL
 // Determines whether the player can move or act (used during cutscenes or transitions)
-can_control = (room != rStartMenu);
+can_control = (room != r_start_screen);
 #endregion
 
 #region BASE MOVEMENT 

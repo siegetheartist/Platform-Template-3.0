@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"scr_obj_collapse",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"scr_obj_collapse",
+  "parent":{
+    "name":"scrAnimations",
+    "path":"folders/Scripts/scrAnimations.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

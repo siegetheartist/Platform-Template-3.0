@@ -4,6 +4,7 @@
   "eventList":[
     {"$GMEvent":"v1","%Name":"","collisionObjectId":null,"eventNum":0,"eventType":0,"isDnD":false,"name":"","resourceType":"GMEvent","resourceVersion":"2.0",},
     {"$GMEvent":"v1","%Name":"","collisionObjectId":null,"eventNum":0,"eventType":3,"isDnD":false,"name":"","resourceType":"GMEvent","resourceVersion":"2.0",},
+    {"$GMEvent":"v1","%Name":"","collisionObjectId":null,"eventNum":0,"eventType":12,"isDnD":false,"name":"","resourceType":"GMEvent","resourceVersion":"2.0",},
   ],
   "managed":true,
   "name":"objTimedPlatform",
@@ -31,12 +32,12 @@
   "resourceVersion":"2.0",
   "solid":false,
   "spriteId":{
-    "name":"sprTimedPlatform",
-    "path":"sprites/sprTimedPlatform/sprTimedPlatform.yy",
+    "name":"sprTimedPlatform_2",
+    "path":"sprites/sprTimedPlatform_2/sprTimedPlatform_2.yy",
   },
   "spriteMaskId":{
-    "name":"sprTimedPlatform",
-    "path":"sprites/sprTimedPlatform/sprTimedPlatform.yy",
+    "name":"sprTimedPlatform_2",
+    "path":"sprites/sprTimedPlatform_2/sprTimedPlatform_2.yy",
   },
   "visible":true,
 }

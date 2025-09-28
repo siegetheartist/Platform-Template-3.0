@@ -1,15 +1,47 @@
-#region INPUT AND VARIABLES
-// Execute the script that handles all input.
-var _player_input = scr_player_input();
+/*
+// --- Handle Input ---
+// The condition is now here, in the object that needs it!
+if (can_control && player_state != PlayerState.DEAD) {
+    // Get the raw input from our universal script
+    input = scr_get_input();
+} else {
+    // If we can't control the player, create a "zeroed-out" input struct
+    // so the rest of the code doesn't crash.
+    input = {
+        left_held: 0, right_held: 0, jump_held: 0,
+        left_pressed: 0, right_pressed: 0, jump_pressed: 0, attack_pressed: 0,
+        dir: 0
+    };
+}
+*/
 
-// Declare and get local variables for the rest of the step event.
-// These variables are now retrieved from the _player_input struct.
-var _key_left = _player_input.key_left;
-var _key_right = _player_input.key_right;
-var _key_jump = _player_input.key_jump;
-var _key_jump_held = _player_input.key_jump_held;
-var _key_attack_pressed = _player_input.key_attack_pressed; // Get attack key input
-var _dir = _player_input.dir;
+
+
+#region INPUT AND VARIABLES
+// -- Universal Input Handling --
+// The condition to check for input is now in the player object.
+if (can_control && player_state != PlayerState.DEAD) {
+    // Get the raw input from our universal script.
+    // We store it in an instance variable `input` so all other scripts/events can access it if needed.
+    input = scr_get_input(); 
+} else {
+    // If we can't control the player, create a "zeroed-out" input struct
+    // to prevent the rest of the code from crashing.
+    input = {
+        left_held: 0, right_held: 0, jump_held: 0,
+        left_pressed: 0, right_pressed: 0, jump_pressed: 0, attack_pressed: 0,
+        dir: 0
+    };
+}
+
+// -- Local Variables for This Event --
+// We create local variables from the 'input' struct for easier use below.
+var _key_left = input.left_held;
+var _key_right = input.right_held;
+var _key_jump = input.jump_pressed;
+var _key_jump_held = input.jump_held;
+var _key_attack_pressed = input.attack_pressed;
+var _dir = input.dir;
 
 // --- Collision Tileset ---
 var collision_cave01 = layer_tilemap_get_id("t_Collision"); // main room titleset

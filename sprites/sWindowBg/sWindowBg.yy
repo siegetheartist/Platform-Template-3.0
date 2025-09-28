@@ -19,13 +19,13 @@
   "height":16,
   "HTile":false,
   "layers":[
-    {"$GMImageLayer":"","%Name":"e7711d14-b55f-4c57-b67c-48f993b38dfa","blendMode":0,"displayName":"default","isLocked":false,"name":"e7711d14-b55f-4c57-b67c-48f993b38dfa","opacity":100.0,"resourceType":"GMImageLayer","resourceVersion":"2.0","visible":true,},
+    {"$GMImageLayer":"","%Name":"e7711d14-b55f-4c57-b67c-48f993b38dfa","blendMode":0,"displayName":"default","isLocked":false,"name":"e7711d14-b55f-4c57-b67c-48f993b38dfa","opacity":40.0,"resourceType":"GMImageLayer","resourceVersion":"2.0","visible":true,},
   ],
   "name":"sWindowBg",
   "nineSlice":{
     "$GMNineSliceData":"",
     "bottom":0,
-    "enabled":true,
+    "enabled":false,
     "guideColour":[4294902015,4294902015,4294902015,4294902015,],
     "highlightColour":1728023040,
     "highlightStyle":0,

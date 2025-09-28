@@ -11,6 +11,14 @@ if (respawn_grace_period > 0) {
 }
 
 
+#region START SCREEN
+// If we are in the start screen room, run the title screen script.
+if (room == r_start_screen) {
+    scr_title_screen();
+}
+#endregion
+
+
 #region PLAYER DEATH CHECK
 // Player death check. This is now handled here, not in the player object.
 // We will only check for death if the grace period has expired and we are in the IDLE state.
@@ -130,39 +138,11 @@ switch (current_state) {
 
     case GAME_STATE.FADING_IN:
         // show_debug_message("State is now FADING_IN");
-    
         // The screen is fading back in. Do nothing until fade is complete.
         break;
         
     case GAME_STATE.GAME_OVER:
-        // Game Over Screen Input
-        // 'A' key to select previous button
-        if (keyboard_check_pressed(ord("A"))) {
-            selected_button = max(0, selected_button - 1);
-        }
-        
-        // 'D' key to select next button
-        if (keyboard_check_pressed(ord("D"))) {
-            selected_button = min(1, selected_button + 1);
-        }
-        
-        // 'J' key to confirm selection
-        if (keyboard_check_pressed(ord("J"))) {
-            // These actions are common to both buttons, so we can do them here
-            player_lives = 1;
-            crystals_collected = 0;
-            current_state = GAME_STATE.IDLE;
-            layer_set_visible("Layer_Game_over", false);
-            
-            // Now, perform the unique action for the selected button
-            if (selected_button == 0) { // Try Again
-                room_restart();
-                initiate_fader_in();
-            } else if (selected_button == 1) { // Back to Menu
-                room_goto(rStartMenu);
-                initiate_fader_in();
-            }
-        }
+        scr_game_over();
         break;
 }
 
