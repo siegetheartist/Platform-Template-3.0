@@ -8,9 +8,13 @@ if (fader_mode == "fade_in") {
         if (instance_exists(oGameManager)) {
             oGameManager.current_state = GAME_STATE.IDLE;
         }
-        with (oPlayer) {
-            can_control = true;
-        }
+        
+    // Only give control back to the player if we are NOT in the start menu.
+    if (room != r_start_screen) {
+        if (instance_exists(oPlayer)) {
+            oPlayer.can_control = true;
+        }
+    }
         instance_destroy();
     }
 }

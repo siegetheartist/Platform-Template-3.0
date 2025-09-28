@@ -20,7 +20,7 @@ function scr_game_over() {
     
     // Use the attack button for "confirm" to match player controls.
     if (_input.attack_pressed) {
-        // ... (rest of the logic remains the same)
+        // Reset
         player_lives = 1;
         crystals_collected = 0;
         current_state = GAME_STATE.IDLE;
