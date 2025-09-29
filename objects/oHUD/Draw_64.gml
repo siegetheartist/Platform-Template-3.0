@@ -4,28 +4,26 @@
 
 #region FONT AND COLOR SETUP
 // Set the font for drawing text (e.g., for crystal count)
-draw_set_font(fnt_hud_default); // Assuming you have a font asset named 'fnt_hud_default'
+draw_set_font(fnt_player_hud_txt); // Size of font
 draw_set_halign(fa_left); // Align text to the left
 draw_set_valign(fa_top); // Align text to the top
 draw_set_color(c_white); // Set default text color to white
 #endregion
 
-// We can now safely assume oGameManager exists because it is a persistent object.
+// Be able to reference our manager
 var _game_manager = oGameManager;
 
-//  Layout Variables 
-var _padding = 15; // Padding from the viewport edges
-var _row_gap = 15; // Gap between each row of HUD elements
+draw_sprite(spr_player_hud, 0, 0, 0);
 
 #region DRAW PLAYER LIVES
 //  Draw Player Lives 
 // Always draw one 'sLives' sprite as the icon for the lives counter
-var _life_x_start = _padding; // Starting X position for lives display, with padding
-var _life_y = _padding;      // Y position for lives display, with padding
+var _life_x_start = 39; // Repositioned to 40px from the left
+var _life_y = 39;       // Repositioned to 30px from the top
     
-draw_sprite(sLives, 0, _life_x_start, _life_y); // Draw the lives icon once
+// draw_sprite(sLives, 0, _life_x_start, _life_y); // sLives icon is now commented out
 // Draw the lives count text immediately next to the icon, vertically centered
-draw_text(_life_x_start + sprite_get_width(sLives), _life_y + (sprite_get_height(sLives) / 2) - (string_height(string(_game_manager.player_lives)) / 2), string(_game_manager.player_lives));
+draw_text(_life_x_start, _life_y, string(_game_manager.player_lives));
 #endregion
 
 #region DRAW PLAYER HEALTH
@@ -36,25 +34,29 @@ if (instance_exists(oPlayer)) {
     _current_player_health = oPlayer.player_health;
 }
     
-// Draw 'sHealth' sprites for max health, showing full or empty frames
-var _health_x_start = _padding; // Starting X position for health display, with padding
-var _health_y = _life_y + sprite_get_height(sLives) + _row_gap; // Y position below lives, with row gap
-var _health_spacing = sprite_get_width(sHealth) + 4; // Spacing between health sprites
+// Determine which sprite to draw for each health slot (full or missing)
+var _health_x_start = 47; // Repositioned to 47px from the left
+var _health_y = 18;       // Repositioned to 19px from the top
+var _health_spacing = sprite_get_width(spr_player_health) + 7; // Spacing is based on the main health sprite
 
 for (var i = 0; i < _game_manager.max_player_health; i++) {
-    var _frame = (i < _current_player_health) ? 0 : 1; // Frame 0 for full, Frame 1 for empty
-    draw_sprite(sHealth, _frame, _health_x_start + (i * _health_spacing), _health_y);
+    var _sprite_to_draw = (i < _current_player_health) ? spr_player_health : spr_player_health_missing;
+    draw_sprite(_sprite_to_draw, 0, _health_x_start + (i * _health_spacing), _health_y);
 }
 // No text counter for health, as it's visually represented by hearts.
 #endregion
 
 #region DRAW CRYSTALS COLLECTED
-//  Draw Crystals Collected 
-// Draw the 'sCrystal' sprite and the count next to it
-var _crystal_x = _padding; // X position for crystal sprite, with padding
-var _crystal_y = _health_y + sprite_get_height(sHealth) + _row_gap; // Y position below health, with row gap
+// --- Crystal Icon ---
+//var _crystal_x = 1; // from the left
+//var _crystal_y = 45; // from the top
+//var _crystal_scale = 0.75; // Scale the sprite
+draw_sprite_ext(sCrystal, 0, 0, 38, .75, .75, 0, c_white, 1);
 
-draw_sprite(sCrystal, 0, _crystal_x, _crystal_y);
-// Draw the crystal count text immediately next to the sprite, vertically centered
-draw_text(_crystal_x + sprite_get_width(sCrystal), _crystal_y + (sprite_get_height(sCrystal) / 2) - (string_height(string(_game_manager.crystals_collected)) / 2), string(_game_manager.crystals_collected));
+// --- Crystal Text ---
+var _crystal_text_x = 8; // 20 pixels from the left
+var _crystal_text_y = 45; // 53 pixels from the top
+draw_text(_crystal_text_x, _crystal_text_y, string(_game_manager.crystals_collected));
+
+
 #endregion

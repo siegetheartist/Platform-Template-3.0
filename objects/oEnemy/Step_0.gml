@@ -95,8 +95,8 @@ if (!knockback_active) {
             _distance_to_player = point_distance(x, y, _player_instance.x, _player_instance.y);
             
             // Calculate a Y-coordinate for Line of Sight checks 
-            var _enemy_los_y = y - 2; // Enemy's vertical center bottom -2
-            var _player_los_y = _player_instance.y - 2; // Player's vertical center bottom -2
+            var _enemy_los_y = y - 1; // Enemy's vertical center bottom -2
+            var _player_los_y = _player_instance.y - 1; // Player's vertical center bottom -2
             
             // Check for line of sight to the player using the collision tilemap
             // The line should be from the enemy's feet to the player feet,

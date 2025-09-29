@@ -1,7 +1,25 @@
+#region PLAYER HEALTH AND INVULNERABILITY
+// Initialize player health in OgameManager. 
+player_health = oGameManager.max_player_health; // Stores players current health and is updated in scr_apply_damage script
+invulnerable_timer = 0; // Timer for player invulnerability frames
+invulnerable_duration = 60; // How many frames player is invulnerable after taking damage (1 second at 60 FPS)
+flash_timer = 0; // Timer for visual damage indicator (blinking)
+flash_duration = 30; // How long the player sprite flashes after taking damage (0.5 seconds at 60 FPS)
+#endregion
+
+
+#region ATTACK MECHANICS
+attack_timer = 0; // Timer for the attack animation
+attack_duration = 18; // Duration of the attack state in frames (adjust as needed for sPlayerAttack sprite)
+current_attack_slash = noone; // Stores the ID of the created oPlayerAttackSlash instance
+#endregion
+
+
 #region CINEMATIC CONTROL
 // Determines whether the player can move or act (used during cutscenes or transitions)
 can_control = (room != r_start_screen);
 #endregion
+
 
 #region BASE MOVEMENT 
 // Horizontal speedS
@@ -72,15 +90,6 @@ wall_slide_dust_timer_max = 8; // Adjust for desired frequency
 #endregion
 
 
-#region PLAYER HEALTH AND INVULNERABILITY
-player_health = oGameManager.max_player_health; // Player's current health, starts at 4
-invulnerable_timer = 0; // Timer for player invulnerability frames
-invulnerable_duration = 60; // How many frames player is invulnerable after taking damage (1 second at 60 FPS)
-flash_timer = 0; // Timer for visual damage indicator (blinking)
-flash_duration = 30; // How long the player sprite flashes after taking damage (0.5 seconds at 60 FPS)
-#endregion
-
-
 #region PLAYER KNOCKBACK (NEW)
 knockback_h_resistance = 1.0;  // Horizontal knockback resistance multiplier for player
 knockback_v_resistance = 1.0;   // Vertical knockback resistance multiplier for player
@@ -112,13 +121,6 @@ enum PlayerState {
 }
 player_state = PlayerState.IDLE; // Initialize the player's state
 player_state_previous = PlayerState.IDLE; // NEW: Store the previous state for on-entry logic
-#endregion
-
-
-#region ATTACK MECHANICS
-attack_timer = 0; // Timer for the attack animation
-attack_duration = 18; // Duration of the attack state in frames (adjust as needed for sPlayerAttack sprite)
-current_attack_slash = noone; // Stores the ID of the created oPlayerAttackSlash instance
 #endregion
 
 

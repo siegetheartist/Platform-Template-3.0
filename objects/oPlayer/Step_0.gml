@@ -1,22 +1,3 @@
-/*
-// --- Handle Input ---
-// The condition is now here, in the object that needs it!
-if (can_control && player_state != PlayerState.DEAD) {
-    // Get the raw input from our universal script
-    input = scr_get_input();
-} else {
-    // If we can't control the player, create a "zeroed-out" input struct
-    // so the rest of the code doesn't crash.
-    input = {
-        left_held: 0, right_held: 0, jump_held: 0,
-        left_pressed: 0, right_pressed: 0, jump_pressed: 0, attack_pressed: 0,
-        dir: 0
-    };
-}
-*/
-
-
-
 #region INPUT AND VARIABLES
 // -- Universal Input Handling --
 // The condition to check for input is now in the player object.
@@ -48,6 +29,10 @@ var collision_cave01 = layer_tilemap_get_id("t_Collision"); // main room titlese
 var collision_slopes = layer_tilemap_get_id("tl_slopes"); // new layer to handle slopes
 // var collision_platforms = layer_tilemap_get_id("il_platforms"); // platforms
 var collision_tileset = [collision_cave01, collision_slopes, objDestructableWall, objTimedPlatform, oInvisibleBlock]; // new variable to hold all collidables
+// rename collision solids?
+
+// This group contains only the objects that should NOT allow wall grabs.
+var non_grabbable_solids = [oInvisibleBlock];
 #endregion
 
 
@@ -62,6 +47,15 @@ var _is_ascending = vsp < 0;
 var _on_wall = place_meeting(x + 1, y, collision_tileset) - place_meeting(x - 1, y, collision_tileset);
 var _is_touching_wall = (_on_wall != 0);
 var _is_pressing_wall = (sign(_dir) == _on_wall) && (_dir != 0);
+
+// Check if the wall being touched is GRABBABLE
+var _is_touching_grabbable_wall = false;
+if (_is_touching_wall) {
+    // A wall is grabbable if it is NOT in the non-grabbable list.
+    if (!place_meeting(x + _on_wall, y, non_grabbable_solids)) {
+        _is_touching_grabbable_wall = true;
+    }
+}
 #endregion
 
 
@@ -71,7 +65,7 @@ if (invulnerable_timer > 0) { invulnerable_timer--; }
 if (flash_timer > 0) { flash_timer--; }
 if (attack_timer > 0) { attack_timer--; }
     
-// NEW: Knockback Timers
+// Knockback Timers
 if (knockback_cooldown_timer > 0) { knockback_cooldown_timer--; }
 if (knockback_duration_timer > 0) { knockback_duration_timer--; }
     
@@ -145,7 +139,7 @@ if (_on_ground && player_state == PlayerState.WALL_SLIDE) {
 
 // Universal transition from air to ground
 if (_on_ground && player_state == PlayerState.AIR) {
-    // NEW: Spawn dust cloud on landing
+    // Spawn dust cloud on landing
     scr_spawn_dust_cloud(x, y, facing_direction);
 
     // Check if the player was truly in an AIR state in the previous frame
@@ -216,7 +210,7 @@ switch (player_state) {
         scr_player_state_run(_dir);
         break;
     case PlayerState.AIR:
-        scr_player_state_air(_key_jump_held, _on_wall, _is_touching_wall, _is_pressing_wall, _dir);
+        scr_player_state_air(_key_jump_held, _on_wall, _is_touching_grabbable_wall, _is_pressing_wall, _dir);
         break;
     case PlayerState.WALL_GRAB:
         scr_player_state_wall_grab(_on_wall, _is_pressing_wall, _key_jump);

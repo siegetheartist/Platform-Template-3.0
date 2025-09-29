@@ -46,7 +46,7 @@ respawn_grace_period = 0; // A timer to briefly prevent death checks after respa
 selected_button = 0;
 
 
-#region GAME UI
+#region GAME OVER UI
 // Set Game over UI invisible by default
 layer_set_visible("Layer_Game_over", false);
 #endregion

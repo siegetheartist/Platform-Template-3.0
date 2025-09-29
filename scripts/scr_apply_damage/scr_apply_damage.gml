@@ -28,7 +28,7 @@ function scr_apply_damage(target_instance, damage_amount, health_variable_name, 
              audio_play_sound(damage_sound, 10, false);
         }
 
-        // Then, apply the damage.
+        // Then, apply the damage and update the health variable to it's new value
         variable_instance_set(target_instance, health_variable_name, _current_health - damage_amount);
     }
 }

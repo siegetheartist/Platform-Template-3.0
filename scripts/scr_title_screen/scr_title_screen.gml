@@ -51,10 +51,15 @@ function scr_title_screen() {
                     case 0: // "Start Game"
                         // Hide the menu UI.
                         layer_set_visible("start_menu", false);
+                        
                         // Give control back to the player.
                         if (instance_exists(oPlayer)) {
                             oPlayer.can_control = true;
                         }
+                        
+                        // Show player HUD after starting the game.
+                        oHUD.visible = true;
+                        
                         // The menu is now done, so move to the INACTIVE state.
                         menu_state = 2;
                         break;
