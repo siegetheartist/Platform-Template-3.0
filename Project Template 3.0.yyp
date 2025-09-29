@@ -184,6 +184,7 @@
     {"id":{"name":"sHealth","path":"sprites/sHealth/sHealth.yy",},},
     {"id":{"name":"sInvisibleBlock","path":"sprites/sInvisibleBlock/sInvisibleBlock.yy",},},
     {"id":{"name":"sLives","path":"sprites/sLives/sLives.yy",},},
+    {"id":{"name":"sMeleeImpact_1","path":"sprites/sMeleeImpact_1/sMeleeImpact_1.yy",},},
     {"id":{"name":"sMeleeImpact","path":"sprites/sMeleeImpact/sMeleeImpact.yy",},},
     {"id":{"name":"sOrcAttack01","path":"sprites/sOrcAttack01/sOrcAttack01.yy",},},
     {"id":{"name":"sOrcChase","path":"sprites/sOrcChase/sOrcChase.yy",},},

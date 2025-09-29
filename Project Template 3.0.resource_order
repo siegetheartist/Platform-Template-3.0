@@ -134,6 +134,7 @@
     {"name":"sHealth","order":3,"path":"sprites/sHealth/sHealth.yy",},
     {"name":"sInvisibleBlock","order":7,"path":"sprites/sInvisibleBlock/sInvisibleBlock.yy",},
     {"name":"sLives","order":4,"path":"sprites/sLives/sLives.yy",},
+    {"name":"sMeleeImpact_1","order":13,"path":"sprites/sMeleeImpact_1/sMeleeImpact_1.yy",},
     {"name":"sMeleeImpact","order":8,"path":"sprites/sMeleeImpact/sMeleeImpact.yy",},
     {"name":"sOrcAttack01","order":7,"path":"sprites/sOrcAttack01/sOrcAttack01.yy",},
     {"name":"sOrcChase","order":2,"path":"sprites/sOrcChase/sOrcChase.yy",},
