@@ -1,11 +1,11 @@
 {
   "$GMObject":"",
-  "%Name":"objToNextLevel",
+  "%Name":"oToNextRoom",
   "eventList":[
     {"$GMEvent":"v1","%Name":"","collisionObjectId":{"name":"oPlayer","path":"objects/oPlayer/oPlayer.yy",},"eventNum":0,"eventType":4,"isDnD":false,"name":"","resourceType":"GMEvent","resourceVersion":"2.0",},
   ],
   "managed":true,
-  "name":"objToNextLevel",
+  "name":"oToNextRoom",
   "overriddenProperties":[],
   "parent":{
     "name":"objEnvironment",
@@ -30,8 +30,8 @@
   "resourceVersion":"2.0",
   "solid":false,
   "spriteId":{
-    "name":"sprToNextLevel",
-    "path":"sprites/sprToNextLevel/sprToNextLevel.yy",
+    "name":"sprDoorwayBackground",
+    "path":"sprites/sprDoorwayBackground/sprDoorwayBackground.yy",
   },
   "spriteMaskId":{
     "name":"sToNextLevel",
