@@ -8,7 +8,9 @@ event_inherited();
 scr_enemy_init_sprites_and_offsets(sGoblinIdle, sGoblinPatrol, sGoblinChase, sGoblinTaunt, sGoblinAttack01);
  
 // NEW: Assign the specific hit sprite for the Goblin
-self.spr_hit_specific = sGoblinHit; // Assuming you have a sprite 'sGoblinHit'
+self.spr_hit_specific = sGoblinHurt;
+spr_death = sGoblinDeath;
+obj_death_effect = oGoblinDeathEffect;
 
 #region PARENT OVERRIDES for Goblin's behavior
 // Define movement speeds for different states

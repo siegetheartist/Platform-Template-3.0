@@ -51,7 +51,8 @@ enum ENEMY_STATE {
     CHASE,   // Chasing state: moves towards the player
     TAUNT,    // Enemy is taunting after hitting the player
     WAIT_AND_TURN, // Enemy stops, waits, then turns around
-    ATTACK
+    ATTACK,
+    DEATH
 }
 
 // Initialize the enemy's starting state
@@ -96,6 +97,9 @@ spr_patrol_move = -1; // Default sprite for moving during patrol/alert
 spr_chase_move = -1;  // Default sprite for moving during chase
 spr_taunt_specific = -1; // NEW: Stores the specific taunt sprite for this enemy type.
 spr_attack_specific = -1; // NEW: Specific attack animation sprite
+// spr_hurt = -1; in future, add this instead of spr_hit_specific to keep everything grouped up
+spr_death = -1; // Placeholder for the death animation sprite
+obj_death_effect = noone; // Placeholder for the death effect object
 
 //  TAUNT SETTINGS
 taunt_timer = 0; // Timer for how long the enemy is in the TAUNT state

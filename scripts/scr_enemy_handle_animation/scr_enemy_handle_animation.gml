@@ -46,11 +46,11 @@ function scr_enemy_handle_animation() {
     }
 
     // Control animation speed based on horizontal movement.
-    // If taunting, animation should usually play, but movement speed is 0.
+    // Play animation if moving, taunting, waiting, attacking, OR dying.
     if (self.hsp != 0 
         || self.enemy_state == ENEMY_STATE.TAUNT 
         || self.enemy_state == ENEMY_STATE.WAIT_AND_TURN 
-        || self.enemy_state == ENEMY_STATE.ATTACK) { // Play animation if moving OR taunting OR waiting to turn OR attacking
+        || self.enemy_state == ENEMY_STATE.ATTACK) {
         self.image_speed = 1; // Play animation
     } else {
         self.image_speed = 0; // Stop animation when not moving

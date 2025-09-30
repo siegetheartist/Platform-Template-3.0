@@ -39,32 +39,45 @@ if (ds_list_find_index(hit_enemies, other.id) == -1) {
         // Determine horizontal position based on player's attack direction
         // Place the impact slightly inwards from the enemy's edge for better visual
         var _player_inst_ref = owner; // Re-referencing owner for clarity
+
         if (instance_exists(_player_inst_ref)) {
-            
             // Calculate offset and spawn location
-            var _offset_from_enemy_center = (other.sprite_width / 2) - 0; // Change ending integer to adjust pixels inwards from enemy's edge
-            var _impact_x_pos = other.x; // Horizontal Center of enemy - Previous calculation used to be: other.x + _player_inst_ref.facing_direction * _offset_from_enemy_center
-            var _impact_y_pos = other.y - (other.sprite_height / 2); // Vertical middle of enemy
-            
-            // Spawn the impact visual effect
-            var _impact_instance = instance_create_layer(_impact_x_pos, _impact_y_pos, "Assets", oAttackImpact);
-            
-            // Set image_xscale of the impact effect to match player's attack direction
-            if (instance_exists(_impact_instance)) {
-                _impact_instance.image_xscale = _player_inst_ref.facing_direction;
+            var _offset_from_enemy_center = (other.sprite_width / 2);
+            var _impact_x_pos = other.x;
+            var _impact_y_pos = other.y - (other.sprite_height / 2);
+        
+            // Check enemy health BEFORE spawning effect
+            if (other.enemy_health > 0) {
+                // Spawn the regular hit impact
+                var _impact_instance = instance_create_layer(_impact_x_pos, _impact_y_pos, "Assets", oAttackImpact);
+        
+                if (instance_exists(_impact_instance)) {
+                    _impact_instance.image_xscale = _player_inst_ref.facing_direction;
+                }
+            } else {
+                // Enemy is dead → spawn death effect instead
+                if (other.obj_death_effect != noone) {
+                    instance_create_layer(other.x, other.y, "Assets", other.obj_death_effect);
+                }
             }
         } else {
             // Fallback if player instance somehow doesn't exist
-            instance_create_layer(other.x, other.y, "Assets", oAttackImpact);
+            if (other.enemy_health > 0) {
+                instance_create_layer(other.x, other.y, "Assets", oAttackImpact);
+            } else {
+                if (other.obj_death_effect != noone) {
+                    instance_create_layer(other.x, other.y, "Assets", other.obj_death_effect);
+                }
+            }
         }
- 
-        // If enemy health drops to 0 or below, destroy it
+        
+        // Handle death cleanup
         if (other.enemy_health <= 0) {
-            // Play death sound if defined for this enemy type (NEW)
             if (variable_instance_exists(other, "snd_death") && other.snd_death != noone) {
                 audio_play_sound(other.snd_death, 1, false);
             }
             instance_destroy(other);
         }
+
     }
 }

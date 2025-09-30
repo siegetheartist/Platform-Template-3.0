@@ -8,7 +8,9 @@ event_inherited();
 scr_enemy_init_sprites_and_offsets(sOrcIdle, sOrcPatrol, sOrcChase, sOrcTaunt, -1); // NEW: -1 for no specific attack sprite yet
  
 // NEW: Assign the specific hit sprite for the Orc
-self.spr_hit_specific = sOrcHit; // Assuming you have a sprite 'sOrcHit'
+self.spr_hit_specific = sOrcHurt; // Assuming you have a sprite 'sOrcHit'
+spr_death = sOrcDeath;
+obj_death_effect = oOrcDeathEffect;
 
 #region PARENT OVERRIDES for Goblin's behavior
 // Define movement speeds for different states

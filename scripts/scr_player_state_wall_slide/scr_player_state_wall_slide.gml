@@ -17,7 +17,7 @@ function scr_player_state_wall_slide(_on_wall, _is_touching_wall, _is_pressing_w
 
     // Set the sprite and image speed for the wall slide state.
     sprite_index = sPlayerOnWall;
-    image_speed = 0;
+    image_speed = 1;
     image_xscale = -_on_wall;
 
     // Apply reduced gravity for wall sliding.

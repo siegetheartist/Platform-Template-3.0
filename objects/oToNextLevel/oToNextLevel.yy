@@ -8,8 +8,8 @@
   "name":"oToNextLevel",
   "overriddenProperties":[],
   "parent":{
-    "name":"Collectables & Checkpoints",
-    "path":"folders/Objects/Collectables & Checkpoints.yy",
+    "name":"objEnvironment",
+    "path":"folders/Objects/objEnvironment.yy",
   },
   "parentObjectId":null,
   "persistent":false,

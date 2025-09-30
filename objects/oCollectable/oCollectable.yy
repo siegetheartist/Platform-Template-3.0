@@ -8,8 +8,8 @@
   "name":"oCollectable",
   "overriddenProperties":[],
   "parent":{
-    "name":"Collectables & Checkpoints",
-    "path":"folders/Objects/Collectables & Checkpoints.yy",
+    "name":"Collectables",
+    "path":"folders/Objects/Collectables.yy",
   },
   "parentObjectId":null,
   "persistent":false,
