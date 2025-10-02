@@ -6,18 +6,21 @@ if (instance_exists(oPlayer)) {
     global.checkpoint_y = oPlayer.y;
 }
 
-// Start the initial fade-in.
-initiate_fader_in();
+
+
+// Automatically initiate a fade-in when any room starts
+// scr_fader("fade_in");
+
 
 // Find the player object and disable its control.
 // The fader will re-enable it when the fade-in is complete.
+/*
 with (oPlayer) {
     can_control = false;
 }
+*/
+
 #endregion
-
-
-
 
 
 #region MUSIC CONTROLER

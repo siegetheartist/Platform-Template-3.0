@@ -1,9 +1,7 @@
 {
   "$GMObject":"",
   "%Name":"objCave",
-  "eventList":[
-    {"$GMEvent":"v1","%Name":"","collisionObjectId":{"name":"oPlayer","path":"objects/oPlayer/oPlayer.yy",},"eventNum":0,"eventType":4,"isDnD":false,"name":"","resourceType":"GMEvent","resourceVersion":"2.0",},
-  ],
+  "eventList":[],
   "managed":true,
   "name":"objCave",
   "overriddenProperties":[],
@@ -11,7 +9,10 @@
     "name":"objEnvironment",
     "path":"folders/Objects/objEnvironment.yy",
   },
-  "parentObjectId":null,
+  "parentObjectId":{
+    "name":"oToNextRoom",
+    "path":"objects/oToNextRoom/oToNextRoom.yy",
+  },
   "persistent":false,
   "physicsAngularDamping":0.1,
   "physicsDensity":0.5,

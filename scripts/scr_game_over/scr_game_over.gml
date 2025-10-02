@@ -2,6 +2,11 @@
 /// @description Handles all input and logic for the Game Over screen.
 
 function scr_game_over() {
+    
+    // Self-initialize the selected_button variable if it doesn't exist
+    if (!variable_instance_exists(oGameManager, "selected_button")) {
+        oGameManager.selected_button = 0;
+    }
 
     // --- Gather Input ---
     // Get the raw input from the exact same script the player uses.

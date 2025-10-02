@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"scr_parallax_scrolling",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"scr_parallax_scrolling",
+  "parent":{
+    "name":"scrBackgrounds",
+    "path":"folders/Scripts/scrBackgrounds.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

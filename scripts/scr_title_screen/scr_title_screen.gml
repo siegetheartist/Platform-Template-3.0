@@ -58,7 +58,8 @@ function scr_title_screen() {
                         }
                         
                         // Show player HUD after starting the game.
-                        oHUD.visible = true;
+                        layer_set_visible("player_hud", false); // hud currently spawned on this layer
+                        //oHUD.visible = true;
                         
                         // The menu is now done, so move to the INACTIVE state.
                         menu_state = 2;
