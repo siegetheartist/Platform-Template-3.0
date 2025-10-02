@@ -4,10 +4,7 @@ if (instance_exists(owner)) {
     // Match the offset used in oPlayer's Step event for creating the slash
     // Calculate the total offset from the player's center to the slash's center
     // This ensures the slash's edge is a consistent distance from the player's edge.
-    var _player_half_width = sprite_get_width(sPlayerAttack) / 2;
-    var _slash_half_width = sprite_get_width(sPlayerAttackSlash) / 2;
-    var _desired_gap = -34 // The distance between the player's edge and the slash's edge
-    var _total_x_offset = _player_half_width + _desired_gap + _slash_half_width;
+    var _total_x_offset = scr_get_offset(sPlayerAttack, sPlayerAttackSlash, -32); // Must match players offset (in scr_player_state_attack)
     x = owner.x + owner.facing_direction * _total_x_offset;
     y = owner.y; // Keep vertical position synced
     image_xscale = owner.facing_direction; // Keep direction synced with player

@@ -5,8 +5,8 @@
   "isDnD":false,
   "name":"scr_game_over",
   "parent":{
-    "name":"scr_ui",
-    "path":"folders/Scripts/scr_ui.yy",
+    "name":"scrUI",
+    "path":"folders/Scripts/scrUI.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

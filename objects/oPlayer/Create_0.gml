@@ -12,6 +12,7 @@ flash_duration = 30; // How long the player sprite flashes after taking damage (
 attack_timer = 0; // Timer for the attack animation
 attack_duration = 18; // Duration of the attack state in frames (adjust as needed for sPlayerAttack sprite)
 current_attack_slash = noone; // Stores the ID of the created oPlayerAttackSlash instance
+attack_slash_desired_gap = -34; // Sets the distance between the player and the slash
 #endregion
 
 

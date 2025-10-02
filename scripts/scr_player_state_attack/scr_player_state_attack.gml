@@ -17,13 +17,11 @@ function scr_player_state_attack(_on_ground) {
         
         // Create the attack slash object
         // Position it relative to the player, slightly in front based on facing_direction
-        var _player_half_width = sprite_get_width(sPlayerAttack) / 2;
-        var _slash_half_width = sprite_get_width(sPlayerAttackSlash) / 2; // Get the width of the slash sprite itself
-        var _desired_gap = -24; // The distance between the player's edge and the slash's edge
-        var _total_x_offset = _player_half_width + _desired_gap + _slash_half_width;
-        
+        // Pass the player's variable into the function
+        var _total_x_offset = scr_get_offset(sPlayerAttack, sPlayerAttackSlash, -32);
         var _slash_x = x + facing_direction * _total_x_offset;
-        current_attack_slash = instance_create_layer(_slash_x, y, "il_player", oPlayerAttackSlash);
+        current_attack_slash = instance_create_layer(_slash_x, y, "ilMiddle", oPlayerAttackSlash);
+        
         if (instance_exists(current_attack_slash)) {
             current_attack_slash.owner = id; // Set the owner to this player instance
             current_attack_slash.image_xscale = facing_direction; // Match player's direction

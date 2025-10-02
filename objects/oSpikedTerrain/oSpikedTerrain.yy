@@ -31,8 +31,8 @@
   "resourceVersion":"2.0",
   "solid":false,
   "spriteId":{
-    "name":"sSpikedTerrain",
-    "path":"sprites/sSpikedTerrain/sSpikedTerrain.yy",
+    "name":"sprSpikedTerrain",
+    "path":"sprites/sprSpikedTerrain/sprSpikedTerrain.yy",
   },
   "spriteMaskId":null,
   "visible":true,

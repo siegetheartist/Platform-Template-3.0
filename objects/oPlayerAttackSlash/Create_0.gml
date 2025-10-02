@@ -12,4 +12,4 @@ knockback_v_strength = -2; // Vertical knockback pixel amount inflicted by this 
 hit_enemies = ds_list_create();
 
 // Owner of this attack (the player instance that created it)
-owner = noone;
+owner = noone; // Updated in the scr_player_state_attack script to the oPlayer object

@@ -16,7 +16,7 @@ if (ds_list_find_index(other.hit_enemies, id) == -1) {
     }
     
     if (spr_wall_hit_effect != noone) {
-    	instance_create_layer(x, y, "Assets", spr_wall_hit_effect);
+    	instance_create_layer(x, y, "alForeground", spr_wall_hit_effect);
     } 
     
     // Update sprite frame based on remaining health

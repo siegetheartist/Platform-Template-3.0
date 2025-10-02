@@ -11,7 +11,18 @@ if (respawn_grace_period > 0) {
 }
 
 
+
+
 #region START SCREEN
+// Bandaid fix to returning to first room from game over screen. Need to get rid of this.
+// Check if we have just returned to the start screen
+if (room == r_start_screen && previous_room != r_start_screen) {
+    // Reset the title screen menu state
+    if (variable_instance_exists(id, "menu_state")) {
+        menu_state = 0; // SETUP
+    }
+}
+previous_room = room;
 // If we are in the start screen room, run the title screen script.
 if (room == r_start_screen) {
     scr_title_screen();
@@ -83,7 +94,7 @@ switch (current_state) {
                 }
                 
                 // Create a new player instance at the last checkpoint's location.
-                var _new_player = instance_create_layer(global.checkpoint_x, global.checkpoint_y, "il_player", oPlayer);
+                var _new_player = instance_create_layer(global.checkpoint_x, global.checkpoint_y, "ilMiddle", oPlayer);
                 _new_player.can_control = false;
                 _new_player.player_health = max_player_health; // Reset health
                 _new_player.player_state = PlayerState.IDLE; // Reset the state

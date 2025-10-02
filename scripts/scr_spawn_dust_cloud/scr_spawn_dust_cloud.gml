@@ -5,8 +5,8 @@
 /// @arg {real} [_on_wall=0] The direction of the wall (-1 for left, 1 for right, 0 for none).
 
 function scr_spawn_dust_cloud(_x, _y, _direction, _on_wall = 0) {
-    // Create a dust cloud instance on the "Assets" layer.
-    var _dust_cloud = instance_create_layer(_x, _y, "Assets", oDustCloud);
+    // Create a dust cloud instance on the "alForeground" layer.
+    var _dust_cloud = instance_create_layer(_x, _y, "alForeground", oDustCloud);
 
     // Flip the dust cloud based on the player's direction.
     _dust_cloud.image_xscale = _direction;

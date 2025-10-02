@@ -17,6 +17,9 @@ with (oPlayer) {
 #endregion
 
 
+
+
+
 #region MUSIC CONTROLER
 // Stop any music that might currently be playing.
 audio_stop_all();

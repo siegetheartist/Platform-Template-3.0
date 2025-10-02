@@ -31,8 +31,8 @@
   "resourceVersion":"2.0",
   "solid":false,
   "spriteId":{
-    "name":"sOrcDeathEffect",
-    "path":"sprites/sOrcDeathEffect/sOrcDeathEffect.yy",
+    "name":"sGoblinDeathEffect",
+    "path":"sprites/sGoblinDeathEffect/sGoblinDeathEffect.yy",
   },
   "spriteMaskId":{
     "name":"sprNoCollision",

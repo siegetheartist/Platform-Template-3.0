@@ -49,7 +49,7 @@ if (ds_list_find_index(hit_enemies, other.id) == -1) {
             // Check enemy health BEFORE spawning effect
             if (other.enemy_health > 0) {
                 // Spawn the regular hit impact
-                var _impact_instance = instance_create_layer(_impact_x_pos, _impact_y_pos, "Assets", oAttackImpact);
+                var _impact_instance = instance_create_layer(_impact_x_pos, _impact_y_pos, "alForeground", oAttackImpact);
         
                 if (instance_exists(_impact_instance)) {
                     _impact_instance.image_xscale = _player_inst_ref.facing_direction;
@@ -57,16 +57,16 @@ if (ds_list_find_index(hit_enemies, other.id) == -1) {
             } else {
                 // Enemy is dead → spawn death effect instead
                 if (other.obj_death_effect != noone) {
-                    instance_create_layer(other.x, other.y, "Assets", other.obj_death_effect);
+                    instance_create_layer(other.x, other.y, "alForeground", other.obj_death_effect);
                 }
             }
         } else {
             // Fallback if player instance somehow doesn't exist
             if (other.enemy_health > 0) {
-                instance_create_layer(other.x, other.y, "Assets", oAttackImpact);
+                instance_create_layer(other.x, other.y, "alForeground", oAttackImpact);
             } else {
                 if (other.obj_death_effect != noone) {
-                    instance_create_layer(other.x, other.y, "Assets", other.obj_death_effect);
+                    instance_create_layer(other.x, other.y, "alForeground", other.obj_death_effect);
                 }
             }
         }

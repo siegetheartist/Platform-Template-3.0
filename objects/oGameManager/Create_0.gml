@@ -14,6 +14,9 @@ if (!variable_global_exists("checkpoint_y")) {
 // audio_listener_orientation(0, 0, 1, 0, -1, 0);
 #endregion
 
+// bandaid fix to returning to first room after game over
+previous_room = -1;
+
 #region STATE MACHINE
 
 enum GAME_STATE {
