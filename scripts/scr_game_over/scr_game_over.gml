@@ -33,10 +33,10 @@ function scr_game_over() {
         
         if (selected_button == 0) { // Try Again
             room_restart();
-            initiate_fader_in();
+            // initiate_fader_in();
         } else { // Back to Menu
             room_goto(r_start_screen);
-            initiate_fader_in();
+            // initiate_fader_in();
         }
     }
 }

@@ -1,4 +1,5 @@
 #region INITIAL FADE IN
+
 // Set the default respawn position to the player's starting position in this room.
 // This ensures we always have a valid respawn point if no checkpoint is activated.
 if (instance_exists(oPlayer)) {
@@ -6,19 +7,8 @@ if (instance_exists(oPlayer)) {
     global.checkpoint_y = oPlayer.y;
 }
 
-
-
 // Automatically initiate a fade-in when any room starts
-// scr_fader("fade_in");
-
-
-// Find the player object and disable its control.
-// The fader will re-enable it when the fade-in is complete.
-/*
-with (oPlayer) {
-    can_control = false;
-}
-*/
+// scr_fader("fade-in", 60);
 
 #endregion
 

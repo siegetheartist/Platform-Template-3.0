@@ -10,7 +10,3 @@ display_set_gui_size(_camera_width, _camera_height);
 
 // The rest of your camera and GUI setup code follows...
 #endregion
-
-// Start the game with HUD invisible
-layer_set_visible("player_hud", false);
-// visible = false; // would normally use this, but hud spawned on the layer... can change later

@@ -3,4 +3,4 @@
 button_id = 0; 
 
 // A variable to store a reference to the game manager. 
-game_manager = oGameManager;
+// game_manager = oGameManager;

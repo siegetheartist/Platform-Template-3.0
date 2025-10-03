@@ -26,12 +26,6 @@ next_action = "";
 
 
 
-//  Game Over Screen Variables 
-// Track which button is currently selected (0 for Try Again, 1 for Back to Menu).
-selected_button = 0;
-
-
-
 #region PLAYER STATS AND LIVES
 player_lives = 1; // Player's current number of lives, starts at 1
 crystals_collected = 0; // Number of crystals collected by the player
@@ -41,7 +35,6 @@ max_player_health = 4; // Maximum player health (for display and resetting healt
 
 //  Respawn Invulnerability Timer 
 respawn_grace_period = 0; // A timer to briefly prevent death checks after respawn.
-
 
 
 

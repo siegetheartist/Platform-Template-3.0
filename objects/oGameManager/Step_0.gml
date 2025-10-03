@@ -12,37 +12,6 @@ if (respawn_grace_period > 0) {
 
 
 
-#region PLAYER DEATH CHECK
-// Player death check. This is now handled here, not in the player object.
-// We will only check for death if the grace period has expired and we are in the IDLE state.
-if (instance_exists(oPlayer) && (oPlayer.player_health <= 0 || oPlayer.y > oPlayer.fall_threshold) && respawn_grace_period <= 0) {
-    
-    if (current_state == GAME_STATE.IDLE) {
-        // We will also check if the player is in the process of dying
-        if (oPlayer.player_state != PlayerState.DEAD) {
-            // Set the death state to prevent the death loop.
-            oPlayer.player_state = PlayerState.DEAD;
-            
-            // Check if the player has lives remaining.
-            if (player_lives > 0) {
-                // Player has lives remaining: Decrement life and trigger respawn.
-                player_lives--;
-                next_action = "respawn";
-            } else {
-                // Player has no lives remaining: GAME OVER.
-                next_action = "game_over";
-            }
-            
-            // Start the fade-out process.
-            //scr_fader("fade_out");
-            
-            // Manually destroy the player instance to prevent the death loop.
-            instance_destroy(oPlayer);
-        }
-    }
-}
-#endregion
-
 
 #region GAME STATE MACHINE
 switch (current_state) {
@@ -51,21 +20,31 @@ switch (current_state) {
         break;
 
     case GAME_STATE.FADING_OUT:
-        // The screen is fading to black. Do nothing until fade is complete.
+        // The screen is fading to black.
+        // Step 1: If a fader doesn't exist, create one.
+        if (!instance_exists(objFader)) {
+        scr_fader("fade-out", 60);
+        }
+    
+        // Step 2: Once fade-out is complete, move to FADE_COMPLETE
+        if (instance_exists(objFader) && objFader.is_complete) {
+            current_state = GAME_STATE.FADE_COMPLETE;
+        }
         break;
 
     case GAME_STATE.FADE_COMPLETE:
         // The screen is black. Perform the queued action.
         switch (next_action) {
             case "respawn":
-                //show_debug_message("Attempting respawn at: (" + string(global.checkpoint_x) + ", " + string(global.checkpoint_y) + ")");
-    
-                // Respawn logic
+    
+                /*
+                // Respawn logic
                 var _old_player = instance_find(oPlayer, 0);
                 if (_old_player) {
                     instance_destroy(_old_player);
                 }
-                
+                */         
+    
                 // Create a new player instance at the last checkpoint's location.
                 var _new_player = instance_create_layer(global.checkpoint_x, global.checkpoint_y, "ilMiddle", oPlayer);
                 _new_player.can_control = false;
@@ -94,10 +73,13 @@ switch (current_state) {
                 }
                 
                 // Set a grace period to prevent immediate death
-                respawn_grace_period = 10; // 10 frames of invulnerability
+                respawn_grace_period = 60; // 10 frames of invulnerability
                 
-                // Trigger the fade back in.
-                //scr_fader("fade_in");
+                // Immediately start fading back in
+                // scr_fader("fade-in", 60);
+    
+                current_state = GAME_STATE.FADING_IN;
+                next_action = ""; // Clear the action so it doesn't run again
                 break;
                
             case "next_level":
@@ -115,15 +97,38 @@ switch (current_state) {
                 // Game over logic (Permanent)
                 layer_set_visible("Layer_Game_over", true);
                 selected_button = 0; // Default to "Try Again"
-                current_state = GAME_STATE.GAME_OVER;
+    
+                // Also go to FADING_IN so the Game Over screen is revealed
+                current_state = GAME_STATE.FADING_IN;
                 break;
         }
         break;
 
     case GAME_STATE.FADING_IN:
-        // show_debug_message("State is now FADING_IN");
-        // The screen is fading back in. Do nothing until fade is complete.
-        break;
+        // If no fader exists yet, create one
+        if (!instance_exists(objFader) || objFader.fade_mode != "fade-in") {
+            scr_fader("fade-in", 60);
+        }
+    
+        // Wait until fade-in is complete
+        if (instance_exists(objFader) && objFader.is_complete) {
+            instance_destroy(objFader);
+    
+            if (next_action == "game_over") {
+                current_state = GAME_STATE.GAME_OVER;
+                next_action = "";
+            } else {
+                current_state = GAME_STATE.IDLE;
+    
+                // Give control back to the player
+                var _new_player = instance_find(oPlayer, 0);
+                if (_new_player) {
+                    _new_player.can_control = true;
+                }
+            }
+        }
+        break;
+
         
     case GAME_STATE.GAME_OVER:
         scr_game_over();

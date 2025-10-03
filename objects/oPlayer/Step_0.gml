@@ -123,6 +123,7 @@ if (scr_player_input_jump(_key_jump, _on_ground)) {
 
 
 #region STATE TRANSITIONS
+
 // Attack Input Check (takes priority over other transitions) - Now calls a dedicated script
 scr_player_input_attack(_key_attack_pressed); // This script will handle the transition to ATTACK state
 
@@ -221,9 +222,7 @@ switch (player_state) {
         scr_player_state_attack(_on_ground); // Pass _on_ground to determine return state and modify hsp if needed
         break;
     case PlayerState.DEAD:
-        // Add death logic here later
-        hsp = 0;
-        vsp = 0;
+        scr_player_state_death(id);
         break;
 }
 #endregion
@@ -271,6 +270,12 @@ if (player_state != PlayerState.ATTACK && !knockback_active) { // Prevent changi
     }
 }
 #endregion
+
+
+// Check for DEATH transition (if not already dead)
+if ((player_health <= 0 || y > fall_threshold) && player_state != PlayerState.DEAD) {
+    player_state = PlayerState.DEAD;
+}
 
 
 #region HAZARD & ENEMY DAMAGE

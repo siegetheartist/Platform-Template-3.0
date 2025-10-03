@@ -8,6 +8,9 @@ flash_duration = 30; // How long the player sprite flashes after taking damage (
 #endregion
 
 
+// dead = false; // Have this set itself if made into a script
+
+
 #region ATTACK MECHANICS
 attack_timer = 0; // Timer for the attack animation
 attack_duration = 18; // Duration of the attack state in frames (adjust as needed for sPlayerAttack sprite)
@@ -18,8 +21,8 @@ attack_slash_desired_gap = -34; // Sets the distance between the player and the 
 
 #region CINEMATIC CONTROL
 // Determines whether the player can move or act (used during cutscenes or transitions)
-can_control = (room != r_start_screen);
-//can_control = true;
+// can_control = (room != r_start_screen);
+can_control = true;
 #endregion
 
 
