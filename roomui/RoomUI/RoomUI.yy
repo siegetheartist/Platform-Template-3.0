@@ -66,5 +66,5 @@
         {"$GMRSpriteGraphic":"v1","%Name":"graphic_19540976","animationSpeed":1.0,"colour":4294967295,"flexProperties":{"$InstanceFlexProps":"v1","anchor":0,"resourceType":"InstanceFlexProps","tileH":true,"tileV":true,},"frozen":false,"headPosition":0.0,"ignore":false,"inheritedItemId":null,"inheritItemSettings":false,"name":"graphic_19540976","resourceType":"GMRSpriteGraphic","resourceVersion":"2.0","rotation":0.0,"scaleX":1.0,"scaleY":1.0,"spriteId":{"name":"sWindowBg","path":"sprites/sWindowBg/sWindowBg.yy",},"x":0.0,"y":0.0,},
       ],"flexDirection":0,"gridX":16,"gridY":16,"justifyContent":1,"name":"start_menu","nodeColour":4292866632,"resourceType":"GMRUILayer","resourceVersion":"2.0","visible":false,},
   ],
-  "visible":true,
+  "visible":false,
 }

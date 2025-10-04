@@ -25,3 +25,7 @@ function scr_fader(_fade_mode, _duration, _amount = 1, _color = c_black) {
 
     return inst;
 }
+
+
+
+

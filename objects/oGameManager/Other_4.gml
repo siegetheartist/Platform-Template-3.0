@@ -8,8 +8,7 @@ if (instance_exists(oPlayer)) {
 }
 
 // Automatically initiate a fade-in when any room starts
-// scr_fader("fade-in", 60);
-
+current_state = GAME_STATE.FADING_IN;
 #endregion
 
 

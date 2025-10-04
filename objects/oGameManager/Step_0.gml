@@ -5,11 +5,10 @@ if (instance_exists(oPlayer)) {
 }
 
 
-// Add this timer to the top of your Step Event, before the other regions.
+// A timer to briefly prevent death checks after respawn.
 if (respawn_grace_period > 0) {
     respawn_grace_period--;
 }
-
 
 
 
@@ -23,14 +22,14 @@ switch (current_state) {
         // The screen is fading to black.
         // Step 1: If a fader doesn't exist, create one.
         if (!instance_exists(objFader)) {
-        scr_fader("fade-out", 60);
+        scr_fader("fade-out", 50);
         }
     
         // Step 2: Once fade-out is complete, move to FADE_COMPLETE
         if (instance_exists(objFader) && objFader.is_complete) {
             current_state = GAME_STATE.FADE_COMPLETE;
         }
-        break;
+    break;
 
     case GAME_STATE.FADE_COMPLETE:
         // The screen is black. Perform the queued action.
@@ -54,87 +53,111 @@ switch (current_state) {
     
                 // Reset health for all enemies
                 with (oEnemy) {
-                    enemy_health = max_enemy_health;
-                    flash_timer = 0; // Stop any flashing effect
-                    knockback_active = false; // Stop any active knockback
-                    knockback_duration_timer = 0; // Reset knockback duration
-                    knockback_cooldown_timer = 0; // Reset knockback cooldown
-                    // Optionally reset enemy_state to PATROL or initial state:
-                    enemy_state = ENEMY_STATE.PATROL;
-                    enemy_state_previous = ENEMY_STATE.PATROL;
-                    sound_played_for_current_state = false;
-                    hsp = 0;
-                    vsp = 0;
-                    x = start_x; // Reset position to start_x
-                    y = start_y; // Reset position to start_y
-                    current_dir = 1; // Reset direction to default (e.g., right)
-                    taunt_timer = 0; // Reset taunt timer
-                    alert_timer = 0; // Reset alert timer
+                    if (room == other.room && reset_on_respawn) {
+                        enemy_health = max_enemy_health;
+                        flash_timer = 0; // Stop any flashing effect
+                        knockback_active = false; // Stop any active knockback
+                        knockback_duration_timer = 0; // Reset knockback duration
+                        knockback_cooldown_timer = 0; // Reset knockback cooldown
+                        // Optionally reset enemy_state to PATROL or initial state:
+                        enemy_state = ENEMY_STATE.PATROL;
+                        enemy_state_previous = ENEMY_STATE.PATROL;
+                        sound_played_for_current_state = false;
+                        hsp = 0;
+                        vsp = 0;
+                        x = start_x; // Reset position to start_x
+                        y = start_y; // Reset position to start_y
+                        current_dir = 1; // Reset direction to default (e.g., right)
+                        taunt_timer = 0; // Reset taunt timer
+                        alert_timer = 0; // Reset alert timer
+                    }
                 }
                 
                 // Set a grace period to prevent immediate death
                 respawn_grace_period = 60; // 10 frames of invulnerability
-                
-                // Immediately start fading back in
-                // scr_fader("fade-in", 60);
     
+                // After respawning, immediately start fading back in
                 current_state = GAME_STATE.FADING_IN;
-                next_action = ""; // Clear the action so it doesn't run again
-                break;
+                next_action = ""; // Clear the action
+
+            break;
                
-            case "next_level":
-                // Next level logic
-                if (room != room_last) {
-                    room_goto_next();
-                } else {
-                    // This is the last room, so trigger a game over or end screen.
-                    next_action = "game_over";
-                    //scr_fader("fade_out");
-                }
-                break;
+            case "next_level":
+                next_action = ""; // Clear the action
+                if (room != room_last) {
+                    room_goto_next();
+                } else {
+                    // This is the last room, so trigger a game over
+                    next_action = "game_over";
+                    current_state = GAME_STATE.FADING_IN; // Go to FADING_IN to reveal game over screen
+                }
+                break;
+            
+            case "previous_level":
+                next_action = ""; // Clear the action
+                
+                if (room != room_first) {
+                    room_goto_previous();
+                }
+                break;
             
             case "game_over":
-                // Game over logic (Permanent)
+                // Show game over UI
                 layer_set_visible("Layer_Game_over", true);
+    
                 selected_button = 0; // Default to "Try Again"
     
                 // Also go to FADING_IN so the Game Over screen is revealed
                 current_state = GAME_STATE.FADING_IN;
-                break;
+            break;
         }
-        break;
+    
+        // Re-initialize the existing fader to perform a fade-in.
+        if (instance_exists(objFader)) {
+            with (objFader) {
+                fade_mode   = "fade-in";
+                fade_speed  = fade_target / 30;
+                fade_alpha  = fade_target; // Start fully opaque (e.g., 1)
+                is_complete = false;
+            }
+        }
+        
+        // Transition to FADING_IN state (if not already set by a case above)
+        if (current_state != GAME_STATE.FADING_IN) { // should this be == GAME_STATE.FADING_COMPLETE ?
+            current_state = GAME_STATE.FADING_IN;
+        }
+
+    break;
 
     case GAME_STATE.FADING_IN:
-        // If no fader exists yet, create one
-        if (!instance_exists(objFader) || objFader.fade_mode != "fade-in") {
-            scr_fader("fade-in", 60);
+        // Step 1: If a fader doesn't exist, create one. This makes the state self-sufficient.
+        if (!instance_exists(objFader)) {
+            scr_fader("fade-in", 30);
         }
-    
-        // Wait until fade-in is complete
+
+        // Step 2: Wait for the fade-in to complete
         if (instance_exists(objFader) && objFader.is_complete) {
-            instance_destroy(objFader);
-    
+            instance_destroy(objFader); // Clean up the fader
+
             if (next_action == "game_over") {
                 current_state = GAME_STATE.GAME_OVER;
                 next_action = "";
             } else {
+                // Transition to normal gameplay
                 current_state = GAME_STATE.IDLE;
-    
+
                 // Give control back to the player
-                var _new_player = instance_find(oPlayer, 0);
-                if (_new_player) {
-                    _new_player.can_control = true;
+                if (instance_exists(oPlayer) && room != r_start_screen) {
+                    oPlayer.can_control = true;
                 }
             }
         }
-        break;
+    break;
 
-        
     case GAME_STATE.GAME_OVER:
         scr_game_over();
-        break;
+    break;
 }
-
 #endregion
 
 

@@ -21,8 +21,7 @@ attack_slash_desired_gap = -34; // Sets the distance between the player and the 
 
 #region CINEMATIC CONTROL
 // Determines whether the player can move or act (used during cutscenes or transitions)
-// can_control = (room != r_start_screen);
-can_control = true;
+can_control = false;
 #endregion
 
 

@@ -4,6 +4,8 @@
 hsp = 0; // Horizontal speed (pixels per frame)
 vsp = 0; // Vertical speed (pixels per frame)
 
+reset_on_respawn = true; // default, but you can toggle per 
+
 // New variables to store the enemy's starting position
 start_x = x; // Stores the enemy's initial X position
 start_y = y; // Stores the enemy's initial Y position

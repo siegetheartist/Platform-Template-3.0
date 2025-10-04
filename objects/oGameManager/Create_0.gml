@@ -20,8 +20,8 @@ enum GAME_STATE {
 }
 
 current_state = GAME_STATE.IDLE; // Start in the normal running state.
-// The action to perform once the screen is fully black.
-next_action = "";
+next_action = ""; // The action to perform once the screen is fully black.
+respawn_grace_period = 0; // A timer to briefly prevent death checks after respawn.
 #endregion
 
 
@@ -32,10 +32,6 @@ crystals_collected = 0; // Number of crystals collected by the player
 max_crystals_for_life = 3; // Number of crystals needed to gain an extra life
 max_player_health = 4; // Maximum player health (for display and resetting health on respawn)
 #endregion
-
-//  Respawn Invulnerability Timer 
-respawn_grace_period = 0; // A timer to briefly prevent death checks after respawn.
-
 
 
 // Set Game over UI invisible by default

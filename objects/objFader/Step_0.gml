@@ -1,3 +1,4 @@
+
 // Progress fade
 if (fade_mode == "fade-in") {
     fade_alpha -= fade_speed;
