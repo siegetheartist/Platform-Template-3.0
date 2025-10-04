@@ -42,7 +42,7 @@ layer_set_visible("Layer_Game_over", false);
 audio_play_sound(sndLevel1, 10, true);
 
 // Set orientation of listener to be correctly upright. (default is 0,0,1,  0,1,0)
-audio_listener_orientation(0, 0, 1, 0, -1, 0);
+// audio_listener_orientation(0, 0, 1, 0, -1, 0);
 
 // Each game session generates a different sequence of random numbers.
 randomize();

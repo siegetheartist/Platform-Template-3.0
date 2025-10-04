@@ -51,25 +51,25 @@ switch (current_state) {
                 _new_player.player_state = PlayerState.IDLE; // Reset the state
     
     
-                // Reset health for all enemies
+                // Reset health for all enemies that are marked to be reset
                 with (oEnemy) {
-                    if (room == other.room && reset_on_respawn) {
+                    // Only run this code if the variable is true
+                    if (reset_on_respawn) {
                         enemy_health = max_enemy_health;
-                        flash_timer = 0; // Stop any flashing effect
-                        knockback_active = false; // Stop any active knockback
-                        knockback_duration_timer = 0; // Reset knockback duration
-                        knockback_cooldown_timer = 0; // Reset knockback cooldown
-                        // Optionally reset enemy_state to PATROL or initial state:
+                        flash_timer = 0;
+                        knockback_active = false;
+                        knockback_duration_timer = 0;
+                        knockback_cooldown_timer = 0;
                         enemy_state = ENEMY_STATE.PATROL;
                         enemy_state_previous = ENEMY_STATE.PATROL;
                         sound_played_for_current_state = false;
                         hsp = 0;
                         vsp = 0;
-                        x = start_x; // Reset position to start_x
-                        y = start_y; // Reset position to start_y
-                        current_dir = 1; // Reset direction to default (e.g., right)
-                        taunt_timer = 0; // Reset taunt timer
-                        alert_timer = 0; // Reset alert timer
+                        x = start_x;
+                        y = start_y;
+                        current_dir = 1;
+                        taunt_timer = 0;
+                        alert_timer = 0;
                     }
                 }
                 
@@ -147,7 +147,7 @@ switch (current_state) {
                 current_state = GAME_STATE.IDLE;
 
                 // Give control back to the player
-                if (instance_exists(oPlayer) && room != r_start_screen) {
+                if (instance_exists(oPlayer) && room != rStartScreen) {
                     oPlayer.can_control = true;
                 }
             }

@@ -25,8 +25,8 @@ var _key_attack_pressed = input.attack_pressed;
 var _dir = input.dir;
 
 // --- Collision Tileset ---
-var collision_cave01 = layer_tilemap_get_id("t_Collision"); // main room titleset
-var collision_slopes = layer_tilemap_get_id("tl_slopes"); // new layer to handle slopes
+var collision_cave01 = layer_tilemap_get_id("tsCollision"); // main room titleset
+var collision_slopes = layer_tilemap_get_id("tlSlopes"); // new layer to handle slopes
 var collision_tileset = [collision_cave01, collision_slopes, objDestructableWall, objTimedPlatform, oInvisibleBlock]; // new variable to hold all collidables
 // rename collision solids?
 
@@ -38,6 +38,7 @@ var non_grabbable_solids = [oInvisibleBlock];
 #region COLLISION CHECKS
 // --- Ground Check ---
 var _on_ground = place_meeting(x, y + 1, collision_tileset);
+is_on_ground = _on_ground; // Make the ground state public for the camera
 
 // --- Vertical State Checks ---
 var _is_ascending = vsp < 0;
@@ -159,10 +160,16 @@ if (_on_ground && player_state == PlayerState.AIR) {
         player_state = PlayerState.IDLE;
     }
 }
+
 // Universal transition from ground to air (e.g., walking off a ledge)
 // Also ensure we don't transition if actively in knockback.
 if (!_on_ground && (player_state == PlayerState.IDLE || player_state == PlayerState.RUN) && player_state != PlayerState.ATTACK && !knockback_active) {
     player_state = PlayerState.AIR;
+}
+
+// Check for DEATH transition (if not already dead)
+if ((player_health <= 0 || y > fall_threshold) && player_state != PlayerState.DEAD) {
+    player_state = PlayerState.DEAD;
 }
 #endregion
 
@@ -230,32 +237,7 @@ switch (player_state) {
 
 
 #region MOVEMENT AND COLLISION
-// --- Move horizontally until collision
-if (place_meeting(x + hsp, y, collision_tileset)) {
-    var _sub_pixel = .5;
-    var _pixel_step = _sub_pixel * sign(hsp);
-    while (!place_meeting(x + _pixel_step, y, collision_tileset)) {
-        x += _pixel_step;
-    }
-    hsp = 0;
-}
-
-// --- Commit to horizontal movement ---
-x += hsp;
-
-
-// --- Move vertically until collision ---
-if (place_meeting(x, y + vsp, collision_tileset)) {
-    var _sub_pixel = .5;
-    var _pixel_step = _sub_pixel * sign(vsp);
-    while (!place_meeting(x, y + _pixel_step, collision_tileset)) {
-        y += _pixel_step;
-    }
-    vsp = 0;
-}
-
-// --- Commit Vertical Movement ---
-y += vsp;
+scr_move_and_collide(collision_tileset);
 #endregion
 
 
@@ -272,10 +254,7 @@ if (player_state != PlayerState.ATTACK && !knockback_active) { // Prevent changi
 #endregion
 
 
-// Check for DEATH transition (if not already dead)
-if ((player_health <= 0 || y > fall_threshold) && player_state != PlayerState.DEAD) {
-    player_state = PlayerState.DEAD;
-}
+
 
 
 #region HAZARD & ENEMY DAMAGE
@@ -291,6 +270,7 @@ if ((_collided_enemy != noone) && invulnerable_timer <= 0) {
         scr_status_effect_knockback(id, _collided_enemy.x, _collided_enemy.knockback_h_strength, _collided_enemy.knockback_v_strength);
     }
 }
+
 #endregion
 
 
@@ -300,4 +280,5 @@ image_index_previous = image_index;
 #endregion
 
 
+public_vsp = vsp; // Camera tracks vsp
 player_state_previous = player_state;

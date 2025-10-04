@@ -35,7 +35,7 @@ function scr_game_over() {
             room_restart();
             // initiate_fader_in();
         } else { // Back to Menu
-            room_goto(r_start_screen);
+            room_goto(rStartScreen);
             // initiate_fader_in();
         }
     }

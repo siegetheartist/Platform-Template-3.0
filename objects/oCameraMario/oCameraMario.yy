@@ -1,13 +1,16 @@
 {
   "$GMObject":"",
-  "%Name":"o_45_degree_slope",
-  "eventList":[],
+  "%Name":"oCameraMario",
+  "eventList":[
+    {"$GMEvent":"v1","%Name":"","collisionObjectId":null,"eventNum":0,"eventType":0,"isDnD":false,"name":"","resourceType":"GMEvent","resourceVersion":"2.0",},
+    {"$GMEvent":"v1","%Name":"","collisionObjectId":null,"eventNum":0,"eventType":3,"isDnD":false,"name":"","resourceType":"GMEvent","resourceVersion":"2.0",},
+  ],
   "managed":true,
-  "name":"o_45_degree_slope",
+  "name":"oCameraMario",
   "overriddenProperties":[],
   "parent":{
-    "name":"objEnvironment",
-    "path":"folders/Objects/objEnvironment.yy",
+    "name":"Controllers",
+    "path":"folders/Objects/Controllers.yy",
   },
   "parentObjectId":null,
   "persistent":false,

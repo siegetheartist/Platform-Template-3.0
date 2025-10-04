@@ -49,10 +49,14 @@ function scr_trap_extend_retract(_direction, _move_amount, _type, _sounds = {}) 
             }
         };
         
+        // Variables for debug OBJ to use. Normally we would just hardcode it below.
+        falloff_ref = 150;
+        falloff_max = 500;
+        
         // --- Audio Emitter Setup ---
         hazard_emitter = audio_emitter_create();
         audio_emitter_position(hazard_emitter, x, y, 0);
-        audio_emitter_falloff(hazard_emitter, 150, 500, 1);
+        audio_emitter_falloff(hazard_emitter, falloff_ref, falloff_max, 1); // Normally hard coded values, but using variables to work with DebugObj
         audio_falloff_set_model(audio_falloff_exponent_distance_scaled);
         
         hazard_initialized = true;

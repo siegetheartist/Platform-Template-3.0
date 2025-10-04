@@ -127,6 +127,10 @@ player_state = PlayerState.IDLE; // Initialize the player's state
 player_state_previous = PlayerState.IDLE; // NEW: Store the previous state for on-entry logic
 #endregion
 
+// Add these public variables for camera to track
+is_on_ground = false;
+public_vsp = 0; // A public version of vsp for the camera
+
 
 #region VISUALS
 facing_direction = 1; // 1 for right, -1 for left
@@ -140,3 +144,4 @@ current_step_sound = 0;
 // re-triggering on the same animation frame.
 image_index_previous = 0;
 #endregion
+

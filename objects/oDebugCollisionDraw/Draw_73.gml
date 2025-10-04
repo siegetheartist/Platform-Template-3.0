@@ -7,7 +7,7 @@ if (global.debug_collision) {
     var view_h = camera_get_view_height(cam);
  
     // --- Tilemap info ---
-    var tilemap_id = layer_tilemap_get_id("t_Collision");
+    var tilemap_id = layer_tilemap_get_id("tsCollision");
     var tile_w = tilemap_get_tile_width(tilemap_id);
     var tile_h = tilemap_get_tile_height(tilemap_id);
  
@@ -35,7 +35,7 @@ if (global.debug_collision) {
  
     // --- Player collision mask + paired edge highlight ---
     with (oPlayer) {
-        var tm = layer_tilemap_get_id("t_Collision");
+        var tm = layer_tilemap_get_id("tsCollision");
  
         var left   = bbox_left;
         var right  = bbox_right;
@@ -136,8 +136,8 @@ if (global.debug_collision) {
         draw_line_width(_outer_right_x, _line_y_thresh_start, _outer_right_x, _line_y_thresh_end, .5);
     }
     
-    // --- Spatial sound range for oSpikeTrap ---
-    with (oSpikeTrap) {
+    // --- Spatial sound range for objTrapSpike ---
+    with (objTrapSpike) {
         // Preserve draw settings for other debug elements, reset at end of this loop
         var _prev_alpha = draw_get_alpha();
         var _prev_color = draw_get_color();
@@ -156,7 +156,27 @@ if (global.debug_collision) {
         draw_set_color(_prev_color);
     }
     
-    // --- Spatial sound range for oSpikeTrap ---
+        // --- Spatial sound range for objTrapSpear ---
+    with (objTrapSpear) {
+        // Preserve draw settings for other debug elements, reset at end of this loop
+        var _prev_alpha = draw_get_alpha();
+        var _prev_color = draw_get_color();
+ 
+        // Visualize full volume zone
+        draw_set_alpha(0.20); // Set to 20% opacity
+        draw_set_color(c_lime); 
+        draw_circle(x, y, falloff_ref, false);
+ 
+        // Visualize fade-out boundary
+        draw_set_alpha(0.60); // Set to 60% opacity
+        draw_set_color(c_red); 
+        draw_circle(x, y, falloff_max, true);
+        
+        draw_set_alpha(_prev_alpha);
+        draw_set_color(_prev_color);
+    }
+    
+    // --- Spatial sound range for objTimedPlatform ---
     with (objTimedPlatform) {
         // Preserve draw settings for other debug elements, reset at end of this loop
         var _prev_alpha = draw_get_alpha();

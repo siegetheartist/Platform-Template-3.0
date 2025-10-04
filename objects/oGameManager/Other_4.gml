@@ -22,7 +22,7 @@ switch (room) {
     case rLevel1:
         audio_play_sound(sndLevel1, 10, true);
         break;
-    case r_start_screen:
+    case rStartScreen:
         // You can have a different music track for your menu screen
         audio_play_sound(sndMenuMusic, 10, true);
         break;
