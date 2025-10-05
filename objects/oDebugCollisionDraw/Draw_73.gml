@@ -136,6 +136,54 @@ if (global.debug_collision) {
         draw_line_width(_outer_right_x, _line_y_thresh_start, _outer_right_x, _line_y_thresh_end, .5);
     }
     
+    
+    // --- Camera vertical deadzone debug ---
+    if (instance_exists(oCamera)) {
+        var _cam = oCamera;
+    
+        // Camera center (already includes offset in actual view logic)
+        var _cam_center_x = _cam.cam_x;
+        var _cam_center_y = _cam.cam_y;
+    
+        // Config
+        var _margin_y = _cam.cam_margin_y;
+        var _offset_y = _cam.vertical_offset;
+    
+        // For debug: shift the anchor DOWN by vertical_offset
+        // This makes the aqua lines line up with the player origin as expected
+        var _debug_anchor_y = _cam_center_y + _offset_y;
+    
+        // Deadzone boundaries relative to this adjusted anchor
+        var _deadzone_top    = _debug_anchor_y - _margin_y;
+        var _deadzone_bottom = _debug_anchor_y + _margin_y;
+    
+        // Horizontal span of the camera view
+        var _left  = _cam_center_x - (_cam.cam_width / 2);
+        var _right = _cam_center_x + (_cam.cam_width / 2);
+    
+        // Draw aqua lines
+        draw_set_alpha(1);
+        draw_set_color(c_aqua);
+        draw_line_width(_left, _deadzone_top, _right, _deadzone_top, 1.5);
+        draw_line_width(_left, _deadzone_bottom, _right, _deadzone_bottom, 1.5);
+    
+        // Fill region
+        draw_set_alpha(0.15);
+        draw_rectangle(_left, _deadzone_top, _right, _deadzone_bottom, false);
+        draw_set_alpha(1);
+    
+        // --- Optional: draw player origin for clarity ---
+        if (instance_exists(_cam.target)) {
+            var _px = _cam.target.x;
+            var _py = _cam.target.y;
+            draw_set_color(c_red);
+            draw_line(_px - 6, _py, _px + 6, _py);
+            draw_line(_px, _py - 6, _px, _py + 6);
+        }
+    }
+
+
+        
     // --- Spatial sound range for objTrapSpike ---
     with (objTrapSpike) {
         // Preserve draw settings for other debug elements, reset at end of this loop

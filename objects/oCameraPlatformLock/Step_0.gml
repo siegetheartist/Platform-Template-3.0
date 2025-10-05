@@ -8,54 +8,47 @@ if (!instance_exists(target)) {
 }
 
 // --- HORIZONTAL ANCHORING & THRESHOLD LOGIC ---
-// 1. Calculate the player's X position relative to the camera's current center.
+// [ YOUR EXISTING HORIZONTAL LOGIC REMAINS UNCHANGED ]
 var player_relative_to_cam_center_x = target.x - cam_x;
-
-// 2. Determine player's current horizontal movement direction.
 var player_current_hsp_dir = sign(target.hsp);
-
-// 3. Check for focus direction change based on player's relative position and movement.
-if (camera_focus_dir == 1) { // Currently focused right
+if (camera_focus_dir == 1) {
     if (player_current_hsp_dir < 0 && player_relative_to_cam_center_x < -outer_threshold_offset) {
         camera_focus_dir = -1;
     }
-} else { // Currently focused left
+} else {
     if (player_current_hsp_dir > 0 && player_relative_to_cam_center_x > outer_threshold_offset) {
         camera_focus_dir = 1;
     }
 }
-
-// Smoothly adjust the look_ahead_offset_amount towards its target
 var target_look_ahead_offset = camera_focus_dir * max_look_ahead_offset;
 look_ahead_offset_amount = lerp(look_ahead_offset_amount, target_look_ahead_offset, look_ahead_lerp_speed);
-
-// 4. Determine the ideal target X for the camera center
 var ideal_cam_center_x = target.x + look_ahead_offset_amount;
 
-// 5. Determine the ideal target Y for the camera center (with upward bias)
-var ideal_cam_center_y = target.y - vertical_offset;
-
 // --- APPLY DEADZONE AND LERP LOGIC TO X ---
+// [ YOUR EXISTING HORIZONTAL LERP LOGIC REMAINS UNCHANGED ]
 var dx = ideal_cam_center_x - cam_x;
 if (abs(dx) > cam_margin_x) {
     cam_x += (dx - sign(dx) * cam_margin_x) * cam_lerp;
 }
 
-// --- APPLY DEADZONE AND LERP LOGIC TO Y ---
-var dy = ideal_cam_center_y - cam_y;
-if (abs(dy) > cam_margin_y) {
-    cam_y += (dy - sign(dy) * cam_margin_y) * cam_lerp;
+
+// --- NEW VERTICAL LOGIC ---
+// This logic keeps the camera vertically still while the player is in the air,
+// and adjusts only after the player lands on new ground.
+
+// IMPORTANT: This assumes your player object has a variable
+// named 'on_ground' which is true when on the ground, and false otherwise.
+if (target.is_on_ground) {
+    // When the player is on the ground, update the camera's target Y-position.
+    // This sets the goal to be the player's current height, minus the offset.
+    cam_target_y = target.y - cam_vertical_offset;
 }
 
-// --- GROUND ALIGNMENT FIX (lerp instead of snap) ---
-if (target.is_on_ground) {
-    var bottom_threshold = cam_y + cam_margin_y;
-    if (target.y < bottom_threshold) {
-        // Lerp camera so bottom threshold hugs the player's feet
-        var desired_y = target.y - (vertical_offset + cam_margin_y);
-        cam_y = lerp(cam_y, desired_y, 0.08); // tweak smoothing factor
-    }
-}
+// ALWAYS smoothly move the camera's actual Y towards the target Y.
+// Because cam_target_y only updates when the player is on the ground, the camera will
+// appear to wait until the player lands before moving.
+cam_y = lerp(cam_y, cam_target_y, cam_lerp);
+
 
 // --- OPTIONAL: Clamp to room bounds ---
 cam_x = clamp(cam_x, cam_width / 2, room_width - cam_width / 2);
