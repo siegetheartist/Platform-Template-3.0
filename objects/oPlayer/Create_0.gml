@@ -129,7 +129,6 @@ player_state_previous = PlayerState.IDLE; // NEW: Store the previous state for o
 
 // Add these public variables for camera to track
 is_on_ground = false;
-public_vsp = 0; // A public version of vsp for the camera
 
 
 #region VISUALS

@@ -29,7 +29,7 @@ respawn_grace_period = 0; // A timer to briefly prevent death checks after respa
 #region PLAYER STATS AND LIVES
 player_lives = 1; // Player's current number of lives, starts at 1
 crystals_collected = 0; // Number of crystals collected by the player
-max_crystals_for_life = 3; // Number of crystals needed to gain an extra life
+max_crystals_for_life = 4; // Number of crystals needed to gain an extra life
 max_player_health = 4; // Maximum player health (for display and resetting health on respawn)
 #endregion
 

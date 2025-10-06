@@ -1,4 +1,5 @@
 /// @description 2 Inner region camera snapping triggered by 2 threshold regions.
+// Mario horizontally + vertical platform lerp snapping
 
 // --- CAMERA CONFIG ---
 cam_width = 352;
@@ -20,7 +21,8 @@ inner_focus_zone_offset = 20; // Distance from camera center to the inner "ideal
                               // This defines the "anchor" zones (inner flags) for debug drawing.
 
 // --- VERTICAL OFFSET (NEW) ---
-vertical_offset = 24; // 
+vertical_offset = 24; // Pushes camera up from player origin
+vertical_ground_lerp = .1; // Easing for vertical camera follow on ground snapping
  
 // --- INITIAL CAMERA SETUP ---
 target = oPlayer; // The object to follow

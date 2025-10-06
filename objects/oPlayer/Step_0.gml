@@ -280,5 +280,4 @@ image_index_previous = image_index;
 #endregion
 
 
-public_vsp = vsp; // Camera tracks vsp
 player_state_previous = player_state;

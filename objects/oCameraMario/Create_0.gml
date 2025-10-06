@@ -3,19 +3,19 @@
 // --- CAMERA CONFIG ---
 cam_width = 352;
 cam_height = 224;
-cam_margin_x = 48;   // Horizontal deadzone before camera starts moving
-cam_margin_y = 32;   // Vertical deadzone before camera starts moving
-cam_lerp = 1;      // Lerp smoothing factor (0 = instant, 1 = no movement) (Used to be 0.1)
+cam_margin_x = 40;   // Horizontal deadzone: player can move x pixels left and right, from camera's center before, camera starts moving
+cam_margin_y = 50;   // Vertical deadzone before camera starts moving
+cam_lerp = 0.1;      // Lerp smoothing factor (1 = instant, 0 = no movement) (Used to be 0.1)
  
 // --- FORWARD FOCUS CONFIG ---
 // These define the look-ahead behavior
-max_look_ahead_offset = 70; // Max offset from player to camera center for 'look-ahead'
+max_look_ahead_offset = 60; // Max offset from player to camera center for 'look-ahead'
 look_ahead_lerp_speed = 0.1; // How quickly the current look_ahead_offset_amount adjusts
 look_ahead_offset_amount = 0; // The actual current horizontal offset the camera applies
  
 // --- HORIZONTAL ANCHORING & THRESHOLD CONFIG (NEW) ---
 camera_focus_dir = 1; // 1 for right, -1 for left. Initial direction.
-outer_threshold_offset = 54; // Distance from camera center to the outer threshold lines. Player must cross this to flip focus_dir.
+outer_threshold_offset = 40; // Distance from camera center to the outer threshold lines. Player must cross this to flip focus_dir.
 inner_focus_zone_offset = 20; // Distance from camera center to the inner "ideal" player position lines.
                               // This defines the "anchor" zones (inner flags) for debug drawing.
  

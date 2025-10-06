@@ -36,9 +36,6 @@
     "name":"sprDestructableWall",
     "path":"sprites/sprDestructableWall/sprDestructableWall.yy",
   },
-  "spriteMaskId":{
-    "name":"sprDestructableWall",
-    "path":"sprites/sprDestructableWall/sprDestructableWall.yy",
-  },
+  "spriteMaskId":null,
   "visible":true,
 }
