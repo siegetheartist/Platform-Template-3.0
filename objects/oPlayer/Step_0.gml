@@ -255,8 +255,6 @@ if (player_state != PlayerState.ATTACK && !knockback_active) { // Prevent changi
 
 
 
-
-
 #region HAZARD & ENEMY DAMAGE
 // --- Enemy/Hazard Collision and Damage ---
 var _collided_enemy = instance_place(x, y, oEnemy);

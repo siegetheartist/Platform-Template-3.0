@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"scr_stalagmite_destroy",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"scr_stalagmite_destroy",
+  "parent":{
+    "name":"scrHazards",
+    "path":"folders/Scripts/scrHazards.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

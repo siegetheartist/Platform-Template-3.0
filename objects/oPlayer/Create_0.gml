@@ -144,3 +144,5 @@ current_step_sound = 0;
 image_index_previous = 0;
 #endregion
 
+// ADD A LIST OF VARIABLES WITH ALL AVAILABLE SOUND EFFECTS TO THE PLAYER
+

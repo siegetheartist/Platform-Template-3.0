@@ -67,3 +67,6 @@ cam_y = clamp(cam_y, cam_height / 2, room_height - cam_height / 2);
 // --- UPDATE CAMERA POSITION ---
 // Apply the final calculated position to the game's camera.
 camera_set_view_pos(camera, cam_x - cam_width / 2, cam_y - cam_height / 2);
+
+// Keep updating the shake each frame
+scr_camera_shake(view_camera[0], 0, 0);
