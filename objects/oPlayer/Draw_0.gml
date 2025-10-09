@@ -16,10 +16,10 @@ if (sprite_index != noone) {
     } else {
         draw_self();   
     }
-} else {
-    show_debug_message("ERROR: Player sprite is not a valid asset!");
 }
 #endregion
+
+
 
 
 

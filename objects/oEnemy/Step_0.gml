@@ -12,12 +12,12 @@ var _line_of_sight_clear = false; // True if enemy has clear sight to player
 var _target_hsp = 0; // Desired horizontal speed based on current state
 var _pixel_step = 0; // For pixel-by-pixel collision adjustment
  
-// NEW: Variables for player relative position
+// Variables for player relative position
 var _player_is_in_front = false;
 var _player_is_behind = false;
 #endregion
  
-#region TIMER MANAGEMENT (NEW)
+#region TIMER MANAGEMENT
 //  Taunt Timer Management 
 if (taunt_timer > 0) {
     taunt_timer--; // Decrement taunt timer
@@ -28,16 +28,16 @@ if (flash_timer > 0) {
     flash_timer--; // Decrement flash timer
 }
  
-//  Knockback Cooldown Timer Management (NEW)
+//  Knockback Cooldown Timer Management
 if (knockback_cooldown_timer > 0) {
     knockback_cooldown_timer--;
 }
-// NEW: Knockback Duration Timer Management
+// Knockback Duration Timer Management
 if (knockback_duration_timer > 0) {
     knockback_duration_timer--;
 }
  
-//  Patrol Stop Timer Management (NEW)
+//  Patrol Stop Timer Management
 if (patrol_stop_timer > 0) {
     patrol_stop_timer--;
 }
@@ -47,12 +47,12 @@ if (alert_cooldown_timer > 0) {
     alert_cooldown_timer--;
 }
  
-// NEW: Attack Timer Management
+// Attack Timer Management
 if (attack_timer > 0) {
     attack_timer--;
 }
  
-// NEW: Attack Cooldown Timer Management
+// Attack Cooldown Timer Management
 if (attack_cooldown_timer > 0) {
     attack_cooldown_timer--;
     if (attack_cooldown_timer <= 0) {
@@ -62,7 +62,7 @@ if (attack_cooldown_timer > 0) {
 #endregion
  
  
-#region STATE SOUND LOGIC (NEW)
+#region STATE SOUND LOGIC 
 // Reset sound_played_for_current_state if the enemy's state has changed
 if (enemy_state != enemy_state_previous) {
     sound_played_for_current_state = false;

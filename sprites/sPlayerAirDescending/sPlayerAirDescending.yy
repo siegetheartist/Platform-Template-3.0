@@ -4,7 +4,7 @@
   "bboxMode":1,
   "bbox_bottom":71,
   "bbox_left":0,
-  "bbox_right":54,
+  "bbox_right":55,
   "bbox_top":0,
   "collisionKind":1,
   "collisionTolerance":0,
@@ -24,7 +24,7 @@
   ],
   "name":"sPlayerAirDescending",
   "nineSlice":null,
-  "origin":7,
+  "origin":9,
   "parent":{
     "name":"sprPlayer",
     "path":"folders/Sprites/sprPlayer.yy",
@@ -81,7 +81,7 @@
     ],
     "visibleRange":null,
     "volume":1.0,
-    "xorigin":27,
+    "xorigin":28,
     "yorigin":72,
   },
   "swatchColours":null,
@@ -92,5 +92,5 @@
   },
   "type":0,
   "VTile":false,
-  "width":55,
+  "width":56,
 }
