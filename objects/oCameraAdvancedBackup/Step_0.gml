@@ -75,15 +75,13 @@ else {
         // --- FALL MODE LOGIC ---
         // The camera has committed to falling.
         // Remove vertical offset to see more of what's below.
-        var fall_ideal_y = target.y - vertical_offset;
-        
-        // Snap instantly to the bottom of the deadzone for a "sticky" fall.
-        cam_y = fall_ideal_y - cam_y_deadzone;
+        var fall_ideal_y = target.y;
         
         // Define the target Y, which is the bottom edge of the deadzone relative to the player.
-        //target_y = fall_ideal_y - cam_y_deadzone;
+        var target_y = fall_ideal_y - cam_y_deadzone;
+        
         // Smoothly LERP towards the target Y position for a smoother fall-follow.
-        //cam_y = lerp(cam_y, target_y, cam_fall_lerp);
+        cam_y = lerp(cam_y, target_y, cam_fall_lerp);
 
     } else {
         // --- NORMAL AERIAL / JUMPING LOGIC ---
@@ -96,13 +94,14 @@ else {
     }
 }
 
-// --- Clamp to room bounds ---
+// --- OPTIONAL: Clamp to room bounds ---
+// Prevents the camera from showing areas outside the room.
 cam_x = clamp(cam_x, cam_width / 2, room_width - cam_width / 2);
 cam_y = clamp(cam_y, cam_height / 2, room_height - cam_height / 2);
 
-
+// --- UPDATE CAMERA POSITION ---
 // Apply the final calculated position to the game's camera.
 camera_set_view_pos(camera, cam_x - cam_width / 2, cam_y - cam_height / 2);
 
-// Keep updating the shake each frame when called
+// Keep updating the shake each frame
 scr_camera_shake(view_camera[0], 0, 0);

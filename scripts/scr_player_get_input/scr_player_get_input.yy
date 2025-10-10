@@ -1,9 +1,9 @@
 {
   "$GMScript":"v1",
-  "%Name":"scr_get_input",
+  "%Name":"scr_player_get_input",
   "isCompatibility":false,
   "isDnD":false,
-  "name":"scr_get_input",
+  "name":"scr_player_get_input",
   "parent":{
     "name":"scrPlayer",
     "path":"folders/Scripts/scrPlayer.yy",

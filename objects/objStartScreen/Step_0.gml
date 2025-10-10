@@ -18,7 +18,7 @@ switch (menu_state) {
         
     case 1: // ACTIVE (Main Menu Loop)
         // Gather input from our universal script.
-        var _input = scr_get_input();
+        var _input = scr_player_get_input();
         
         // Handle navigation
         if (_input.left_pressed) {

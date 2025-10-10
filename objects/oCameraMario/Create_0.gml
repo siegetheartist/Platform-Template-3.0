@@ -3,8 +3,8 @@
 // --- CAMERA CONFIG ---
 cam_width = 352;
 cam_height = 224;
-cam_margin_x = 40;   // Horizontal deadzone: player can move x pixels left and right, from camera's center before, camera starts moving
-cam_margin_y = 50;   // Vertical deadzone before camera starts moving
+cam_x_deadzone = 40;   // Horizontal deadzone: player can move x pixels left and right, from camera's center before, camera starts moving
+cam_y_deadzone = 50;   // Vertical deadzone before camera starts moving
 cam_lerp = 0.1;      // Lerp smoothing factor (1 = instant, 0 = no movement) (Used to be 0.1)
  
 // --- FORWARD FOCUS CONFIG ---

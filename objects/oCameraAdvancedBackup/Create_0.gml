@@ -1,5 +1,5 @@
 /// @description 2 Inner region camera snapping triggered by 2 threshold regions.
-// Mario horizontally + vertical offset + vertical platform lerp snapping + fall snapping
+// Mario horizontally + vertical platform lerp snapping
 
 // --- CAMERA CONFIG ---
 cam_width = 352;
@@ -7,12 +7,12 @@ cam_height = 224;
 cam_x_deadzone = 40;   // Horizontal deadzone: player can move x pixels left and right, from camera's center before, camera starts moving
 cam_y_deadzone = 30;   // Vertical deadzone before camera starts moving
 cam_lerp = 0.1;      // Lerp smoothing factor (1 = instant, 0 = no movement) (Used to be 0.1)
-cam_fall_lerp = 1.0; // A dedicated lerp for falling DOWN. Lower is smoother.
+cam_fall_lerp = 0.4; // A dedicated lerp for falling DOWN. Lower is smoother.
  
 // --- FORWARD FOCUS CONFIG ---
 // These define the look-ahead behavior
 max_look_ahead_offset = 60; // Max offset from player to camera center for 'look-ahead'
-look_ahead_lerp_speed = .8; // How quickly the current look_ahead_offset_amount adjusts
+look_ahead_lerp_speed = 0.1; // How quickly the current look_ahead_offset_amount adjusts
 look_ahead_offset_amount = 0; // The actual current horizontal offset the camera applies
  
 // --- HORIZONTAL ANCHORING & THRESHOLD CONFIG (NEW) ---

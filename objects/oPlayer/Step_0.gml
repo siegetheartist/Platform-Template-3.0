@@ -1,10 +1,8 @@
 #region INPUT AND VARIABLES
 // -- Universal Input Handling --
-// The condition to check for input is now in the player object.
 if (can_control && player_state != PlayerState.DEAD) {
     // Get the raw input from our universal script.
-    // We store it in an instance variable `input` so all other scripts/events can access it if needed.
-    input = scr_get_input(); 
+    input = scr_player_get_input(); 
 } else {
     // If we can't control the player, create a "zeroed-out" input struct
     // to prevent the rest of the code from crashing.
@@ -27,7 +25,7 @@ var _dir = input.dir;
 // --- Collision Tileset ---
 var collision_cave01 = layer_tilemap_get_id("tsCollision"); // main room titleset
 var collision_slopes = layer_tilemap_get_id("tlSlopes"); // new layer to handle slopes
-var collision_tileset = [collision_cave01, collision_slopes, objDestructableWall, objTimedPlatform, oInvisibleBlock]; // new variable to hold all collidables
+var collision_tileset = [collision_cave01, collision_slopes, objSlope, objDestructableWall, objTimedPlatform, oInvisibleBlock]; // Holds all collidables
 // rename collision solids?
 
 // This group contains only the objects that should NOT allow wall grabs.
@@ -59,8 +57,8 @@ if (_is_touching_wall) {
 #endregion
 
 
-#region TIMER MANAGEMENT
-// --- Player Timers ---
+#region PLAYER TIMER MANAGEMENT
+
 if (invulnerable_timer > 0) { invulnerable_timer--; }
 if (flash_timer > 0) { flash_timer--; }
 if (attack_timer > 0) { attack_timer--; }
@@ -100,8 +98,8 @@ if (wall_jump_move_loss > 0) {
 if (player_state != PlayerState.WALL_SLIDE && player_state != PlayerState.WALL_GRAB) {
     // Apply gravity to vertical speed.
     vsp += grav;
-    // Clamp vertical speed to prevent it from exceeding max falling speed.
-    vsp = min(vsp, grav_max);
+    vsp = min(vsp, grav_max); // Clamp vertical speed to prevent it from exceeding max falling speed.
+    
     // No upper clamp for vsp when knocked back, allowing full upward impulse.
     // Otherwise, clamp to normal max upward speed for regular jumps.
     if (!knockback_active) {
@@ -125,7 +123,7 @@ if (scr_player_input_jump(_key_jump, _on_ground)) {
 
 #region STATE TRANSITIONS
 
-// Attack Input Check (takes priority over other transitions) - Now calls a dedicated script
+// Attack Input Check (takes priority over other transitions)
 scr_player_input_attack(_key_attack_pressed); // This script will handle the transition to ATTACK state
 
 // Transition from wall slide to ground
@@ -140,16 +138,11 @@ if (_on_ground && player_state == PlayerState.WALL_SLIDE) {
 
 // Universal transition from air to ground
 if (_on_ground && player_state == PlayerState.AIR) {
-    // Spawn dust cloud on landing
-    scr_spawn_dust_cloud(x, y, facing_direction);
 
     // Check if the player was truly in an AIR state in the previous frame
     // to prevent playing the landing sound immediately after initiating a jump.
     if (player_state_previous == PlayerState.AIR) {
-        // Play landing sound
         audio_play_sound(sndPlayerJumpLanding, 10, false);
-        
-        // Spawn dust cloud on landing
         scr_spawn_dust_cloud(x, y, facing_direction);
     }
     
@@ -181,13 +174,13 @@ if (knockback_active) {
     if (abs(hsp) > knockback_h_friction) {
         hsp -= sign(hsp) * knockback_h_friction;
     } else {
-        hsp = 0; // Snap to zero
+        hsp = 0;
     }
     // End knockback if duration timer runs out
     if (knockback_duration_timer <= 0) {
         knockback_active = false;
-        hsp = 0; // Stop any residual knockback hsp
-        vsp = 0; // Stop any residual knockback vsp
+        hsp = 0;
+        vsp = 0;
     }
 } else { // Normal movement physics if not knocked back
     if (_dir != 0) {
@@ -199,7 +192,7 @@ if (knockback_active) {
         if (abs(hsp) > decel) {
             hsp -= sign(hsp) * decel;
         } else {
-            hsp = 0; // Snap to zero
+            hsp = 0;
         }
     }
 }

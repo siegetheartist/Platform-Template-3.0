@@ -46,7 +46,7 @@ grav_max = 12; // Maximum vertical speed due to normal gravity
 
 // Gravity settings while sliding on a wall
 grav_wall = 0.1; // Reduced gravity strength for wall sliding
-grav_max_wall = 5; // Maximum vertical speed while wall sliding
+grav_wall_max = 5; // Maximum vertical speed while wall sliding
 #endregion
 
 

@@ -25,11 +25,11 @@ var dx = tx - cam_x;
 var dy = ty - cam_y;
 
 // --- APPLY DEADZONE LOGIC ---
-if (abs(dx) > cam_margin_x) {
-    cam_x += (dx - sign(dx) * cam_margin_x) * cam_lerp;
+if (abs(dx) > cam_x_deadzone) {
+    cam_x += (dx - sign(dx) * cam_x_deadzone) * cam_lerp;
 }
-if (abs(dy) > cam_margin_y) {
-    cam_y += (dy - sign(dy) * cam_margin_y) * cam_lerp;
+if (abs(dy) > cam_y_deadzone) {
+    cam_y += (dy - sign(dy) * cam_y_deadzone) * cam_lerp;
 }
 
 // --- OPTIONAL: Clamp to room bounds ---

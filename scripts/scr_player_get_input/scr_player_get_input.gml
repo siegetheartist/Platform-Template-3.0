@@ -1,8 +1,8 @@
-/// @function scr_get_input();
+/// @function scr_player_get_input();
 /// @description Gathers all raw keyboard and gamepad inputs and returns them in a struct.
 /// @return {struct} A struct containing the state of all defined inputs.
 
-function scr_get_input() {
+function scr_player_get_input() {
     
     // --- Define the structure for all possible inputs ---
     var _input_data = {

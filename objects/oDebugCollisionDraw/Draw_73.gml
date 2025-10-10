@@ -146,7 +146,7 @@ if (global.debug_collision) {
         var _cam_center_y = _cam.cam_y;
     
         // Config
-        var _margin_y = _cam.cam_margin_y;
+        var _margin_y = _cam.cam_y_deadzone;
         var _offset_y = _cam.vertical_offset;
     
         // For debug: shift the anchor DOWN by vertical_offset

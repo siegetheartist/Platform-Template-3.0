@@ -1,16 +1,13 @@
 {
   "$GMObject":"",
-  "%Name":"oCameraMario",
-  "eventList":[
-    {"$GMEvent":"v1","%Name":"","collisionObjectId":null,"eventNum":0,"eventType":0,"isDnD":false,"name":"","resourceType":"GMEvent","resourceVersion":"2.0",},
-    {"$GMEvent":"v1","%Name":"","collisionObjectId":null,"eventNum":0,"eventType":3,"isDnD":false,"name":"","resourceType":"GMEvent","resourceVersion":"2.0",},
-  ],
+  "%Name":"objSlope",
+  "eventList":[],
   "managed":true,
-  "name":"oCameraMario",
+  "name":"objSlope",
   "overriddenProperties":[],
   "parent":{
-    "name":"Cameras",
-    "path":"folders/Objects/Controllers/Cameras.yy",
+    "name":"objEnvironment",
+    "path":"folders/Objects/objEnvironment.yy",
   },
   "parentObjectId":null,
   "persistent":false,
@@ -30,7 +27,10 @@
   "resourceType":"GMObject",
   "resourceVersion":"2.0",
   "solid":false,
-  "spriteId":null,
+  "spriteId":{
+    "name":"sprSlope",
+    "path":"sprites/sprSlope/sprSlope.yy",
+  },
   "spriteMaskId":null,
   "visible":true,
 }

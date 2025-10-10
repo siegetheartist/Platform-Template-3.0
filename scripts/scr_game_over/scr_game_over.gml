@@ -10,7 +10,7 @@ function scr_game_over() {
 
     // --- Gather Input ---
     // Get the raw input from the exact same script the player uses.
-    var _input = scr_get_input();
+    var _input = scr_player_get_input();
     
     // --- Handle Menu Logic ---
     

@@ -9,8 +9,8 @@
   "name":"oCamera01",
   "overriddenProperties":[],
   "parent":{
-    "name":"Controllers",
-    "path":"folders/Objects/Controllers.yy",
+    "name":"Cameras",
+    "path":"folders/Objects/Controllers/Cameras.yy",
   },
   "parentObjectId":null,
   "persistent":false,

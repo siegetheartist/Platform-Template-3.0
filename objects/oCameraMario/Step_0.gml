@@ -40,20 +40,20 @@ look_ahead_offset_amount = lerp(look_ahead_offset_amount, target_look_ahead_offs
 var ideal_cam_center_x = target.x + look_ahead_offset_amount; // Use the dynamically adjusted look_ahead_offset_amount
  
 // 5. Determine the ideal target Y for the camera center (for vertical follow, usually just player's Y).
-var ideal_cam_center_y = target.y;
+var _ideal_cam_center_y = target.y;
  
 // --- APPLY DEADZONE AND LERP LOGIC TO X ---
-// The camera only moves horizontally if the `ideal_cam_center_x` is outside the `cam_margin_x` deadzone.
+// The camera only moves horizontally if the `ideal_cam_center_x` is outside the `cam_x_deadzone` deadzone.
 var dx = ideal_cam_center_x - cam_x;
-if (abs(dx) > cam_margin_x) {
-    cam_x += (dx - sign(dx) * cam_margin_x) * cam_lerp;
+if (abs(dx) > cam_x_deadzone) {
+    cam_x += (dx - sign(dx) * cam_x_deadzone) * cam_lerp;
 }
  
 // --- APPLY DEADZONE AND LERP LOGIC TO Y (Existing vertical logic) ---
-// The camera only moves vertically if the `ideal_cam_center_y` is outside the `cam_margin_y` deadzone.
-var dy = ideal_cam_center_y - cam_y;
-if (abs(dy) > cam_margin_y) {
-    cam_y += (dy - sign(dy) * cam_margin_y) * cam_lerp;
+// The camera only moves vertically if the `_ideal_cam_center_y` is outside the `cam_y_deadzone` deadzone.
+var dy = _ideal_cam_center_y - cam_y;
+if (abs(dy) > cam_y_deadzone) {
+    cam_y += (dy - sign(dy) * cam_y_deadzone) * cam_lerp;
 }
  
 // --- OPTIONAL: Clamp to room bounds ---

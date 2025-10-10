@@ -3,8 +3,8 @@
 // --- CAMERA CONFIG ---
 cam_width = 352;
 cam_height = 224;
-cam_margin_x = 48;   // Horizontal deadzone before camera starts moving
-cam_margin_y = 32;   // Vertical deadzone before camera starts moving
+cam_x_deadzone = 48;   // Horizontal deadzone before camera starts moving
+cam_y_deadzone = 32;   // Vertical deadzone before camera starts moving
 cam_lerp = 0.1;      // Lerp smoothing factor (0 = instant, 1 = no movement)
 
 // --- FORWARD FOCUS CONFIG ---
