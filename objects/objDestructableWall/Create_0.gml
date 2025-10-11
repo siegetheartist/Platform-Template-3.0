@@ -3,8 +3,8 @@
 event_inherited();
  
 // Overrides specific to objDestructableWall
-current_health = sprite_get_number(sprite_index);
-max_health = sprite_get_number(sprite_index); // Max health should match initial_health
+current_health = 3;
+max_health = 3;
  
 // Assign specific sounds for this breakable wall
 snd_hit = sndWallHit; // You'll need to create this sound asset, e.g., a 'thwack' or 'crack'

@@ -1,9 +1,7 @@
-//  Enemy Parent Drawing Logic 
+/// @description oEnemy draw event
+// Draw visual damage flash-blinking indicator
+scr_obj_flash_draw();
 
-#region DEFAULT DRAWING
-// --- Visual Damage Indicator (Blinking) --- 
-scr_draw_self_flash();
-#endregion
 
 #region ALARM INDICATOR DRAWING
 // Only draw the exclamation mark if the enemy is in ALERT or CHASE state

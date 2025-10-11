@@ -91,7 +91,6 @@ if (wall_jump_move_loss > 0) {
 #endregion
 
 
-
 #region GENERAL VERTICAL MOVEMENT PHYSICS
 // Wall slide and wall grab states handle their own vertical movement, overriding default gravity.
 // Therefore, only apply general gravity if not in those states.
@@ -109,16 +108,12 @@ if (player_state != PlayerState.WALL_SLIDE && player_state != PlayerState.WALL_G
 #endregion
 
 
-
 #region JUMP LOGIC
 // We check for jump input here, before state transitions, to ensure that
 // a jump can be registered even in the brief window after leaving the ground (coyote time).
 if (scr_player_input_jump(_key_jump, _on_ground)) {
 }
 #endregion
-
-
-
 
 
 #region STATE TRANSITIONS
@@ -167,7 +162,6 @@ if ((player_health <= 0 || y > fall_threshold) && player_state != PlayerState.DE
 #endregion
 
 
-
 #region HORIZONTAL MOVEMENT PHYSICS (DEFAULT AND KNOCKBACK)
 if (knockback_active) {
     // Apply knockback-specific friction/deceleration
@@ -199,7 +193,6 @@ if (knockback_active) {
 #endregion
 
 
-
 #region STATE MACHINE LOGIC
 // Execute the logic for the current state
 switch (player_state) {
@@ -228,11 +221,9 @@ switch (player_state) {
 #endregion
 
 
-
 #region MOVEMENT AND COLLISION
 scr_move_and_collide(collision_tileset);
 #endregion
-
 
 
 #region UPDATE VISUALS
@@ -244,24 +235,6 @@ if (player_state != PlayerState.ATTACK && !knockback_active) { // Prevent changi
         facing_direction = sign(hsp);
     }
 }
-#endregion
-
-
-
-#region HAZARD & ENEMY DAMAGE
-// --- Enemy/Hazard Collision and Damage ---
-var _collided_enemy = instance_place(x, y, oEnemy);
-if ((_collided_enemy != noone) && invulnerable_timer <= 0) {
-    var _damage_taken = _collided_enemy.enemy_damage;
-
-    if (_damage_taken > 0) {
-        scr_apply_damage(id, _damage_taken, "player_health", sndPlayerTakesDamage);
-        scr_apply_invulnerability(id);
-        scr_apply_flash(id);
-        scr_status_effect_knockback(id, _collided_enemy.x, _collided_enemy.knockback_h_strength, _collided_enemy.knockback_v_strength);
-    }
-}
-
 #endregion
 
 

@@ -1,12 +1,12 @@
 {
   "$GMScript":"v1",
-  "%Name":"scr_apply_flash",
+  "%Name":"scr_obj_flash",
   "isCompatibility":false,
   "isDnD":false,
-  "name":"scr_apply_flash",
+  "name":"scr_obj_flash",
   "parent":{
-    "name":"scrDamage",
-    "path":"folders/Scripts/scrDamage.yy",
+    "name":"scrAnimations",
+    "path":"folders/Scripts/scrAnimations.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

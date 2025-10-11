@@ -68,6 +68,65 @@ if (enemy_state != enemy_state_previous) {
     sound_played_for_current_state = false;
 }
 #endregion
+
+
+
+// --- DEATH STATE TRIGGER & HANDLER ---
+// HIGHEST PRIORITY: Check for death.
+if (enemy_health <= 0) {
+    enemy_state = ENEMY_STATE.DEATH;
+}
+
+// If the enemy is in the DEATH state, run only death logic and stop everything else.
+if (enemy_state == ENEMY_STATE.DEATH) {
+    // Stop all movement immediately
+    hsp = 0;
+    vsp = 0;
+            
+    // On the first frame of entering the death state...
+    if (!sound_played_for_current_state) {
+        // Play death sound
+        if (snd_death != noone) {
+            audio_play_sound(snd_death, 10, false);
+        }
+
+        // Change to death sprite and start animation
+        if (spr_death != -1) {
+            sprite_index = spr_death;
+            image_index = 0;
+            image_speed = 1;
+        }
+        
+        // Spawn the death effect object
+        if (obj_death_effect != noone) {
+            instance_create_layer(x, y, "alForeground", obj_death_effect);
+        }
+        
+        sound_played_for_current_state = true; // Mark that on-entry logic is done
+    }
+
+    // --- Destruction Logic ---
+    // 1. If there's a death animation, wait for it to finish.
+    if (sprite_index == spr_death) {
+        if (image_index >= image_number - 1) {
+            instance_destroy();
+        }
+    }
+    // 2. If no animation, check if the death effect object has been destroyed.
+    else if (obj_death_effect != noone) {
+        if (!instance_exists(obj_death_effect)) {
+            instance_destroy();
+        }
+    }
+    // 3. Fallback: If no animation and no death effect, destroy immediately.
+    else {
+        instance_destroy();
+    }
+    
+    // !!! CRITICAL FIX: Exit the event so no other logic (like AI or collisions) runs !!!
+    exit; 
+}
+
  
  
 // Only AI logic and target_hsp calculation happens if not actively knocked back.
@@ -75,7 +134,7 @@ if (!knockback_active) {
  
     #region WAIT AND TURN STATE
     if (enemy_state == ENEMY_STATE.WAIT_AND_TURN) {
-        hsp_max = 0; // Ensure no horizontal movement while waitinglol
+        hsp_max = 0; // Ensure no horizontal movement while waiting
         if (patrol_stop_timer <= 0) {
             current_dir *= -1; // Reverse direction after waiting
             enemy_state = ENEMY_STATE.PATROL; // Resume patrolling
@@ -293,6 +352,9 @@ if (!knockback_active) {
                         sound_played_for_current_state = false; // Reset for new state
                     }
                     break;
+
+                    
+
             }
         } else {
             // If no player exists, ensure the enemy is in patrol mode
@@ -316,6 +378,10 @@ if (enemy_state == ENEMY_STATE.PATROL) {
 }
 #endregion
  
+
+
+
+
 #region MOVEMENT ACCELERATION / DECELERATION
 if (knockback_active) {
     // Apply knockback-specific friction/deceleration

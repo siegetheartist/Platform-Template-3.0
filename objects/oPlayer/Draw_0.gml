@@ -5,7 +5,8 @@ if (player_state != PlayerState.WALL_SLIDE && player_state != PlayerState.WALL_G
     image_xscale = facing_direction;
 }
 
-scr_draw_self_flash();
+// Draw visual damage flash-blinking indicator
+scr_obj_flash_draw();
 #endregion
 
 

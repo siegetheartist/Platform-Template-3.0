@@ -2,7 +2,7 @@
 
 #region DEFAULT DRAWING
 // --- Visual Damage Indicator (Blinking) --- 
-scr_draw_self_flash();
+scr_obj_flash_draw();
 #endregion
 
 #region ALARM INDICATOR DRAWING

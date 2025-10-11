@@ -9,30 +9,38 @@ if (ds_list_find_index(hit_enemies, other.id) == -1) {
  
     if (variable_instance_exists(other, "enemy_health")) {
         scr_apply_damage(other, damage, "enemy_health", sndEnemyHit);
-        scr_apply_flash(other);
-                
-        // NEW: Initiate hit animation if a specific hit sprite is assigned
-        if (other.spr_hit_specific != -1) {
-            // Store current animation state to revert to it later
-            other.original_sprite_index = other.sprite_index;
-            other.original_image_speed = other.image_speed;
-            other.original_image_index = other.image_index;
-            
-            // Set the hit animation sprite and start it
-            other.sprite_index = other.spr_hit_specific;
-            other.image_index = 0; // Start hit animation from the beginning
-            other.image_speed = 1; // Play hit animation at normal speed
-            other.is_hit_animating = true; // Flag to indicate hit animation is active
-            // Set enemy's image_xscale to match the player's attack direction
-            if (instance_exists(owner)) {
-                other.image_xscale = owner.facing_direction;
-            }
-        }
         
-        // Apply knockback if cooldown allows
-        if (instance_exists(owner)) { // Ensure the player (owner) still exists to get its position
-            // Use THIS ATTACK'S (self) knockback strengths, not the enemy's (other) 'receiving' strengths.
-            scr_status_effect_knockback(other, owner.x, self.knockback_h_strength, self.knockback_v_strength);
+        if (other.enemy_health > 0) {
+            // If it is, apply all the non-fatal hit effects.
+            scr_obj_flash_initialize(other);
+            
+            #region remove
+                /*
+            // NEW: Initiate hit animation if a specific hit sprite is assigned
+            if (other.spr_hit_specific != -1) {
+                // Store current animation state to revert to it later
+                other.original_sprite_index = other.sprite_index;
+                other.original_image_speed = other.image_speed;
+                other.original_image_index = other.image_index;
+                
+                // Set the hit animation sprite and start it
+                other.sprite_index = other.spr_hit_specific;
+                other.image_index = 0; // Start hit animation from the beginning
+                other.image_speed = 1; // Play hit animation at normal speed
+                other.is_hit_animating = true; // Flag to indicate hit animation is active
+                // Set enemy's image_xscale to match the player's attack direction
+                if (instance_exists(owner)) {
+                    other.image_xscale = owner.facing_direction;
+                }
+            }
+            */
+            #endregion
+    
+            // Apply knockback if cooldown allows
+            if (instance_exists(owner)) { // Ensure the player (owner) still exists to get its position
+                // Use THIS ATTACK'S (self) knockback strengths, not the enemy's (other) 'receiving' strengths.
+                scr_status_effect_knockback(other, owner.x, self.knockback_h_strength, self.knockback_v_strength);
+            }
         }
 
         
@@ -54,30 +62,7 @@ if (ds_list_find_index(hit_enemies, other.id) == -1) {
                 if (instance_exists(_impact_instance)) {
                     _impact_instance.image_xscale = _player_inst_ref.facing_direction;
                 }
-            } else {
-                // Enemy is dead → spawn death effect instead
-                if (other.obj_death_effect != noone) {
-                    instance_create_layer(other.x, other.y, "alForeground", other.obj_death_effect);
-                }
-            }
-        } else {
-            // Fallback if player instance somehow doesn't exist
-            if (other.enemy_health > 0) {
-                instance_create_layer(other.x, other.y, "alForeground", oAttackImpact);
-            } else {
-                if (other.obj_death_effect != noone) {
-                    instance_create_layer(other.x, other.y, "alForeground", other.obj_death_effect);
-                }
             }
         }
-        
-        // Handle death cleanup
-        if (other.enemy_health <= 0) {
-            if (variable_instance_exists(other, "snd_death") && other.snd_death != noone) {
-                audio_play_sound(other.snd_death, 1, false);
-            }
-            instance_destroy(other);
-        }
-
     }
 }
