@@ -3,15 +3,6 @@
 // Inherit all variables and settings from the parent oEnemy
 event_inherited(); 
 
-//  Initialize specific sprites and calculate offsets using the helper script 
-// Calls the function with the specific sprite assets for the Orc, including the taunt sprite.
-scr_enemy_init_sprites_and_offsets(sOrcIdle, sOrcPatrol, sOrcChase, sOrcTaunt, -1); // NEW: -1 for no specific attack sprite yet
- 
-// NEW: Assign the specific hit sprite for the Orc
-self.spr_hit_specific = sOrcHurt; // Assuming you have a sprite 'sOrcHit'
-spr_death = sOrcDeath;
-obj_death_effect = oOrcDeathEffect;
-
 #region PARENT OVERRIDES for Goblin's behavior
 // Define movement speeds for different states
 patrol_hsp_max = .5; // Default slower speed for patrolling
@@ -47,6 +38,19 @@ attack_cooldown_duration = 0;
 // NEW: Knockback inflicted by Orc's attack (currently 0 as no attack defined)
 knockback_h_strength = 6;  // Horizontal knockback inflicted by orc's attack
 knockback_v_strength = 0; // Vertical knockback inflicted by orc's attack
+#endregion
+
+#region SPRITES + EFFECTS
+spr_idle = sOrcIdle;
+spr_alerted = sprOrcAlerted;
+spr_patrol = sOrcPatrol;
+spr_chase = sOrcChase;
+spr_taunt = sOrcTaunt;
+spr_attack = noone;
+spr_hurt = sOrcHurt;
+spr_death = sOrcDeath;
+exclamation_sprite = spr_exclamation;
+obj_death_effect = oOrcDeathEffect;
 #endregion
 
 #region ORC SPECIFIC SOUNDS

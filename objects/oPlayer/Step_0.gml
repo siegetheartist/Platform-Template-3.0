@@ -238,10 +238,7 @@ if (player_state != PlayerState.ATTACK && !knockback_active) { // Prevent changi
 #endregion
 
 
-#region MISC LOGIC
-// Update previous image index for animation sound logic
-image_index_previous = image_index;
-#endregion
 
-
+// Keep track of previous variable values
+image_index_previous = image_index; // // Update previous image index for animation sound logic
 player_state_previous = player_state;

@@ -3,15 +3,6 @@
 // Inherit all variables and settings from the parent oEnemy
 event_inherited(); 
 
-//  Initialize specific sprites and calculate offsets using the helper script 
-// Calls the function with the specific sprite assets for the Goblin, including the taunt sprite.
-scr_enemy_init_sprites_and_offsets(sGoblinIdle, sGoblinPatrol, sGoblinChase, sGoblinTaunt, sGoblinAttack01);
- 
-// NEW: Assign the specific hit sprite for the Goblin
-self.spr_hit_specific = sGoblinHurt;
-spr_death = sGoblinDeath;
-obj_death_effect = oGoblinDeathEffect;
-
 #region PARENT OVERRIDES for Goblin's behavior
 // Define movement speeds for different states
 patrol_hsp_max = 1; // Default slower speed for patrolling
@@ -47,6 +38,19 @@ attack_cooldown_duration = 60; // 1 second cooldown after attack
 // NEW: Knockback inflicted by Goblin's attack
 knockback_h_strength = 3;  // Horizontal knockback inflicted by goblin's attack
 knockback_v_strength = -0; // Vertical knockback inflicted by goblin's attack
+#endregion
+
+#region SPRITES + EFFECTS
+spr_idle = sGoblinIdle;
+spr_alerted = sprGoblinAlerted;
+spr_patrol = sGoblinPatrol;
+spr_chase = sGoblinChase;
+spr_taunt = sGoblinTaunt;
+spr_attack = sGoblinAttack01;
+spr_hurt = sGoblinHurt;
+spr_death = sGoblinDeath;
+exclamation_sprite = spr_exclamation;
+obj_death_effect = oGoblinDeathEffect;
 #endregion
 
 #region GOBLIN SPECIFIC SOUNDS

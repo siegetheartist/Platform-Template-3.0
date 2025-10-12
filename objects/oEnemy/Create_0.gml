@@ -54,6 +54,7 @@ enum ENEMY_STATE {
     TAUNT,    // Enemy is taunting after hitting the player
     WAIT_AND_TURN, // Enemy stops, waits, then turns around
     ATTACK,
+    HURT,
     DEATH
 }
 
@@ -93,16 +94,6 @@ _ground_check_offset = 0; // Initialize, will be set by children
 // Placeholder for the exclamation mark sprite. Children will set their specific sprite.
 exclamation_sprite = -1; 
 
-// Placeholder sprite variables for animation (children will set these)
-spr_idle_specific = -1; // Stores the specific idle sprite for this enemy type.
-spr_patrol_move = -1; // Default sprite for moving during patrol/alert
-spr_chase_move = -1;  // Default sprite for moving during chase
-spr_taunt_specific = -1; // NEW: Stores the specific taunt sprite for this enemy type.
-spr_attack_specific = -1; // NEW: Specific attack animation sprite
-// spr_hurt = -1; in future, add this instead of spr_hit_specific to keep everything grouped up
-spr_death = -1; // Placeholder for the death animation sprite
-obj_death_effect = noone; // Placeholder for the death effect object
-
 //  TAUNT SETTINGS
 taunt_timer = 0; // Timer for how long the enemy is in the TAUNT state
 taunt_duration = 60; // How long the enemy taunts (1 second at 60 FPS)
@@ -128,14 +119,30 @@ flash_timer = 0; // Timer for visual damage indicator (blinking)
 flash_duration = 10; // How long the enemy sprite flashes after taking damage (0.5 seconds at 60 FPS)
 
 // NEW: Variables for hit animation
-spr_hit_specific = -1; // Specific hit animation sprite for this enemy type. Children will override.
 is_hit_animating = false; // Flag to indicate if the enemy is currently playing a hit animation.
 original_sprite_index = noone; // Stores the sprite_index before playing the hit animation.
 original_image_speed = 1; // Stores the image_speed before playing the hit animation.
 original_image_index = 0; // Stores the image_index before playing the hit animation.
 #endregion
 
-#region AUDIO SETTINGS (NEW)
+#region SPRITES + EFFECTS
+// Placeholder sprite variables for animation (children will set these)
+spr_idle = -1; // Stores the specific idle sprite for this enemy type.
+spr_alerted = -1;
+spr_patrol = -1; // Default sprite for moving during patrol/alert
+spr_chase = -1;  // Default sprite for moving during chase
+spr_taunt = -1; // NEW: Stores the specific taunt sprite for this enemy type.
+spr_attack = -1; // NEW: Specific attack animation sprite
+spr_hurt = -1;
+spr_death = -1; // Placeholder for the death animation sprite
+obj_death_effect = noone; // Placeholder for the death effect object
+#endregion
+
+// Sprite checks
+_edge_check_offset = self.sprite_width / 2 + 2;
+_ground_check_offset = 1;
+
+#region AUDIO SETTINGS
 snd_alert = noone;
 snd_chase = noone;
 snd_taunt = noone;
