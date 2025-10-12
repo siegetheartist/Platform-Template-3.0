@@ -117,12 +117,6 @@ enemy_detect_distance = 24; // Distance from another enemy to trigger a stop and
 // Damage feedback variables
 flash_timer = 0; // Timer for visual damage indicator (blinking)
 flash_duration = 10; // How long the enemy sprite flashes after taking damage (0.5 seconds at 60 FPS)
-
-// NEW: Variables for hurt animation
-is_hurt_animating = false; // Flag to indicate if the enemy is currently playing a hurt animation.
-original_sprite_index = noone; // Stores the sprite_index before playing the hurt animation.
-original_image_speed = 1; // Stores the image_speed before playing the hurt animation.
-original_image_index = 0; // Stores the image_index before playing the hurt animation.
 #endregion
 
 #region SPRITES + EFFECTS

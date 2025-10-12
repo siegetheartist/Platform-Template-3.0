@@ -57,7 +57,7 @@ obj_death_effect = oOrcDeathEffect;
 snd_alert = sndOrcAlert;
 snd_chase = sndOrcChase;
 snd_taunt = sndOrcTaunt;
-snd_hurt = sndOrcHit;
+snd_hurt = sndOrcHurt;
 snd_death = sndOrcDeath;
-snd_attack = noone; // NEW: No specific attack sound yet
+snd_attack = noone;
 #endregion

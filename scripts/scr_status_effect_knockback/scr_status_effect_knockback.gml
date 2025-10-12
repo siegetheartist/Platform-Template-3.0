@@ -5,6 +5,7 @@
 /// @arg {real} _inflicting_h_strength The raw horizontal strength of the knockback impulse to be inflicted.
 /// @arg {real} _inflicting_v_strength The raw vertical strength of the knockback impulse to be inflicted (should be negative for upward).
 function scr_status_effect_knockback(_target_instance, _attacker_x, _inflicting_h_strength, _inflicting_v_strength) {
+    debug_event("Starting knockback script");
     // Ensure target exists and is not currently on knockback cooldown.
     if (instance_exists(_target_instance) && _target_instance.knockback_cooldown_timer <= 0) {
         // Determine knockback direction based on attacker's position relative to target.

@@ -1,6 +1,6 @@
 {
   "$GMSound":"v2",
-  "%Name":"sndOrcHit",
+  "%Name":"sndOrcHurt",
   "audioGroupId":{
     "name":"audiogroup_default",
     "path":"audiogroups/audiogroup_default",
@@ -12,7 +12,7 @@
   "conversionMode":0,
   "duration":2.2354195,
   "exportDir":"",
-  "name":"sndOrcHit",
+  "name":"sndOrcHurt",
   "parent":{
     "name":"sndOrc",
     "path":"folders/Sounds/sndOrc.yy",
@@ -21,6 +21,6 @@
   "resourceType":"GMSound",
   "resourceVersion":"2.0",
   "sampleRate":44100,
-  "soundFile":"sndOrcHit.wav",
-  "volume":0.26,
+  "soundFile":"sndOrcHurt.wav",
+  "volume":1.0,
 }

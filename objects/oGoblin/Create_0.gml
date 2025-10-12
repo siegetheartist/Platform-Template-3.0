@@ -57,7 +57,7 @@ obj_death_effect = oGoblinDeathEffect;
 snd_alert = sndGoblinAlert;
 snd_chase = sndGoblinChase;
 snd_taunt = sndGoblinTaunt;
-snd_hurt = sndGoblinHit;
+snd_hurt = sndGoblinHurt;
 snd_death = sndGoblinDeath;
 snd_attack = sndGoblinAttack01;
 #endregion

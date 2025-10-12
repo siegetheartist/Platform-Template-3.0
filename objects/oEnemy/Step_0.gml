@@ -35,6 +35,7 @@ if (attack_cooldown_timer > 0) {
     }
 }
 if (knockback_active && knockback_duration_timer > 0) {
+    show_debug_message("TIMER MANAGEMENT: Knockback timer: " + string(knockback_duration_timer));
     knockback_duration_timer--; 
 }
 #endregion
@@ -79,8 +80,11 @@ if (enemy_state != ENEMY_STATE.DEATH && enemy_state != ENEMY_STATE.WAIT_AND_TURN
 // --- HURT/KNOCKBACK --- Do BEFORE attack checks so a hit always interrupts an attack windup.
 if (knockback_active && enemy_state != ENEMY_STATE.HURT) {
     // This is needed so HURT can return to the correct state (CHASE, PATROL, etc.).
+    show_debug_message("KNOCKBACK TRANSITION: Previous enemy state: " + string(enemy_state_previous));
     enemy_state_previous = enemy_state; // Store the state we are interrupting
     enemy_state = ENEMY_STATE.HURT;
+    show_debug_message("KNOCKBACK TRANSITION: Enemy state: " + string(enemy_state));
+    state_initialized = false; // CRITICAL. Reset flag when entering hurt since you can enter it from other states
 }
 
 
@@ -155,7 +159,7 @@ if (enemy_state != ENEMY_STATE.ATTACK && enemy_state != ENEMY_STATE.HURT && inst
 switch (enemy_state) {
     case ENEMY_STATE.PATROL:
         hsp_max = patrol_hsp_max;
-        
+
         if (!state_initialized) {
             sprite_index = spr_patrol;
             image_index = 0;
@@ -313,7 +317,7 @@ switch (enemy_state) {
         break;
     case ENEMY_STATE.HURT:
         hsp_max = 0;
-        
+        show_debug_message("HURT STATE: State initialized: " + string(state_initialized));
         if (!state_initialized) {
             if (snd_hurt != noone) { 
                 audio_play_sound(snd_hurt, 10, false); 
@@ -324,10 +328,12 @@ switch (enemy_state) {
             // The drawing is handled by the Draw Event using the flash_timer
             state_initialized = true;
         }
-        
+        //show_debug_message("Knockback timer: " + string(knockback_active));
+        show_debug_message("HURT STATE: Previous state: " + string(enemy_state_previous));
         // Transition out of HURT once the physics override is finished
         if (!knockback_active) {
             enemy_state = enemy_state_previous;
+            show_debug_message("HURT STATE: Enemy state: " + string(enemy_state));
         }
         break;
     case ENEMY_STATE.DEATH:
@@ -507,4 +513,6 @@ if (current_dir == 1) {
 }
  
 // Update previous state for next frame's sound logic
-enemy_state_previous = enemy_state;
+if (enemy_state != ENEMY_STATE.HURT) {
+	enemy_state_previous = enemy_state;
+}
