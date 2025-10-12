@@ -1,8 +1,8 @@
 /// @description Handle animation end for hit animation
  
 // If the hit animation has just finished and we were actively playing it
-if (is_hit_animating && sprite_index == spr_hurt) {
-    is_hit_animating = false; // Turn off the flag
+if (is_hurt_animating && sprite_index == spr_hurt) {
+    is_hurt_animating = false; // Turn off the flag
     
     // Revert to the sprite and animation settings that were active before the hit
     sprite_index = original_sprite_index;

@@ -28,14 +28,14 @@ max_enemy_health = 2; // Health
 enemy_health = max_enemy_health; // Initialize current health to its max
 enemy_damage = 1; // Damage
 
-// NEW: Attack properties (children will override) - Default to 0 for no attack
+// Attack properties (children will override) - Default to 0 for no attack
 attack_range = 96;          // Goblin attacks if player is within 48px
 attack_h_speed = 3;         // Horizontal speed of the leap
 attack_v_speed = -6;       // Vertical speed of the leap (negative for upward)
 attack_duration = 20;       // How long the attack state lasts (frames)
 attack_cooldown_duration = 60; // 1 second cooldown after attack
 
-// NEW: Knockback inflicted by Goblin's attack
+// Knockback inflicted by Goblin's attack
 knockback_h_strength = 3;  // Horizontal knockback inflicted by goblin's attack
 knockback_v_strength = -0; // Vertical knockback inflicted by goblin's attack
 #endregion
@@ -57,8 +57,8 @@ obj_death_effect = oGoblinDeathEffect;
 snd_alert = sndGoblinAlert;
 snd_chase = sndGoblinChase;
 snd_taunt = sndGoblinTaunt;
-snd_hit = sndGoblinHit;
+snd_hurt = sndGoblinHit;
 snd_death = sndGoblinDeath;
-snd_attack = sndGoblinAttack01; // NEW
+snd_attack = sndGoblinAttack01;
 #endregion
 

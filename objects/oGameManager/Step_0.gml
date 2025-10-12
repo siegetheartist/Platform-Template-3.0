@@ -62,7 +62,7 @@ switch (current_state) {
                         knockback_cooldown_timer = 0;
                         enemy_state = ENEMY_STATE.PATROL;
                         enemy_state_previous = ENEMY_STATE.PATROL;
-                        sound_played_for_current_state = false;
+                        state_initialized = false;
                         hsp = 0;
                         vsp = 0;
                         x = start_x;

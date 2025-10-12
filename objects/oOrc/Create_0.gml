@@ -28,14 +28,14 @@ max_enemy_health = 4; // Health
 enemy_health = max_enemy_health; // Initialize current health to its max
 enemy_damage = 1; // Damage
 
-// NEW: Attack properties (children will override) - Default to 0 for no attack
+// Attack properties (children will override) - Default to 0 for no attack
 attack_range = 0;          // Orc doesn't have a specific attack range yet
 attack_h_speed = 0;        
 attack_v_speed = 0;        
 attack_duration = 0;      
 attack_cooldown_duration = 0; 
 
-// NEW: Knockback inflicted by Orc's attack (currently 0 as no attack defined)
+// Knockback inflicted by Orc's attack (currently 0 as no attack defined)
 knockback_h_strength = 6;  // Horizontal knockback inflicted by orc's attack
 knockback_v_strength = 0; // Vertical knockback inflicted by orc's attack
 #endregion
@@ -57,7 +57,7 @@ obj_death_effect = oOrcDeathEffect;
 snd_alert = sndOrcAlert;
 snd_chase = sndOrcChase;
 snd_taunt = sndOrcTaunt;
-snd_hit = sndOrcHit;
+snd_hurt = sndOrcHit;
 snd_death = sndOrcDeath;
 snd_attack = noone; // NEW: No specific attack sound yet
 #endregion

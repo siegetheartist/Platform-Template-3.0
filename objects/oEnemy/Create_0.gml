@@ -61,7 +61,7 @@ enum ENEMY_STATE {
 // Initialize the enemy's starting state
 enemy_state = ENEMY_STATE.PATROL; // Sets the initial behavior state
 enemy_state_previous = ENEMY_STATE.PATROL; // NEW: Store previous state for sound logic
-sound_played_for_current_state = false; // NEW: Flag to prevent sound spamming on state entry
+state_initialized = false; // NEW: Flag to prevent sound spamming on state entry
 
 // Define movement speeds for different states (children can override these)
 patrol_hsp_max = 1; // Default slower speed for patrolling
@@ -118,11 +118,11 @@ enemy_detect_distance = 24; // Distance from another enemy to trigger a stop and
 flash_timer = 0; // Timer for visual damage indicator (blinking)
 flash_duration = 10; // How long the enemy sprite flashes after taking damage (0.5 seconds at 60 FPS)
 
-// NEW: Variables for hit animation
-is_hit_animating = false; // Flag to indicate if the enemy is currently playing a hit animation.
-original_sprite_index = noone; // Stores the sprite_index before playing the hit animation.
-original_image_speed = 1; // Stores the image_speed before playing the hit animation.
-original_image_index = 0; // Stores the image_index before playing the hit animation.
+// NEW: Variables for hurt animation
+is_hurt_animating = false; // Flag to indicate if the enemy is currently playing a hurt animation.
+original_sprite_index = noone; // Stores the sprite_index before playing the hurt animation.
+original_image_speed = 1; // Stores the image_speed before playing the hurt animation.
+original_image_index = 0; // Stores the image_index before playing the hurt animation.
 #endregion
 
 #region SPRITES + EFFECTS
@@ -146,7 +146,7 @@ _ground_check_offset = 1;
 snd_alert = noone;
 snd_chase = noone;
 snd_taunt = noone;
-snd_hit = noone;
+snd_hurt = noone;
 snd_death = noone;
 snd_attack = noone;
 #endregion

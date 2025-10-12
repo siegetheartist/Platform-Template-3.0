@@ -41,10 +41,10 @@ if (knockback_active && knockback_duration_timer > 0) {
  
  
 #region STATE SOUND & ANIMATION RESET LOGIC (On-State-Change Handler)
-// Reset sound_played_for_current_state if the enemy's state has changed.
+// Reset state_initialized if the enemy's state has changed.
 // This flag is now used as a generic "on-entry" marker for both sound and animation.
 if (enemy_state != enemy_state_previous) {
-    sound_played_for_current_state = false;
+    state_initialized = false;
 }
 #endregion
 
@@ -156,12 +156,12 @@ switch (enemy_state) {
     case ENEMY_STATE.PATROL:
         hsp_max = patrol_hsp_max;
         
-        if (!sound_played_for_current_state) {
+        if (!state_initialized) {
             sprite_index = spr_patrol;
             image_index = 0;
             image_speed = 1; 
 
-            sound_played_for_current_state = true;
+            state_initialized = true;
         }
 
         // Proactive Ledge Detection (only if not already stopping for another enemy)
@@ -213,11 +213,11 @@ switch (enemy_state) {
     case ENEMY_STATE.WAIT_AND_TURN:
         hsp_max = 0; // Ensure no horizontal movement while waiting
         
-        if (!sound_played_for_current_state) {
+        if (!state_initialized) {
             sprite_index = spr_idle;
             image_index = 0;
             image_speed = 0;
-            sound_played_for_current_state = true;
+            state_initialized = true;
         }
         
         if (patrol_stop_timer <= 0) {
@@ -228,14 +228,14 @@ switch (enemy_state) {
     case ENEMY_STATE.ALERT:
         hsp_max = 0;
         
-        if (!sound_played_for_current_state) {
+        if (!state_initialized) {
             if (snd_alert != noone) { 
                 audio_play_sound(snd_alert, 10, false); 
             }
             sprite_index = spr_alerted; 
             image_index = 0;
             image_speed = 1; 
-            sound_played_for_current_state = true;
+            state_initialized = true;
         }
         
         
@@ -261,25 +261,25 @@ switch (enemy_state) {
     case ENEMY_STATE.CHASE:
         hsp_max = chase_hsp_max;
         
-        if (!sound_played_for_current_state) {
+        if (!state_initialized) {
             if (snd_chase != noone) { 
                 audio_play_sound(snd_chase, 10, false); 
             }
             sprite_index = spr_chase;
             image_index = 0;
             image_speed = 1;
-            sound_played_for_current_state = true;
+            state_initialized = true;
         }
         break;
     case ENEMY_STATE.TAUNT:
         hsp_max = 0;
         
-        if (!sound_played_for_current_state) {
+        if (!state_initialized) {
             if (snd_taunt != noone) { audio_play_sound(snd_taunt, 10, false); }
             sprite_index = spr_taunt;
             image_index = 0;
             image_speed = 1;
-            sound_played_for_current_state = true;
+            state_initialized = true;
         }
 
         if (taunt_timer <= 0) {
@@ -308,19 +308,21 @@ switch (enemy_state) {
             } else {
                 enemy_state = ENEMY_STATE.PATROL;
             }
-            sound_played_for_current_state = false; // Reset for new state
+            state_initialized = false; // Reset for new state
         }
         break;
     case ENEMY_STATE.HURT:
         hsp_max = 0;
         
-        if (!sound_played_for_current_state) {
-            if (snd_hit != noone) { audio_play_sound(snd_hit, 10, false); }
+        if (!state_initialized) {
+            if (snd_hurt != noone) { 
+                audio_play_sound(snd_hurt, 10, false); 
+            }
             sprite_index = spr_hurt; // Show the hit animation
             image_index = 0;
             image_speed = 1;
             // The drawing is handled by the Draw Event using the flash_timer
-            sound_played_for_current_state = true;
+            state_initialized = true;
         }
         
         // Transition out of HURT once the physics override is finished
@@ -334,7 +336,7 @@ switch (enemy_state) {
         vsp = 0;
                 
         // On the first frame of entering the death state...
-        if (!sound_played_for_current_state) {
+        if (!state_initialized) {
             // Play death sound
             if (snd_death != noone) {
                 audio_play_sound(snd_death, 10, false);
@@ -352,7 +354,7 @@ switch (enemy_state) {
                 instance_create_layer(x, y, "alForeground", obj_death_effect);
             }
             
-            sound_played_for_current_state = true; // Mark that on-entry logic is done
+            state_initialized = true; 
         }
     
         // --- Destruction Logic ---
