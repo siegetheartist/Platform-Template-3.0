@@ -60,8 +60,8 @@ enum ENEMY_STATE {
 
 // Initialize the enemy's starting state
 enemy_state = ENEMY_STATE.PATROL; // Sets the initial behavior state
-enemy_state_previous = ENEMY_STATE.PATROL; // NEW: Store previous state for sound logic
-state_initialized = false; // NEW: Flag to prevent sound spamming on state entry
+enemy_state_previous = ENEMY_STATE.PATROL; // Stores previous state
+state_initialized = false; // NEW: Flag to prevent sound spamming & sprite loops on state entry
 
 // Define movement speeds for different states (children can override these)
 patrol_hsp_max = 1; // Default slower speed for patrolling

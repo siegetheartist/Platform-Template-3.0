@@ -52,7 +52,7 @@
     },
     "eventStubScript":null,
     "eventToFunction":{},
-    "length":8.0,
+    "length":20.0,
     "lockOrigin":false,
     "moments":{
       "$KeyframeStore<MomentsEventKeyframe>":"",
@@ -78,13 +78,13 @@
               },"Disabled":false,"id":"449cc8dc-373e-4f3d-9cb3-d38ff9351d1a","IsCreationKey":false,"Key":0.0,"Length":1.0,"resourceType":"Keyframe<SpriteFrameKeyframe>","resourceVersion":"2.0","Stretch":false,},
             {"$Keyframe<SpriteFrameKeyframe>":"","Channels":{
                 "0":{"$SpriteFrameKeyframe":"","Id":{"name":"71e90080-f13a-4942-b91c-a9b5ff75f1ff","path":"sprites/sprGoblinAlerted/sprGoblinAlerted.yy",},"resourceType":"SpriteFrameKeyframe","resourceVersion":"2.0",},
-              },"Disabled":false,"id":"01f85d30-0128-4274-9cd9-04fb1ecee663","IsCreationKey":false,"Key":1.0,"Length":3.0,"resourceType":"Keyframe<SpriteFrameKeyframe>","resourceVersion":"2.0","Stretch":false,},
+              },"Disabled":false,"id":"01f85d30-0128-4274-9cd9-04fb1ecee663","IsCreationKey":false,"Key":1.0,"Length":7.0,"resourceType":"Keyframe<SpriteFrameKeyframe>","resourceVersion":"2.0","Stretch":false,},
             {"$Keyframe<SpriteFrameKeyframe>":"","Channels":{
                 "0":{"$SpriteFrameKeyframe":"","Id":{"name":"09013f2d-8edf-4aeb-8019-aa365eb11473","path":"sprites/sprGoblinAlerted/sprGoblinAlerted.yy",},"resourceType":"SpriteFrameKeyframe","resourceVersion":"2.0",},
-              },"Disabled":false,"id":"42c3c27b-3b3d-4a87-84d7-89f9482870a7","IsCreationKey":false,"Key":4.0,"Length":2.0,"resourceType":"Keyframe<SpriteFrameKeyframe>","resourceVersion":"2.0","Stretch":false,},
+              },"Disabled":false,"id":"42c3c27b-3b3d-4a87-84d7-89f9482870a7","IsCreationKey":false,"Key":8.0,"Length":6.0,"resourceType":"Keyframe<SpriteFrameKeyframe>","resourceVersion":"2.0","Stretch":false,},
             {"$Keyframe<SpriteFrameKeyframe>":"","Channels":{
                 "0":{"$SpriteFrameKeyframe":"","Id":{"name":"1caa8e0c-cf3c-458b-9a43-e0f4940072a1","path":"sprites/sprGoblinAlerted/sprGoblinAlerted.yy",},"resourceType":"SpriteFrameKeyframe","resourceVersion":"2.0",},
-              },"Disabled":false,"id":"79f9ff3c-b9ef-4231-a330-0385ed31eb77","IsCreationKey":false,"Key":6.0,"Length":2.0,"resourceType":"Keyframe<SpriteFrameKeyframe>","resourceVersion":"2.0","Stretch":false,},
+              },"Disabled":false,"id":"79f9ff3c-b9ef-4231-a330-0385ed31eb77","IsCreationKey":false,"Key":14.0,"Length":6.0,"resourceType":"Keyframe<SpriteFrameKeyframe>","resourceVersion":"2.0","Stretch":false,},
           ],"resourceType":"KeyframeStore<SpriteFrameKeyframe>","resourceVersion":"2.0",},"modifiers":[],"name":"frames","resourceType":"GMSpriteFramesTrack","resourceVersion":"2.0","spriteId":null,"trackColour":0,"tracks":[],"traits":0,},
     ],
     "visibleRange":null,

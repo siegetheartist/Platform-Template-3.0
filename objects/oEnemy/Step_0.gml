@@ -15,8 +15,9 @@ var _player_is_behind = false;
 
 
 // --- HIGH PRIORITY CHECK: DEATH (Must run before timers) ---
-if (enemy_health <= 0) {
-    enemy_state = ENEMY_STATE.DEATH;
+if (enemy_health <= 0 && enemy_state != ENEMY_STATE.DEATH) { 
+    enemy_state = ENEMY_STATE.DEATH; 
+    state_initialized = false; 
 }
  
 
@@ -35,17 +36,7 @@ if (attack_cooldown_timer > 0) {
     }
 }
 if (knockback_active && knockback_duration_timer > 0) {
-    show_debug_message("TIMER MANAGEMENT: Knockback timer: " + string(knockback_duration_timer));
     knockback_duration_timer--; 
-}
-#endregion
- 
- 
-#region STATE SOUND & ANIMATION RESET LOGIC (On-State-Change Handler)
-// Reset state_initialized if the enemy's state has changed.
-// This flag is now used as a generic "on-entry" marker for both sound and animation.
-if (enemy_state != enemy_state_previous) {
-    state_initialized = false;
 }
 #endregion
 
@@ -70,6 +61,7 @@ if (enemy_state != ENEMY_STATE.DEATH && enemy_state != ENEMY_STATE.WAIT_AND_TURN
     } else {
         // If no player exists, ensure AI defaults to patrol mode
         enemy_state = ENEMY_STATE.PATROL;
+        state_initialized = false;
     }
 }
 #endregion
@@ -80,11 +72,9 @@ if (enemy_state != ENEMY_STATE.DEATH && enemy_state != ENEMY_STATE.WAIT_AND_TURN
 // --- HURT/KNOCKBACK --- Do BEFORE attack checks so a hit always interrupts an attack windup.
 if (knockback_active && enemy_state != ENEMY_STATE.HURT) {
     // This is needed so HURT can return to the correct state (CHASE, PATROL, etc.).
-    show_debug_message("KNOCKBACK TRANSITION: Previous enemy state: " + string(enemy_state_previous));
-    enemy_state_previous = enemy_state; // Store the state we are interrupting
+    enemy_state_previous = enemy_state;
     enemy_state = ENEMY_STATE.HURT;
-    show_debug_message("KNOCKBACK TRANSITION: Enemy state: " + string(enemy_state));
-    state_initialized = false; // CRITICAL. Reset flag when entering hurt since you can enter it from other states
+    state_initialized = false;
 }
 
 
@@ -93,6 +83,7 @@ if (enemy_state != ENEMY_STATE.ATTACK && enemy_state != ENEMY_STATE.HURT && can_
     if (_distance_to_player < attack_range) {
         current_dir = sign(_player_instance.x - x);
         enemy_state = ENEMY_STATE.ATTACK;
+        state_initialized = false;
         
         // On-entry logic for attack: This is a safe impulse setting, as knockback_active check is done in the physics region.
         // It's technically safe here, but placing the hsp/vsp set logic below the knockback guard is a stronger pattern.
@@ -116,31 +107,35 @@ if (enemy_state != ENEMY_STATE.ATTACK && enemy_state != ENEMY_STATE.HURT && inst
     // 1. HIGHEST PRIORITY: Default Close Chase
     if (_distance_to_player < default_close_chase_distance && _line_of_sight_clear) {
         enemy_state = ENEMY_STATE.CHASE;
+        // state_initialized = false; (causes looped audio on enter chase)
         current_dir = sign(_player_instance.x - x); 
     }
     // 1.5. ALERT to CHASE escalation
     else if (enemy_state == ENEMY_STATE.ALERT && _distance_to_player < default_close_chase_distance && _line_of_sight_clear && _player_is_in_front) {
         enemy_state = ENEMY_STATE.CHASE;
+        state_initialized = false;
         current_dir = sign(_player_instance.x - x); 
     }
     // 2. Next Priority: Sight-Based Detection
     else if (enemy_state != ENEMY_STATE.ALERT && _distance_to_player < sight_distance && _line_of_sight_clear && _player_is_in_front) {
         enemy_state = ENEMY_STATE.CHASE;
+        //state_initialized = false; (causes looped audio on enter chase)
         current_dir = sign(_player_instance.x - x);
     }
     // 3. Next Priority: Behind Detection - Chase
     else if (_distance_to_player < behind_chase_distance && _player_is_behind && _line_of_sight_clear) {
         enemy_state = ENEMY_STATE.CHASE;
+        state_initialized = false;
         current_dir = sign(_player_instance.x - x); 
     }
     // 4. Lowest Priority: Behind Detection - Alert
     else if (enemy_state == ENEMY_STATE.PATROL && _distance_to_player < behind_alert_distance && _player_is_behind && _line_of_sight_clear && alert_cooldown_timer <= 0) {
         enemy_state = ENEMY_STATE.ALERT;
+        state_initialized = false;
         alert_timer = alert_timeout; 
     }
-    
     // De-aggro logic for CHASE state (must run AFTER all re-aggro logic)
-    else if (enemy_state == ENEMY_STATE.CHASE) {
+    else if (enemy_state == ENEMY_STATE.CHASE) { 
         var _is_chase_condition_met = 
             (_distance_to_player < default_close_chase_distance && _line_of_sight_clear) || 
             (_distance_to_player < sight_distance && _line_of_sight_clear && _player_is_in_front) || 
@@ -148,6 +143,7 @@ if (enemy_state != ENEMY_STATE.ATTACK && enemy_state != ENEMY_STATE.HURT && inst
 
         if (!_is_chase_condition_met || _distance_to_player > deaggro_distance_from_chase) { 
             enemy_state = ENEMY_STATE.TAUNT;
+            state_initialized = false;
             taunt_timer = taunt_duration;
         }
     }
@@ -174,6 +170,7 @@ switch (enemy_state) {
         
         if (!place_meeting(_proactive_ledge_check_x, _proactive_ledge_check_y, collision_tileset)) {
             enemy_state = ENEMY_STATE.WAIT_AND_TURN;
+            state_initialized = false;
             patrol_stop_timer = patrol_stop_duration;
             if (!knockback_active) { hsp = 0; }
         } else {
@@ -209,6 +206,7 @@ switch (enemy_state) {
 
             if (_found_other_enemy) {
                 enemy_state = ENEMY_STATE.WAIT_AND_TURN;
+                state_initialized = false;
                 patrol_stop_timer = patrol_stop_duration;
                 if (!knockback_active) { hsp = 0; }
             }
@@ -227,6 +225,7 @@ switch (enemy_state) {
         if (patrol_stop_timer <= 0) {
             current_dir *= -1; // Reverse direction after waiting
             enemy_state = ENEMY_STATE.PATROL; // Resume patrolling
+            state_initialized = false;
         }
         break;
     case ENEMY_STATE.ALERT:
@@ -257,6 +256,7 @@ switch (enemy_state) {
         }
         if (alert_timer <= 0) {
             enemy_state = ENEMY_STATE.PATROL; // Time's up, go back to patrolling
+            state_initialized = false;
             alert_cooldown_timer = alert_cooldown_time; // Start the cooldown timer
         }
          
@@ -266,7 +266,7 @@ switch (enemy_state) {
         hsp_max = chase_hsp_max;
         
         if (!state_initialized) {
-            if (snd_chase != noone) { 
+            if (snd_chase != noone && enemy_state_previous != ENEMY_STATE.HURT) { 
                 audio_play_sound(snd_chase, 10, false); 
             }
             sprite_index = spr_chase;
@@ -288,6 +288,7 @@ switch (enemy_state) {
 
         if (taunt_timer <= 0) {
             enemy_state = ENEMY_STATE.PATROL; // Return to patrol after taunt
+            state_initialized = false;
             alert_cooldown_timer = alert_cooldown_time; // Start cooldown before re-alerting
         }
         break;
@@ -317,7 +318,6 @@ switch (enemy_state) {
         break;
     case ENEMY_STATE.HURT:
         hsp_max = 0;
-        show_debug_message("HURT STATE: State initialized: " + string(state_initialized));
         if (!state_initialized) {
             if (snd_hurt != noone) { 
                 audio_play_sound(snd_hurt, 10, false); 
@@ -328,12 +328,12 @@ switch (enemy_state) {
             // The drawing is handled by the Draw Event using the flash_timer
             state_initialized = true;
         }
-        //show_debug_message("Knockback timer: " + string(knockback_active));
-        show_debug_message("HURT STATE: Previous state: " + string(enemy_state_previous));
+
         // Transition out of HURT once the physics override is finished
         if (!knockback_active) {
             enemy_state = enemy_state_previous;
-            show_debug_message("HURT STATE: Enemy state: " + string(enemy_state));
+            enemy_state_previous = ENEMY_STATE.HURT;
+            state_initialized = false;
         }
         break;
     case ENEMY_STATE.DEATH:
@@ -353,6 +353,7 @@ switch (enemy_state) {
                 sprite_index = spr_death;
                 image_index = 0;
                 image_speed = 1;
+                //mask_index = sprNoCollision;
             }
             
             // Spawn the death effect object
@@ -370,13 +371,7 @@ switch (enemy_state) {
                 instance_destroy();
             }
         }
-        // 2. If no animation, check if the death effect object has been destroyed.
-        else if (obj_death_effect != noone) {
-            if (!instance_exists(obj_death_effect)) {
-                instance_destroy();
-            }
-        }
-        // 3. Fallback: If no animation and no death effect, destroy immediately.
+        // 2. Fallback: If no animation destroy immediately.
         else {
             instance_destroy();
         }
@@ -510,9 +505,4 @@ if (current_dir == 1) {
     image_xscale = 1; // Face right
 } else {
     image_xscale = -1; // Face left (flipped)
-}
- 
-// Update previous state for next frame's sound logic
-if (enemy_state != ENEMY_STATE.HURT) {
-	enemy_state_previous = enemy_state;
 }

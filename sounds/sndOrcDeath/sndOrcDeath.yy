@@ -22,5 +22,5 @@
   "resourceVersion":"2.0",
   "sampleRate":44100,
   "soundFile":"sndOrcDeath.mp3",
-  "volume":0.23,
+  "volume":0.41,
 }
