@@ -22,8 +22,6 @@
   "height":112,
   "HTile":false,
   "layers":[
-    {"$GMImageLayer":"","%Name":"9ea1ac42-ec33-4849-9689-39f5c3cfc192","blendMode":0,"displayName":"Layer 2","isLocked":false,"name":"9ea1ac42-ec33-4849-9689-39f5c3cfc192","opacity":100.0,"resourceType":"GMImageLayer","resourceVersion":"2.0","visible":false,},
-    {"$GMImageLayer":"","%Name":"b8c54d32-b7aa-456f-b0ce-d52fc419c1bb","blendMode":0,"displayName":"Layer 1","isLocked":false,"name":"b8c54d32-b7aa-456f-b0ce-d52fc419c1bb","opacity":100.0,"resourceType":"GMImageLayer","resourceVersion":"2.0","visible":false,},
     {"$GMImageLayer":"","%Name":"fb5bbdfb-04d4-40be-a5b2-59fd9616c356","blendMode":0,"displayName":"default","isLocked":false,"name":"fb5bbdfb-04d4-40be-a5b2-59fd9616c356","opacity":100.0,"resourceType":"GMImageLayer","resourceVersion":"2.0","visible":true,},
   ],
   "name":"sprWallParticles",
@@ -49,8 +47,8 @@
   },
   "origin":4,
   "parent":{
-    "name":"sprDestructables",
-    "path":"folders/Sprites/sprDestructables.yy",
+    "name":"Particle Effects",
+    "path":"folders/Sprites/Particle Effects.yy",
   },
   "preMultiplyAlpha":false,
   "resourceType":"GMSprite",

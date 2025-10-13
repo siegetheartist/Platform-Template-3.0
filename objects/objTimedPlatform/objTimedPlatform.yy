@@ -10,8 +10,8 @@
   "name":"objTimedPlatform",
   "overriddenProperties":[],
   "parent":{
-    "name":"objEnvironment",
-    "path":"folders/Objects/objEnvironment.yy",
+    "name":"Environment",
+    "path":"folders/Objects/Environment.yy",
   },
   "parentObjectId":null,
   "persistent":false,

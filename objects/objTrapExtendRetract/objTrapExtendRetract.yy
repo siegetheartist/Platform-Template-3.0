@@ -12,8 +12,8 @@
   "name":"objTrapExtendRetract",
   "overriddenProperties":[],
   "parent":{
-    "name":"objHazards",
-    "path":"folders/Objects/objHazards.yy",
+    "name":"Hazards",
+    "path":"folders/Objects/Hazards.yy",
   },
   "parentObjectId":null,
   "persistent":false,

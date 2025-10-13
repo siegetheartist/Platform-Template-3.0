@@ -1,0 +1,26 @@
+{
+  "$GMSound":"v2",
+  "%Name":"sndButtonConfirm",
+  "audioGroupId":{
+    "name":"audiogroup_default",
+    "path":"audiogroups/audiogroup_default",
+  },
+  "bitDepth":1,
+  "channelFormat":0,
+  "compression":3,
+  "compressionQuality":4,
+  "conversionMode":0,
+  "duration":3.1111112,
+  "exportDir":"",
+  "name":"sndButtonConfirm",
+  "parent":{
+    "name":"sndUI",
+    "path":"folders/Sounds/sndUI.yy",
+  },
+  "preload":false,
+  "resourceType":"GMSound",
+  "resourceVersion":"2.0",
+  "sampleRate":44100,
+  "soundFile":"sndButtonConfirm.wav",
+  "volume":0.31,
+}

@@ -1,4 +1,4 @@
-/// @function scr_enemy_spawner(object, [spawn_rate], [max_instances]);
+/// @description Spawns an enemy
 /// @param {asset.gml} object The object to spawn.
 /// @param {real} [spawn_rate] The time between spawns, in game frames. Defaults to 480 (8 seconds at 60fps).
 /// @param {real} [max_instances] The max number of spawned objects allowed. Defaults to -1 (infinite).

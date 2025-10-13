@@ -9,8 +9,8 @@
   "name":"objDestructableWall",
   "overriddenProperties":[],
   "parent":{
-    "name":"objDestructables",
-    "path":"folders/Objects/objDestructables.yy",
+    "name":"Destructables",
+    "path":"folders/Objects/Destructables.yy",
   },
   "parentObjectId":{
     "name":"objDestructables",

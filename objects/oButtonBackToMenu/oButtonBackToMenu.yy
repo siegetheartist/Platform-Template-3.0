@@ -8,8 +8,8 @@
   "name":"oButtonBackToMenu",
   "overriddenProperties":[],
   "parent":{
-    "name":"oUserInterface",
-    "path":"folders/Objects/oUserInterface.yy",
+    "name":"UserInterface",
+    "path":"folders/Objects/UserInterface.yy",
   },
   "parentObjectId":{
     "name":"oButton",

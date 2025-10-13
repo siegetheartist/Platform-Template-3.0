@@ -1,4 +1,4 @@
-/// @function scr_fader(fade_mode, duration, amount, color)
+/// @description Spawns fader object that fades the screen on the GUI layer
 /// @param fade_mode   "fade-in" or "fade-out"
 /// @param duration    time in steps (e.g. 60 = 1 second at 60fps)
 /// @param amount      target alpha (0–1), default 1
@@ -8,7 +8,8 @@ function scr_fader(_fade_mode, _duration, _amount = 1, _color = c_black) {
     
     // Create the fader on a regular instance layer. "Instances" is the default layer name.
     // If you have a specific layer for UI objects, you can use that name instead.
-    var inst = instance_create_layer(0, 0, "alForeground", objFader);
+    var inst = instance_create_depth(x, y, -999, objFader);
+    // var inst = instance_create_layer(0, 0, "ilFader", objFader);
 
     inst.fade_mode   = _fade_mode;
     inst.fade_target = _amount;

@@ -1,5 +1,3 @@
-#region INITIAL FADE IN
-
 // Set the default respawn position to the player's starting position in this room.
 // This ensures we always have a valid respawn point if no checkpoint is activated.
 if (instance_exists(oPlayer)) {
@@ -9,7 +7,7 @@ if (instance_exists(oPlayer)) {
 
 // Automatically initiate a fade-in when any room starts
 current_state = GAME_STATE.FADING_IN;
-#endregion
+
 
 
 #region MUSIC CONTROLER
@@ -35,5 +33,5 @@ switch (room) {
 
 // --- SPAWN CAMERA IF NONE EXISTS ---
 if (!instance_exists(oCamera)) {
-    instance_create_layer(0, 0, "l_Controllers", oCamera);
+    instance_create_layer(0, 0, "ilControllers", oCamera);
 }

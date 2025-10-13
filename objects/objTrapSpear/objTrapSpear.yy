@@ -9,8 +9,8 @@
   "name":"objTrapSpear",
   "overriddenProperties":[],
   "parent":{
-    "name":"objHazards",
-    "path":"folders/Objects/objHazards.yy",
+    "name":"Hazards",
+    "path":"folders/Objects/Hazards.yy",
   },
   "parentObjectId":{
     "name":"objTrapExtendRetract",

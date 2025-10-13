@@ -8,8 +8,8 @@
   "name":"objWallParticles",
   "overriddenProperties":[],
   "parent":{
-    "name":"objDestructables",
-    "path":"folders/Objects/objDestructables.yy",
+    "name":"Particle Effects",
+    "path":"folders/Objects/Particle Effects.yy",
   },
   "parentObjectId":null,
   "persistent":false,

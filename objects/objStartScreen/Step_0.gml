@@ -17,7 +17,8 @@ switch (menu_state) {
         break;
         
     case 1: // ACTIVE (Main Menu Loop)
-        // Gather input from our universal script.
+        
+        var _previously_selection = selected_button; // Store the current selected button before checking for input
         var _input = scr_player_get_input();
         
         // Handle navigation
@@ -28,18 +29,19 @@ switch (menu_state) {
             selected_button++;
         }
         selected_button = clamp(selected_button, 0, 2); // Clamp between 3 buttons
+        
+        if (selected_button != _previously_selection) {
+        	audio_play_sound(sndButtonSelect, 10, false);
+        }
 
         // Handle confirmation
         if (_input.attack_pressed) {
             switch (selected_button) {
                 case 0: // "Start Game"
+                    audio_play_sound(sndButtonConfirm, 10, false);
+                    
                     // Hide the menu UI.
                     layer_set_visible("start_menu", false);
-                    
-                    // Give control back to the player.
-                    if (instance_exists(oPlayer)) {
-                        oPlayer.can_control = true;
-                    }
                     
                     // Show player HUD after starting the game.
                     oHUD.visible = true;
@@ -60,6 +62,9 @@ switch (menu_state) {
         break;
         
     case 2: // INACTIVE
-        // The menu has been completed. Do nothing.
+        // Give control back to the player.
+        if (instance_exists(oPlayer)) {
+            oPlayer.can_control = true;
+        }
         break;
 }

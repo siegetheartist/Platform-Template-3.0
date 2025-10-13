@@ -119,7 +119,7 @@ if (enemy_state != ENEMY_STATE.ATTACK && enemy_state != ENEMY_STATE.HURT && inst
     // 2. Next Priority: Sight-Based Detection
     else if (enemy_state != ENEMY_STATE.ALERT && _distance_to_player < sight_distance && _line_of_sight_clear && _player_is_in_front) {
         enemy_state = ENEMY_STATE.CHASE;
-        //state_initialized = false; (causes looped audio on enter chase)
+        // state_initialized = false; (causes looped audio on enter chase)
         current_dir = sign(_player_instance.x - x);
     }
     // 3. Next Priority: Behind Detection - Chase
@@ -332,7 +332,7 @@ switch (enemy_state) {
         // Transition out of HURT once the physics override is finished
         if (!knockback_active) {
             enemy_state = enemy_state_previous;
-            enemy_state_previous = ENEMY_STATE.HURT;
+            enemy_state_previous = ENEMY_STATE.HURT; // Use in other states to prevent loops.
             state_initialized = false;
         }
         break;

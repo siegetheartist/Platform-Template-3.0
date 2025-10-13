@@ -9,8 +9,8 @@
   "name":"oButton",
   "overriddenProperties":[],
   "parent":{
-    "name":"oUserInterface",
-    "path":"folders/Objects/oUserInterface.yy",
+    "name":"UserInterface",
+    "path":"folders/Objects/UserInterface.yy",
   },
   "parentObjectId":null,
   "persistent":false,
