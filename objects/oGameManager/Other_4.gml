@@ -22,7 +22,7 @@ switch (room) {
         break;
     case rStartScreen:
         // You can have a different music track for your menu screen
-        audio_play_sound(sndMenuMusic, 10, true);
+        audio_play_sound(sndStartScreen, 10, true);
         break;
     default:
         // Optional: Play a default track or no music if a room has no specific music.

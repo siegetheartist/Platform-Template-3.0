@@ -132,7 +132,7 @@ switch (current_state) {
     case GAME_STATE.FADING_IN:
         // Step 1: If a fader doesn't exist, create one. This makes the state self-sufficient.
         if (!instance_exists(objFader)) {
-            scr_fader("fade-in", 30);
+            	scr_fader("fade-in", 30);
         }
 
         // Step 2: Wait for the fade-in to complete

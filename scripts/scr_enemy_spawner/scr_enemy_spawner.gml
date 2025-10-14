@@ -14,7 +14,7 @@ function scr_enemy_spawner(_object, _spawn_rate = 480, _max_instances = -1) {
     // Spawning Logic
     spawn_timer++;
     if (spawn_timer >= _spawn_rate) {
-        spawn_timer = 0;
+        spawn_timer -= _spawn_rate;
 
         // Clean up destroyed instances from the list
         for (var i = ds_list_size(spawned_instances) - 1; i >= 0; i--) {
