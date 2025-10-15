@@ -5,6 +5,7 @@ var collision_tileset = [_main_tileset, oInvisibleBlock, objDestructableWall, ob
  
 // Declare all local variables
 var _player_instance = instance_find(oPlayer, 0); // Reference to the player object
+var _on_ground = place_meeting(x, y + 1, collision_tileset);
 var _distance_to_player = 0; // Distance from enemy to player
 var _line_of_sight_clear = false; // True if enemy has clear sight to player
 var _target_hsp = 0; // Desired horizontal speed based on current state
@@ -48,8 +49,8 @@ if (enemy_state != ENEMY_STATE.DEATH && enemy_state != ENEMY_STATE.WAIT_AND_TURN
         _distance_to_player = point_distance(x, y, _player_instance.x, _player_instance.y);
         
         // Calculate a Y-coordinate for Line of Sight checks 
-        var _enemy_los_y = y - 1; // Enemy's vertical center bottom -2
-        var _player_los_y = _player_instance.y - 1; // Player's vertical center bottom -2
+        var _enemy_los_y = y - 20; // Enemy's vertical center bottom -2
+        var _player_los_y = _player_instance.y - 20; // Player's vertical center bottom -2
         
         // Check for line of sight to the player using the collision tilemap
         // The line should be from the enemy's feet to the player feet,
@@ -446,58 +447,18 @@ if (knockback_active && knockback_duration_timer <= 0) {
         }
     }
 }
-#endregion
 
-
-#region HORIZONTAL COLLISION
-// Apply horizontal movement
-x += hsp;
- 
-if (place_meeting(x, y, collision_tileset)) {
-    // Determine the direction of collision (pixel by pixel adjustment)
-    _pixel_step = sign(hsp);
-    if (_pixel_step == 0) { // If hsp is 0 but still colliding, choose a direction to push out
-        _pixel_step = current_dir; // Push out in the enemy's current facing/intended direction
-        if (_pixel_step == 0) _pixel_step = 1; // Failsafe: if current_dir is also 0 (unlikely for patrolling)
-    }
-    // Move the enemy back one pixel at a time until it's no longer colliding
-    while (place_meeting(x, y, collision_tileset)) { // While *still* colliding
-        x -= _pixel_step;
-    }
-    hsp = 0; // Stop horizontal movement
-    if (!knockback_active) { // Only reverse direction if not actively knocked back
-        current_dir *= -1; // Reverse direction (bounce off tilemap wall)
-    }
-}
-#endregion
- 
-
-#region VERTICAL COLLISION
-// Check if currently on ground BEFORE applying movement for this frame
-var _is_on_ground_before_move = place_meeting(x, y + 1, collision_tileset);
- 
 // If on ground, only set vsp=0 if NOT actively being knocked or performing an attack leap.
-if (_is_on_ground_before_move && !knockback_active && enemy_state != ENEMY_STATE.ATTACK) {
+if (_on_ground && !knockback_active && enemy_state != ENEMY_STATE.ATTACK) {
     vsp = 0;
 }
- 
-// Apply vertical movement for this frame
-y += vsp;
- 
-// Resolve vertical collision
-if (place_meeting(x, y, collision_tileset)) {
-    // Determine the direction of collision (pixel by pixel adjustment)
-    _pixel_step = sign(vsp);
-    if (_pixel_step == 0) { // If vsp is 0 but still colliding, push up as a default
-        _pixel_step = -1; // Push up (against gravity)
-    }
-    // Move the enemy back one pixel at a time until it's no longer colliding
-    while (place_meeting(x, y, collision_tileset)) { // While *still* colliding
-        y -= _pixel_step;
-    }
-    vsp = 0; // Ensure vsp is zero after resolving collision
-}
 #endregion
+
+
+
+
+
+scr_move_and_collide(collision_tileset);
 
 
 // Flip the sprite horizontally based on the current direction.

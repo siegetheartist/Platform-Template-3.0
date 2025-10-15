@@ -32,12 +32,12 @@
   "resourceVersion":"2.0",
   "solid":false,
   "spriteId":{
-    "name":"sprTimedPlatform_2",
-    "path":"sprites/sprTimedPlatform_2/sprTimedPlatform_2.yy",
+    "name":"sprTimedPlatform",
+    "path":"sprites/sprTimedPlatform/sprTimedPlatform.yy",
   },
   "spriteMaskId":{
-    "name":"sprTimedPlatform_2",
-    "path":"sprites/sprTimedPlatform_2/sprTimedPlatform_2.yy",
+    "name":"sprTimedPlatform",
+    "path":"sprites/sprTimedPlatform/sprTimedPlatform.yy",
   },
   "visible":true,
 }

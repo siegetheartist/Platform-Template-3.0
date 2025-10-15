@@ -86,10 +86,9 @@ alert_timeout = 120; // The total time (in frames) before the enemy returns to p
 alert_cooldown_timer = 0; // A timer to prevent immediate re-alerting after de-aggro
 alert_cooldown_time = 60; // The total time (in frames) before a new alert can be triggered (e.g., 2 seconds)
 
-// Offset for edge detection check. These will be calculated by child objects
-// based on their specific sprite_width/height.
-_edge_check_offset = 0; // Initialize, will be set by children
-_ground_check_offset = 0; // Initialize, will be set by children
+// Offset for edge detection check.
+_edge_check_offset = self.sprite_width / 2 + 2;
+_ground_check_offset = 1;
 
 // Placeholder for the exclamation mark sprite. Children will set their specific sprite.
 exclamation_sprite = -1; 
@@ -131,10 +130,6 @@ spr_hurt = -1;
 spr_death = -1; // Placeholder for the death animation sprite
 obj_death_effect = noone; // Placeholder for the death effect object
 #endregion
-
-// Sprite checks
-_edge_check_offset = self.sprite_width / 2 + 2;
-_ground_check_offset = 1;
 
 #region AUDIO SETTINGS
 snd_alert = noone;
