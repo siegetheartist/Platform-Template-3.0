@@ -1,7 +1,7 @@
 #region VARIABLES
 //  Get tilemap ID for collision 
 var _main_tileset = layer_tilemap_get_id("tsCollision"); // Get the ID of the collision tilemap layer
-var collision_tileset = [_main_tileset, oInvisibleBlock, objDestructableWall, objTimedPlatform]; // Get the ID of the collision tilemap layer
+var collision_tileset = [_main_tileset, oInvisibleBlock, objDestructableWall, objTimedPlatform, objSlope01, objSlope02, objSlope03, objSlope04, objSlope05]; // Get the ID of the collision tilemap layer
  
 // Declare all local variables
 var _player_instance = instance_find(oPlayer, 0); // Reference to the player object

@@ -1,8 +1,8 @@
 /// @description No regions. Soft camera follow
 
 // --- CAMERA CONFIG ---
-cam_width = 352;
-cam_height = 224;
+cam_width = 640;
+cam_height = 320;
 cam_x_deadzone = 48;   // Horizontal deadzone before camera starts moving
 cam_y_deadzone = 32;   // Vertical deadzone before camera starts moving
 cam_lerp = 0.1;      // Lerp smoothing factor (0 = instant, 1 = no movement)

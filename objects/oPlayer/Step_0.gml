@@ -25,7 +25,7 @@ var _dir = input.dir;
 // --- Collision Tileset ---
 var collision_cave01 = layer_tilemap_get_id("tsCollision"); // main room titleset
 var collision_slopes = layer_tilemap_get_id("tlSlopes"); // new layer to handle slopes
-var collision_tileset = [collision_cave01, collision_slopes, objSlope, objDestructableWall, objTimedPlatform, oInvisibleBlock]; // Holds all collidables
+var collision_tileset = [collision_cave01, collision_slopes, objSlope, objDestructableWall, objTimedPlatform, oInvisibleBlock, objSlope01, objSlope02, objSlope03, objSlope04, objSlope05]; // Holds all collidables
 // rename collision solids?
 
 // This group contains only the objects that should NOT allow wall grabs.

@@ -1,9 +1,13 @@
 /// @description 2 Inner region camera snapping triggered by 2 threshold regions.
 // Mario horizontally + vertical offset + vertical platform lerp snapping + fall snapping
+// TERMS:   deadzone: (area where you can move before camera responds
+//          damping: ease between player and camera position "add lerp
+//          look-ahead: an offset from the player in a direction (to see more in a given direction)
+//          camera shake: shaking, stalling, zoom, freeze, slow down, etc.
 
 // --- CAMERA CONFIG ---
-cam_width = 352;
-cam_height = 224;
+cam_width = 440;
+cam_height = 248;
 cam_x_deadzone = 40;   // Horizontal deadzone: player can move x pixels left and right, from camera's center before, camera starts moving
 cam_y_deadzone = 30;   // Vertical deadzone before camera starts moving
 cam_lerp = 0.1;      // Lerp smoothing factor (1 = instant, 0 = no movement) (Used to be 0.1)
