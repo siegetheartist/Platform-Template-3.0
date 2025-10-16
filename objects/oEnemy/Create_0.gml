@@ -36,7 +36,7 @@ knockback_v_resistance = 1.0; // 1.0 = full knockback, 0.75 = 25% reduction
 knockback_active = false;  // True when the enemy is currently in the knockback animation/movement
 knockback_cooldown_timer = 0; // Timer to prevent repeated knockbacks (1 second cooldown)
 knockback_cooldown_duration = 60; // 1 second at 60 FPS
-knockback_duration = 15; // Duration of the knockback effect (e.g., 0.25 seconds)
+knockback_duration = 60; // Duration of the knockback effect (e.g., 0.25 seconds)
 knockback_duration_timer = 0; // Current countdown for knockback duration
 knockback_h_friction = 0.2; // Horizontal friction applied during knockback
  

@@ -363,7 +363,7 @@ switch (enemy_state) {
         }
 
         // Transition out of HURT once the physics override is finished
-        if (!knockback_active) {
+        if (!knockback_active && _on_ground) {
             enemy_state = enemy_state_previous;
             enemy_state_previous = ENEMY_STATE.HURT; // Use in other states to prevent loops.
             state_initialized = false;
