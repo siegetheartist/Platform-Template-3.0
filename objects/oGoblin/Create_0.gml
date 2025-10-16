@@ -14,10 +14,10 @@ hsp_accel = 0.1; // How quickly the enemy speeds up horizontally
 
 // Detection ranges 
 sight_distance = 150; // Distance for front-facing, line-of-sight detection (triggers CHASE)
-behind_alert_distance = 125; // Distance for player detection from behind (triggers ALERT)
-behind_chase_distance = 100; // Closer distance for player detection from behind (triggers CHASE)
+behind_alert_distance = 120; // Distance for player detection from behind (triggers ALERT)
+behind_chase_distance = 80; // Closer distance for player detection from behind (triggers CHASE)
 default_close_chase_distance = 80; // General close proximity detection (triggers CHASE regardless of direction/LOS)
-deaggro_distance_from_chase = 190; // Distance at which the enemy will stop chasing/alerting and return to patrol
+deaggro_distance_from_chase = 160; // Distance at which the enemy will stop chasing/alerting and return to patrol
 
 // Amount of knockback resistance (when this enemy *receives* knockback)
 knockback_h_resistance = 1.0;  // Goblin takes full knockback
@@ -43,12 +43,13 @@ knockback_v_strength = -0; // Vertical knockback inflicted by goblin's attack
 #region SPRITES + EFFECTS
 spr_idle = sGoblinIdle;
 spr_alerted = sprGoblinAlerted;
+spr_inspect = sprGoblinInspect;
 spr_patrol = sGoblinPatrol;
 spr_chase = sGoblinChase;
 spr_taunt = sGoblinTaunt;
 spr_attack = sGoblinAttack01;
 spr_hurt = sGoblinHurt;
-spr_death = sGoblinDeath;
+spr_death = -1;
 exclamation_sprite = spr_exclamation;
 obj_death_effect = oGoblinDeathEffect;
 #endregion

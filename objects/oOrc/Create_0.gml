@@ -14,17 +14,17 @@ hsp_accel = 0.07; // How quickly the enemy speeds up horizontally
 
 // Detection ranges 
 sight_distance = 175; // Distance for front-facing, line-of-sight detection (triggers CHASE)
-behind_alert_distance = 125; // Distance for player detection from behind (triggers ALERT)
-behind_chase_distance = 105; // Closer distance for player detection from behind (triggers CHASE)
-default_close_chase_distance = 80; // General close proximity detection (triggers CHASE regardless of direction/LOS)
-deaggro_distance_from_chase = 240; // Distance at which the enemy will stop chasing/alerting and return to patrol
+behind_alert_distance = 100; // Distance for player detection from behind (triggers ALERT)
+behind_chase_distance = 70; // Closer distance for player detection from behind (triggers CHASE)
+default_close_chase_distance = 70; // General close proximity detection (triggers CHASE regardless of direction/LOS)
+deaggro_distance_from_chase = 180; // Distance at which the enemy will stop chasing/alerting and return to patrol
 
 // Amount of knockback resistance (when this enemy *receives* knockback)
 knockback_h_resistance = 0.75;  // Orc takes 25% reduced knockback
 knockback_v_resistance = 0.75; // Orc takes 25% reduced knockback
 
 // Enemy Stas
-max_enemy_health = 4; // Health
+max_enemy_health = 6; // Health
 enemy_health = max_enemy_health; // Initialize current health to its max
 enemy_damage = 1; // Damage
 
@@ -43,6 +43,7 @@ knockback_v_strength = 0; // Vertical knockback inflicted by orc's attack
 #region SPRITES + EFFECTS
 spr_idle = sOrcIdle;
 spr_alerted = sprOrcAlerted;
+spr_inspect = sprOrcInspect;
 spr_patrol = sOrcPatrol;
 spr_chase = sOrcChase;
 spr_taunt = sOrcTaunt;

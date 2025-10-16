@@ -78,10 +78,6 @@ behind_chase_distance = 125; // Closer distance for player detection from behind
 default_close_chase_distance = 100; // General close proximity detection (triggers CHASE regardless of direction/LOS)
 deaggro_distance_from_chase = 250; // Distance at which the enemy will stop chasing/alerting and return to patrol
 
-// Alert timeout
-alert_timer = 0; // The current countdown timer for the alert state
-alert_timeout = 120; // The total time (in frames) before the enemy returns to patrol (e.g., 2 seconds at 60 FPS)
-
 // Alert cooldown
 alert_cooldown_timer = 0; // A timer to prevent immediate re-alerting after de-aggro
 alert_cooldown_time = 60; // The total time (in frames) before a new alert can be triggered (e.g., 2 seconds)
@@ -112,6 +108,7 @@ patrol_stop_timer = 0; // Timer for the 1-second stop before turning
 patrol_stop_duration = 60; // 1 second at 60 FPS
 ledge_detect_distance = 48; // Distance from a ledge to trigger a stop and turn
 enemy_detect_distance = 24; // Distance from another enemy to trigger a stop and turn
+wall_detect_distance = 10; // pixels ahead to check for walls
 
 // Damage feedback variables
 flash_timer = 0; // Timer for visual damage indicator (blinking)
@@ -122,6 +119,7 @@ flash_duration = 10; // How long the enemy sprite flashes after taking damage (0
 // Placeholder sprite variables for animation (children will set these)
 spr_idle = -1; // Stores the specific idle sprite for this enemy type.
 spr_alerted = -1;
+spr_inspect = -1;
 spr_patrol = -1; // Default sprite for moving during patrol/alert
 spr_chase = -1;  // Default sprite for moving during chase
 spr_taunt = -1; // NEW: Stores the specific taunt sprite for this enemy type.

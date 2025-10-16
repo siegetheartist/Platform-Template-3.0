@@ -7,7 +7,6 @@
   "inheritLayers":false,
   "instanceCreationOrder":[
     {"name":"inst_235BCE38","path":"rooms/rLevel2/rLevel2.yy",},
-    {"name":"inst_77FF25B0","path":"rooms/rLevel2/rLevel2.yy",},
     {"name":"inst_34F34871","path":"rooms/rLevel2/rLevel2.yy",},
     {"name":"inst_6D036C58_1_2","path":"rooms/rLevel2/rLevel2.yy",},
     {"name":"inst_27748D06","path":"rooms/rLevel2/rLevel2.yy",},
@@ -28,7 +27,6 @@
         {"$GMRInstance":"v4","%Name":"inst_ED788E1","colour":4294967295,"frozen":false,"hasCreationCode":false,"ignore":false,"imageIndex":0,"imageSpeed":1.0,"inheritCode":false,"inheritedItemId":null,"inheritItemSettings":false,"isDnd":false,"name":"inst_ED788E1","objectId":{"name":"objEnemySpawnerTimer","path":"objects/objEnemySpawnerTimer/objEnemySpawnerTimer.yy",},"properties":[],"resourceType":"GMRInstance","resourceVersion":"2.0","rotation":0.0,"scaleX":1.0,"scaleY":1.0,"x":928.0,"y":96.0,},
       ],"layers":[],"name":"ilTop","properties":[],"resourceType":"GMRInstanceLayer","resourceVersion":"2.0","userdefinedDepth":false,"visible":true,},
     {"$GMRInstanceLayer":"","%Name":"ilMiddle","depth":400,"effectEnabled":true,"effectType":null,"gridX":16,"gridY":16,"hierarchyFrozen":false,"inheritLayerDepth":false,"inheritLayerSettings":false,"inheritSubLayers":true,"inheritVisibility":true,"instances":[
-        {"$GMRInstance":"v4","%Name":"inst_77FF25B0","colour":4294967295,"frozen":false,"hasCreationCode":false,"ignore":false,"imageIndex":0,"imageSpeed":1.0,"inheritCode":false,"inheritedItemId":null,"inheritItemSettings":false,"isDnd":false,"name":"inst_77FF25B0","objectId":{"name":"oGoblin","path":"objects/oGoblin/oGoblin.yy",},"properties":[],"resourceType":"GMRInstance","resourceVersion":"2.0","rotation":0.0,"scaleX":-1.0,"scaleY":1.0,"x":368.0,"y":224.0,},
         {"$GMRInstance":"v4","%Name":"inst_34F34871","colour":4294967295,"frozen":false,"hasCreationCode":false,"ignore":false,"imageIndex":0,"imageSpeed":1.0,"inheritCode":false,"inheritedItemId":null,"inheritItemSettings":false,"isDnd":false,"name":"inst_34F34871","objectId":{"name":"oGoblin","path":"objects/oGoblin/oGoblin.yy",},"properties":[],"resourceType":"GMRInstance","resourceVersion":"2.0","rotation":0.0,"scaleX":1.0,"scaleY":1.0,"x":560.0,"y":240.0,},
         {"$GMRInstance":"v4","%Name":"inst_61E34E73","colour":4294967295,"frozen":false,"hasCreationCode":false,"ignore":false,"imageIndex":0,"imageSpeed":1.0,"inheritCode":false,"inheritedItemId":null,"inheritItemSettings":false,"isDnd":false,"name":"inst_61E34E73","objectId":{"name":"oOrc","path":"objects/oOrc/oOrc.yy",},"properties":[],"resourceType":"GMRInstance","resourceVersion":"2.0","rotation":0.0,"scaleX":-1.0,"scaleY":1.0,"x":288.0,"y":224.0,},
       ],"layers":[],"name":"ilMiddle","properties":[],"resourceType":"GMRInstanceLayer","resourceVersion":"2.0","userdefinedDepth":false,"visible":true,},

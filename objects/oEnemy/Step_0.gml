@@ -43,7 +43,7 @@ if (knockback_active && knockback_duration_timer > 0) {
 
 
 #region PLAYER DETECTION 
-if (enemy_state != ENEMY_STATE.DEATH && enemy_state != ENEMY_STATE.WAIT_AND_TURN) {
+if (enemy_state != ENEMY_STATE.DEATH) {
     if (instance_exists(_player_instance)) {
 
         _distance_to_player = point_distance(x, y, _player_instance.x, _player_instance.y);
@@ -85,19 +85,6 @@ if (enemy_state != ENEMY_STATE.ATTACK && enemy_state != ENEMY_STATE.HURT && can_
         current_dir = sign(_player_instance.x - x);
         enemy_state = ENEMY_STATE.ATTACK;
         state_initialized = false;
-        
-        // On-entry logic for attack: This is a safe impulse setting, as knockback_active check is done in the physics region.
-        // It's technically safe here, but placing the hsp/vsp set logic below the knockback guard is a stronger pattern.
-        hsp = current_dir * attack_h_speed; 
-        vsp = attack_v_speed; 
-        
-        image_index = 0;
-        attack_timer = attack_duration; 
-        
-        if (snd_attack != noone) { audio_play_sound(snd_attack, 10, false); }
-        
-        can_attack_player = false;
-        attack_cooldown_timer = attack_cooldown_duration;
     }
 }
 
@@ -105,35 +92,41 @@ if (enemy_state != ENEMY_STATE.ATTACK && enemy_state != ENEMY_STATE.HURT && can_
 // --- GENERAL AI TRANSITIONS ---
 // Skip general transitions if currently in ATTACK or HURT (they handle their own exits).
 if (enemy_state != ENEMY_STATE.ATTACK && enemy_state != ENEMY_STATE.HURT && instance_exists(_player_instance)) {
+    
+    // Helper function to initialize CHASE state transition
+    function transition_to_chase() {
+        // Only initialize if we are coming from a different state.
+        if (enemy_state != ENEMY_STATE.CHASE) {
+            enemy_state = ENEMY_STATE.CHASE;
+            state_initialized = false;
+        }
+    }
+    
     // 1. HIGHEST PRIORITY: Default Close Chase
     if (_distance_to_player < default_close_chase_distance && _line_of_sight_clear) {
-        enemy_state = ENEMY_STATE.CHASE;
-        // state_initialized = false; (causes looped audio on enter chase)
-        current_dir = sign(_player_instance.x - x); 
+        transition_to_chase();
+        show_debug_message("Default close chase.");
     }
     // 1.5. ALERT to CHASE escalation
     else if (enemy_state == ENEMY_STATE.ALERT && _distance_to_player < default_close_chase_distance && _line_of_sight_clear && _player_is_in_front) {
-        enemy_state = ENEMY_STATE.CHASE;
-        state_initialized = false;
-        current_dir = sign(_player_instance.x - x); 
+        transition_to_chase();
+        show_debug_message("ALERT -> CHASE");
     }
-    // 2. Next Priority: Sight-Based Detection
+    // 2. Next Priority: Sight-Based Detection to chase
     else if (enemy_state != ENEMY_STATE.ALERT && _distance_to_player < sight_distance && _line_of_sight_clear && _player_is_in_front) {
-        enemy_state = ENEMY_STATE.CHASE;
-        // state_initialized = false; (causes looped audio on enter chase)
-        current_dir = sign(_player_instance.x - x);
+        transition_to_chase();
+        show_debug_message("Sight based detection PATROL -> CHASE.");
     }
     // 3. Next Priority: Behind Detection - Chase
     else if (_distance_to_player < behind_chase_distance && _player_is_behind && _line_of_sight_clear) {
-        enemy_state = ENEMY_STATE.CHASE;
-        state_initialized = false;
-        current_dir = sign(_player_instance.x - x); 
+        transition_to_chase();
+        show_debug_message("Behind detection. PATROL -> Chase");
     }
     // 4. Lowest Priority: Behind Detection - Alert
     else if (enemy_state == ENEMY_STATE.PATROL && _distance_to_player < behind_alert_distance && _player_is_behind && _line_of_sight_clear && alert_cooldown_timer <= 0) {
         enemy_state = ENEMY_STATE.ALERT;
         state_initialized = false;
-        alert_timer = alert_timeout; 
+        show_debug_message("Behind detection. PATROL -> ALERT");
     }
     // De-aggro logic for CHASE state (must run AFTER all re-aggro logic)
     else if (enemy_state == ENEMY_STATE.CHASE) { 
@@ -146,6 +139,7 @@ if (enemy_state != ENEMY_STATE.ATTACK && enemy_state != ENEMY_STATE.HURT && inst
             enemy_state = ENEMY_STATE.TAUNT;
             state_initialized = false;
             taunt_timer = taunt_duration;
+            show_debug_message("CHASE -> TAUNT");
         }
     }
 }
@@ -164,18 +158,36 @@ switch (enemy_state) {
 
             state_initialized = true;
         }
-
-        // Proactive Ledge Detection (only if not already stopping for another enemy)
-        var _proactive_ledge_check_x = x + (current_dir * ledge_detect_distance);
-        var _proactive_ledge_check_y = y + _ground_check_offset;
         
-        if (!place_meeting(_proactive_ledge_check_x, _proactive_ledge_check_y, collision_tileset)) {
+        function enemy_start_wait_and_turn() {
             enemy_state = ENEMY_STATE.WAIT_AND_TURN;
             state_initialized = false;
-            patrol_stop_timer = patrol_stop_duration;
-            if (!knockback_active) { hsp = 0; }
-        } else {
-            // Proactive Enemy Detection (only if not already stopping for a ledge)
+            
+            // Halt horizontal movement immediately to prevent sliding into collision
+            if (!knockback_active) { 
+                hsp = 0; 
+            }
+        }
+
+        // --- PROACTIVE CHECKS (AI) ---
+        // 1. Proactive Ledge Detection (Highest Priority)
+        var _proactive_ledge_check_x = x + (current_dir * ledge_detect_distance);
+        var _proactive_ledge_check_y = y + _ground_check_offset;
+        var _proactive_wall_check_x = x + (current_dir * wall_detect_distance);
+        
+        if (!place_meeting(_proactive_ledge_check_x, _proactive_ledge_check_y, collision_tileset)) {
+            // Ledge detected!
+            enemy_start_wait_and_turn();
+        } 
+        
+        // 2. Proactive Wall Detection
+        else if (place_meeting(_proactive_wall_check_x, y, collision_tileset)) {
+            // Wall detected!
+            enemy_start_wait_and_turn();
+        }
+
+        // 3. Proactive Enemy Detection (Only runs if no Ledge or Wall was detected)
+        else {
             var _check_left, _check_right, _check_top, _check_bottom;
             
             _check_top = bbox_top;
@@ -183,21 +195,20 @@ switch (enemy_state) {
             
             // Create a detection rectangle extending from the front of the enemy
             if (current_dir == 1) { // Facing right
-                _check_left = bbox_right; // Start at the current enemy's right edge
-                _check_right = bbox_right + enemy_detect_distance; // Extend forward by detect distance
+                _check_left = bbox_right;
+                _check_right = bbox_right + enemy_detect_distance;
             } else { // Facing left
-                _check_right = bbox_left; // Start at the current enemy's left edge
-                _check_left = bbox_left - enemy_detect_distance; // Extend backward by detect distance
+                _check_right = bbox_left;
+                _check_left = bbox_left - enemy_detect_distance;
             }
 
             var _list = ds_list_create();
-            // Check for other enemies within the forward-facing rectangle
-            var _num_enemies = collision_rectangle_list(_check_left, _check_top, _check_right, _check_bottom, oEnemy, false, true, _list, false); // Added 'false' for ordered_by_distance
+            var _num_enemies = collision_rectangle_list(_check_left, _check_top, _check_right, _check_bottom, oEnemy, false, true, _list, false);
 
             var _found_other_enemy = false;
             if (_num_enemies > 0) {
                 for (var i = 0; i < _num_enemies; i++) {
-                    if (_list[| i] != id) { // Make sure it's not 'self'
+                    if (_list[| i] != id) {
                         _found_other_enemy = true;
                         break;
                     }
@@ -206,24 +217,32 @@ switch (enemy_state) {
             ds_list_destroy(_list);
 
             if (_found_other_enemy) {
-                enemy_state = ENEMY_STATE.WAIT_AND_TURN;
-                state_initialized = false;
-                patrol_stop_timer = patrol_stop_duration;
-                if (!knockback_active) { hsp = 0; }
+                enemy_start_wait_and_turn();
             }
         }
-        break;
+        
+    break;
     case ENEMY_STATE.WAIT_AND_TURN:
+        show_debug_message("ENEMY STATE: WAIT AND TURN");
+        // Interupt WAIT_AND_TURN and enter CHASE if player is close enough during animation
+        if (_distance_to_player < default_close_chase_distance && _line_of_sight_clear) {
+            transition_to_chase();
+            // Use 'break' to immediately exit the switch case and prevent the PATROL exit logic from running.
+            break; 
+        }
         hsp_max = 0; // Ensure no horizontal movement while waiting
         
         if (!state_initialized) {
-            sprite_index = spr_idle;
+            sprite_index = spr_inspect;
             image_index = 0;
-            image_speed = 0;
+            image_speed = 1;
             state_initialized = true;
         }
         
-        if (patrol_stop_timer <= 0) {
+        
+        
+        // Exit WAIT_AND_TURN. Enter PATROL
+        if (image_index >= image_number - 1) {
             current_dir *= -1; // Reverse direction after waiting
             enemy_state = ENEMY_STATE.PATROL; // Resume patrolling
             state_initialized = false;
@@ -252,10 +271,7 @@ switch (enemy_state) {
         }
         */
         
-        if (alert_timer > 0) {
-            alert_timer--;
-        }
-        if (alert_timer <= 0) {
+        if (image_index >= image_number - 1) {
             enemy_state = ENEMY_STATE.PATROL; // Time's up, go back to patrolling
             state_initialized = false;
             alert_cooldown_timer = alert_cooldown_time; // Start the cooldown timer
@@ -264,6 +280,9 @@ switch (enemy_state) {
 
         break;
     case ENEMY_STATE.CHASE:
+        if (instance_exists(oPlayer)) {
+            current_dir = sign(oPlayer.x - x); // Continuously update direction towards the player.
+        }
         hsp_max = chase_hsp_max;
         
         if (!state_initialized) {
@@ -296,15 +315,28 @@ switch (enemy_state) {
     case ENEMY_STATE.ATTACK:
         hsp_max = 0;
         
-        if (image_index == 0 && sprite_index != spr_attack) { 
-            if (snd_attack != noone) { audio_play_sound(snd_attack, 10, false); }
+        // --- ONE-TIME INITIALIZATION ---
+        if (!state_initialized) { 
+            // Set Movement Impulse
+            hsp = current_dir * attack_h_speed; 
+            vsp = attack_v_speed; 
+            
+            // Set Animation and Timers
             sprite_index = spr_attack;
             image_index = 0;
             image_speed = 1; 
+            attack_timer = attack_duration; 
+            
+            // Set Cooldowns and Sound
+            if (snd_attack != noone) { 
+                audio_play_sound(snd_attack, 10, false); 
+            }
+            can_attack_player = false;
+            attack_cooldown_timer = attack_cooldown_duration;
+            state_initialized = true;
         }
         
-        // Note: The on-entry logic for attack impulse is in the STATE TRANSITIONS section.
-        
+        // --- STATE EXIT LOGIC (Per-frame logic) ---
         if (attack_timer <= 0) {
             // Attack animation/duration is over, transition back to CHASE or PATROL
             // Check player distance again to decide next state
@@ -354,7 +386,7 @@ switch (enemy_state) {
                 sprite_index = spr_death;
                 image_index = 0;
                 image_speed = 1;
-                //mask_index = sprNoCollision;
+                mask_index = sprNoCollision;
             }
             
             // Spawn the death effect object
@@ -371,6 +403,7 @@ switch (enemy_state) {
             if (image_index >= image_number - 1) {
                 instance_destroy();
             }
+            return; // Don't run anymore code. enemy is dead. Just finish animating.
         }
         // 2. Fallback: If no animation destroy immediately.
         else {
@@ -455,9 +488,7 @@ if (_on_ground && !knockback_active && enemy_state != ENEMY_STATE.ATTACK) {
 #endregion
 
 
-
-
-
+// Commit to movement
 scr_move_and_collide(collision_tileset);
 
 
