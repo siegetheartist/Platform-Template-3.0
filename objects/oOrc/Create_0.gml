@@ -62,3 +62,24 @@ snd_hurt = sndOrcHurt;
 snd_death = sndOrcDeath;
 snd_attack = noone;
 #endregion
+
+// ORC ATTACK BEHAVIORS
+function orc_swing_attack() {
+    if (sprite_index != spr_orc_swing) {
+        sprite_index = spr_orc_swing;
+        image_index = 0;
+        image_speed = 1;
+        hsp = 0; // Orc plants feet
+    }
+
+    // Example: spawn hitbox at frame 3
+    if (image_index == 3 && !hitbox_spawned) {
+        instance_create_layer(x + current_dir * 8, y, "Instances", oOrcHitbox);
+        hitbox_spawned = true;
+    }
+}
+
+function choose_orc_attack() {
+    // Orc might only have one attack for now
+    enemy_attack_behavior = orc_swing_attack;
+}

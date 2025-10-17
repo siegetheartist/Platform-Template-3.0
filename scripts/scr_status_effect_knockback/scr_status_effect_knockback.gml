@@ -1,4 +1,3 @@
-/// @function scr_status_effect_knockback(_target_instance, _attacker_x, _inflicting_h_strength, _inflicting_v_strength)
 /// @description Applies a knockback effect to a target instance if not on cooldown, considering target's resistance.
 /// @arg {id} _target_instance The instance to receive knockback (e.g., id, other).
 /// @arg {real} _attacker_x The x-coordinate of the attacker. Used to determine knockback direction.

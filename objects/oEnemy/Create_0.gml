@@ -36,7 +36,7 @@ knockback_v_resistance = 1.0; // 1.0 = full knockback, 0.75 = 25% reduction
 knockback_active = false;  // True when the enemy is currently in the knockback animation/movement
 knockback_cooldown_timer = 0; // Timer to prevent repeated knockbacks (1 second cooldown)
 knockback_cooldown_duration = 60; // 1 second at 60 FPS
-knockback_duration = 60; // Duration of the knockback effect (e.g., 0.25 seconds)
+knockback_duration = 20; // Duration of the knockback effect (e.g., 0.25 seconds)
 knockback_duration_timer = 0; // Current countdown for knockback duration
 knockback_h_friction = 0.2; // Horizontal friction applied during knockback
  
@@ -62,6 +62,7 @@ enum ENEMY_STATE {
 enemy_state = ENEMY_STATE.PATROL; // Sets the initial behavior state
 enemy_state_previous = ENEMY_STATE.PATROL; // Stores previous state
 state_initialized = false; // NEW: Flag to prevent sound spamming & sprite loops on state entry
+enemy_attack_behavior = noone;
 
 // Define movement speeds for different states (children can override these)
 patrol_hsp_max = 1; // Default slower speed for patrolling
@@ -88,24 +89,15 @@ _ground_check_offset = 1;
 
 // Placeholder for the exclamation mark sprite. Children will set their specific sprite.
 exclamation_sprite = -1; 
-
-//  TAUNT SETTINGS
-taunt_timer = 0; // Timer for how long the enemy is in the TAUNT state
-taunt_duration = 60; // How long the enemy taunts (1 second at 60 FPS)
  
 // NEW: Attack properties (children will override)
-attack_range = 0;         // Distance to trigger an attack
-attack_h_speed = 0;       // Horizontal speed applied during attack
-attack_v_speed = 0;       // Vertical speed applied during attack (negative for jump)
-attack_duration = 0;      // How long the attack state lasts (frames)
-attack_timer = 0;         // Current countdown for the attack duration
+attack_range = 0;         // Distance to enter ATTACK state
+attack_finished = false;
 attack_cooldown_timer = 0;
 attack_cooldown_duration = 0;
 can_attack_player = true; // Set to false when on cooldown
 
 // Patrol stopping
-patrol_stop_timer = 0; // Timer for the 1-second stop before turning
-patrol_stop_duration = 60; // 1 second at 60 FPS
 ledge_detect_distance = 48; // Distance from a ledge to trigger a stop and turn
 enemy_detect_distance = 24; // Distance from another enemy to trigger a stop and turn
 wall_detect_distance = 10; // pixels ahead to check for walls

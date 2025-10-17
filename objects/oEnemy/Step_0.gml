@@ -5,7 +5,7 @@ var collision_tileset = [_main_tileset, oInvisibleBlock, objDestructableWall, ob
  
 // Declare all local variables
 var _player_instance = instance_find(oPlayer, 0); // Reference to the player object
-var _on_ground = place_meeting(x, y + 1, collision_tileset);
+_on_ground = place_meeting(x, y + 1, collision_tileset);
 var _distance_to_player = 0; // Distance from enemy to player
 var _line_of_sight_clear = false; // True if enemy has clear sight to player
 var _target_hsp = 0; // Desired horizontal speed based on current state
@@ -24,12 +24,9 @@ if (enemy_health <= 0 && enemy_state != ENEMY_STATE.DEATH) {
 
 #region STATUS EFFECT & TIMER MANAGEMENT
 // Standard Timers (Taunt, Flash, Cooldowns, etc)
-if (taunt_timer > 0) { taunt_timer--; }
 if (flash_timer > 0) { flash_timer--; }
 if (knockback_cooldown_timer > 0) { knockback_cooldown_timer--; }
-if (patrol_stop_timer > 0) { patrol_stop_timer--; }
 if (alert_cooldown_timer > 0) { alert_cooldown_timer--; }
-if (attack_timer > 0) { attack_timer--; }
 if (attack_cooldown_timer > 0) {
     attack_cooldown_timer--;
     if (attack_cooldown_timer <= 0) {
@@ -138,7 +135,6 @@ if (enemy_state != ENEMY_STATE.ATTACK && enemy_state != ENEMY_STATE.HURT && inst
         if (!_is_chase_condition_met || _distance_to_player > deaggro_distance_from_chase) { 
             enemy_state = ENEMY_STATE.TAUNT;
             state_initialized = false;
-            taunt_timer = taunt_duration;
             show_debug_message("CHASE -> TAUNT");
         }
     }
@@ -306,47 +302,43 @@ switch (enemy_state) {
             state_initialized = true;
         }
 
-        if (taunt_timer <= 0) {
+        if (image_index >= image_number - 1) {
             enemy_state = ENEMY_STATE.PATROL; // Return to patrol after taunt
             state_initialized = false;
             alert_cooldown_timer = alert_cooldown_time; // Start cooldown before re-alerting
         }
         break;
     case ENEMY_STATE.ATTACK:
-        hsp_max = 0;
-        
-        // --- ONE-TIME INITIALIZATION ---
-        if (!state_initialized) { 
-            // Set Movement Impulse
-            hsp = current_dir * attack_h_speed; 
-            vsp = attack_v_speed; 
-            
-            // Set Animation and Timers
-            sprite_index = spr_attack;
-            image_index = 0;
-            image_speed = 1; 
-            attack_timer = attack_duration; 
-            
-            // Set Cooldowns and Sound
-            if (snd_attack != noone) { 
-                audio_play_sound(snd_attack, 10, false); 
-            }
-            can_attack_player = false;
-            attack_cooldown_timer = attack_cooldown_duration;
+        show_debug_message("ENEMY STATE: ATTACK");
+        hsp_max = 0; // Stop horizontal movement
+        // --- STATE INITIALIZATION (Runs once) ---
+        if (!state_initialized) {
+            attack_finished = false; // Reset attack flag
             state_initialized = true;
+        }
+    
+        // --- DYNAMIC ATTACK BEHAVIOR ---
+        if (enemy_attack_behavior != noone) {
+            enemy_attack_behavior();
         }
         
         // --- STATE EXIT LOGIC (Per-frame logic) ---
-        if (attack_timer <= 0) {
-            // Attack animation/duration is over, transition back to CHASE or PATROL
-            // Check player distance again to decide next state
-            var _player_exists_after_attack = instance_exists(_player_instance);
-            if (_player_exists_after_attack && point_distance(x, y, _player_instance.x, _player_instance.y) < deaggro_distance_from_chase) {
+        if (attack_finished) {
+            // Attack is over, decide what to do next based on player position.
+            var _player_exists = instance_exists(oPlayer);
+            if (_player_exists && point_distance(x, y, oPlayer.x, oPlayer.y) < attack_range) {
+                // If player is STILL in attack range, we can attack again (after cooldown).
+                // We'll reset the state to re-evaluate.
+                state_initialized = false; 
+            } else if (_player_exists && point_distance(x, y, oPlayer.x, oPlayer.y) < deaggro_distance_from_chase) {
+                // If player is out of attack range but still close, chase them.
                 enemy_state = ENEMY_STATE.CHASE;
+                state_initialized = false;
             } else {
+                // If player is far away or gone, go back to patrolling.
                 enemy_state = ENEMY_STATE.PATROL;
+                state_initialized = false;
             }
-            state_initialized = false; // Reset for new state
         }
         break;
     case ENEMY_STATE.HURT:

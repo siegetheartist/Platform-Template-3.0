@@ -19,8 +19,6 @@
     {"$GMSpriteFrame":"v1","%Name":"1a906467-59cd-4398-8598-194f46724126","name":"1a906467-59cd-4398-8598-194f46724126","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
     {"$GMSpriteFrame":"v1","%Name":"d5f483bd-9732-4a63-a0b3-c448febd59d3","name":"d5f483bd-9732-4a63-a0b3-c448febd59d3","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
     {"$GMSpriteFrame":"v1","%Name":"bc00a28a-5369-4a3f-8625-4d2650c52989","name":"bc00a28a-5369-4a3f-8625-4d2650c52989","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
-    {"$GMSpriteFrame":"v1","%Name":"90ce0a20-2880-4a02-a0fe-4475e17c99f6","name":"90ce0a20-2880-4a02-a0fe-4475e17c99f6","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
-    {"$GMSpriteFrame":"v1","%Name":"f3924d9c-0357-403e-82de-64a5fde76e18","name":"f3924d9c-0357-403e-82de-64a5fde76e18","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
     {"$GMSpriteFrame":"v1","%Name":"add48701-6e16-4639-9324-1d46627cb232","name":"add48701-6e16-4639-9324-1d46627cb232","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
   ],
   "gridX":0,
@@ -99,13 +97,7 @@
               },"Disabled":false,"id":"11b86d79-509c-4d5d-9885-b79df0cac16f","IsCreationKey":false,"Key":5.0,"Length":1.0,"resourceType":"Keyframe<SpriteFrameKeyframe>","resourceVersion":"2.0","Stretch":false,},
             {"$Keyframe<SpriteFrameKeyframe>":"","Channels":{
                 "0":{"$SpriteFrameKeyframe":"","Id":{"name":"bc00a28a-5369-4a3f-8625-4d2650c52989","path":"sprites/sGoblinTaunt/sGoblinTaunt.yy",},"resourceType":"SpriteFrameKeyframe","resourceVersion":"2.0",},
-              },"Disabled":false,"id":"f63b8c67-b759-4d78-a630-eb69adb54bad","IsCreationKey":false,"Key":6.0,"Length":1.0,"resourceType":"Keyframe<SpriteFrameKeyframe>","resourceVersion":"2.0","Stretch":false,},
-            {"$Keyframe<SpriteFrameKeyframe>":"","Channels":{
-                "0":{"$SpriteFrameKeyframe":"","Id":{"name":"90ce0a20-2880-4a02-a0fe-4475e17c99f6","path":"sprites/sGoblinTaunt/sGoblinTaunt.yy",},"resourceType":"SpriteFrameKeyframe","resourceVersion":"2.0",},
-              },"Disabled":false,"id":"46c6af4c-8c37-441b-a519-c56b996f520e","IsCreationKey":false,"Key":7.0,"Length":1.0,"resourceType":"Keyframe<SpriteFrameKeyframe>","resourceVersion":"2.0","Stretch":false,},
-            {"$Keyframe<SpriteFrameKeyframe>":"","Channels":{
-                "0":{"$SpriteFrameKeyframe":"","Id":{"name":"f3924d9c-0357-403e-82de-64a5fde76e18","path":"sprites/sGoblinTaunt/sGoblinTaunt.yy",},"resourceType":"SpriteFrameKeyframe","resourceVersion":"2.0",},
-              },"Disabled":false,"id":"2d04c81f-1f95-483f-9566-a2de6618e012","IsCreationKey":false,"Key":8.0,"Length":1.0,"resourceType":"Keyframe<SpriteFrameKeyframe>","resourceVersion":"2.0","Stretch":false,},
+              },"Disabled":false,"id":"f63b8c67-b759-4d78-a630-eb69adb54bad","IsCreationKey":false,"Key":6.0,"Length":3.0,"resourceType":"Keyframe<SpriteFrameKeyframe>","resourceVersion":"2.0","Stretch":false,},
             {"$Keyframe<SpriteFrameKeyframe>":"","Channels":{
                 "0":{"$SpriteFrameKeyframe":"","Id":{"name":"add48701-6e16-4639-9324-1d46627cb232","path":"sprites/sGoblinTaunt/sGoblinTaunt.yy",},"resourceType":"SpriteFrameKeyframe","resourceVersion":"2.0",},
               },"Disabled":false,"id":"1f13a79c-c8f3-43c6-877e-b8a87ae0b2e5","IsCreationKey":false,"Key":9.0,"Length":1.0,"resourceType":"Keyframe<SpriteFrameKeyframe>","resourceVersion":"2.0","Stretch":false,},
