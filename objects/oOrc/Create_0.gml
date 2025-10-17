@@ -23,20 +23,17 @@ deaggro_distance_from_chase = 180; // Distance at which the enemy will stop chas
 knockback_h_resistance = 0.75;  // Orc takes 25% reduced knockback
 knockback_v_resistance = 0.75; // Orc takes 25% reduced knockback
 
-// Enemy Stas
+// Enemy Stats
 max_enemy_health = 6; // Health
 enemy_health = max_enemy_health; // Initialize current health to its max
 enemy_damage = 1; // Damage
 
-// Attack properties (children will override) - Default to 0 for no attack
-attack_range = 0;          // Orc doesn't have a specific attack range yet
-attack_h_speed = 0;        
-attack_v_speed = 0;        
-attack_duration = 0;      
-attack_cooldown_duration = 0; 
+// Attack properties - Default to 0 for no attack
+attack_range = 0;
+attack_cooldown_duration = 0;
 
 // Knockback inflicted by Orc's attack (currently 0 as no attack defined)
-knockback_h_strength = 6;  // Horizontal knockback inflicted by orc's attack
+knockback_h_strength = 4;  // Horizontal knockback inflicted by orc's attack
 knockback_v_strength = 0; // Vertical knockback inflicted by orc's attack
 #endregion
 
@@ -63,10 +60,21 @@ snd_death = sndOrcDeath;
 snd_attack = noone;
 #endregion
 
+#region GOBLIN ATTACK VARIABLES
+// LEAP
+spr_swipe_attack_01 = sprOrcAttackSwing01;
+leap_attack_range = 96;
+attack_range = leap_attack_range; // Currently only 1 attack, but in future other attacks will have to override this
+leap_h_speed = 3;         // Horizontal speed of the leap
+leap_v_speed = -6;       // Vertical speed of the leap (negative for upward)
+leap_cooldown = 90; 
+attack_cooldown_duration = leap_cooldown;
+#endregion
+
 // ORC ATTACK BEHAVIORS
-function orc_swing_attack() {
-    if (sprite_index != spr_orc_swing) {
-        sprite_index = spr_orc_swing;
+function swing_attack() {
+    if (sprite_index != sprOrcAttackSwing01) {
+        sprite_index = sprOrcAttackSwing01;
         image_index = 0;
         image_speed = 1;
         hsp = 0; // Orc plants feet
@@ -74,12 +82,12 @@ function orc_swing_attack() {
 
     // Example: spawn hitbox at frame 3
     if (image_index == 3 && !hitbox_spawned) {
-        instance_create_layer(x + current_dir * 8, y, "Instances", oOrcHitbox);
+        instance_create_layer(x + current_dir * 8, y, "Instances", objOrcAttackSwing01Hitbox);
         hitbox_spawned = true;
     }
 }
 
 function choose_orc_attack() {
     // Orc might only have one attack for now
-    enemy_attack_behavior = orc_swing_attack;
+    enemy_attack_behavior = swing_attack;
 }

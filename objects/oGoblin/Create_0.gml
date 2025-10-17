@@ -60,22 +60,25 @@ snd_attack = sndGoblinAttack01;
 // LEAP
 spr_leap_attack_1 = sprGoblinAttackLeap1;
 spr_leap_attack_2 = sprGoblinAttackLeap2;
-goblin_leap_attack_range = 96;
-attack_range = goblin_leap_attack_range; // Currently only 1 attack, but in future other attacks will have to override this
-goblin_leap_h_speed = 3;         // Horizontal speed of the leap
-goblin_leap_v_speed = -6;       // Vertical speed of the leap (negative for upward)
-goblin_leap_cooldown = 60; 
+leap_attack_range = 96;
+attack_range = leap_attack_range; // Currently only 1 attack, but in future other attacks will have to override this
+leap_h_speed = 3;         // Horizontal speed of the leap
+leap_v_speed = -6;       // Vertical speed of the leap (negative for upward)
+leap_cooldown = 90; 
+attack_cooldown_duration = leap_cooldown;
 #endregion
 
 
+
 #region GOBLIN ATTACK BEHAVIORS (Functions)
-function goblin_leap_attack() {
-    // 1. If not in the "ready" pose, switch to it.
-    if (sprite_index != spr_leap_attack_1) {
+function leap_attack() {
+    // 1. If not in the "ready" or "leap" pose, switch to the ready pose.
+    if (sprite_index != spr_leap_attack_1 && sprite_index != spr_leap_attack_2) {
         sprite_index = spr_leap_attack_1;
         image_index = 0;
         image_speed = 1;
-        return;
+        hsp = 0; // Make sure the goblin stops moving while getting ready
+        return; // Wait until next frame
     }
 
     // 2. Once the "ready" animation is finished, perform the leap.
@@ -85,33 +88,40 @@ function goblin_leap_attack() {
         image_speed = 1;
         
         // Apply the leap speed
-        hsp = current_dir * goblin_leap_h_speed;
-        vsp = goblin_leap_v_speed;
+        hsp = current_dir * leap_h_speed;
+        vsp = leap_v_speed;
         
         // Play a sound for feedback
         audio_play_sound(sndGoblinAttack01, 10, false);
     }
 
-    // 3. After leaping, check if we have landed on the ground.
-    if (sprite_index == spr_leap_attack_2 && _on_ground) {
+    // 3. During the leap, check for collision with the player
+    if (sprite_index == spr_leap_attack_2) {
+        // Check for collision with player instance
+        var _player_hit = instance_place(x, y, oPlayer);
+        if (_player_hit != noone) {
+            // Player was hit! Apply knockback to self (bounce back)
+            hsp = -current_dir * (leap_h_speed * 1.0); // Bounce back with more force
+            vsp = leap_v_speed * 0.25; // A small hop up
+            
+            // End the attack immediately after bouncing
+            attack_finished = true;
+            return; // Exit the function early
+        }
+    }
+
+    // 4. After leaping, check if we have landed on the ground.
+    // We only run this check if we are in the leap animation and haven't already finished the attack
+    if (sprite_index == spr_leap_attack_2 && _on_ground && vsp > 0) {
+        hsp = 0 // lerp(hsp, 0, 0.6); Smoothly decelerate hsp to 0 by 20% each frame
         // The attack is now officially over.
         attack_finished = true;
     }
 }
 #endregion
 
-
 // -- ATTACK SELECTION LOGIC --
-// This is the "selector" function. It decides WHICH attack to use and WHEN.
+// This is the "selector" function. It decides WHICH attack to use.
 enemy_attack_behavior = function() {
-    if (attack_cooldown_timer <= 0) {
-
-        // Reset the cooldown for this specific attack
-        attack_cooldown_timer = goblin_leap_cooldown;
-
-        // Execute the leap attack function now!
-        goblin_leap_attack();
-    }
-    // If on cooldown, the goblin will just wait (doing nothing)
-    // because the parent oEnemy has set hsp_max to 0.
+    leap_attack();
 }

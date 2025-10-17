@@ -1,7 +1,8 @@
 #region VARIABLES
 //  Get tilemap ID for collision 
 var _main_tileset = layer_tilemap_get_id("tsCollision"); // Get the ID of the collision tilemap layer
-var collision_tileset = [_main_tileset, oInvisibleBlock, objDestructableWall, objTimedPlatform, objSlope01, objSlope02, objSlope03, objSlope04, objSlope05]; // Get the ID of the collision tilemap layer
+var collision_slopes = layer_tilemap_get_id("tlSlopes"); // new layer to handle slopes
+var collision_tileset = [_main_tileset, collision_slopes, oInvisibleBlock, objDestructableWall, objTimedPlatform, objSlope01, objSlope02, objSlope03, objSlope04, objSlope05]; // Get the ID of the collision tilemap layer
  
 // Declare all local variables
 var _player_instance = instance_find(oPlayer, 0); // Reference to the player object
@@ -311,26 +312,40 @@ switch (enemy_state) {
     case ENEMY_STATE.ATTACK:
         show_debug_message("ENEMY STATE: ATTACK");
         hsp_max = 0; // Stop horizontal movement
+
         // --- STATE INITIALIZATION (Runs once) ---
         if (!state_initialized) {
-            attack_finished = false; // Reset attack flag
-            state_initialized = true;
+            // Only start a new attack if the cooldown is over
+            if (can_attack_player) {
+                attack_finished = false; // Reset attack flag
+                state_initialized = true;
+                can_attack_player = false; // Prevent re-attacking immediately
+                // The child object should set 'attack_cooldown_duration' in its Create Event
+                attack_cooldown_timer = attack_cooldown_duration;
+            } else {
+                // If on cooldown, immediately transition out of the attack state
+                // and chase the player if they are still nearby.
+                if (instance_exists(oPlayer) && point_distance(x, y, oPlayer.x, oPlayer.y) < deaggro_distance_from_chase) {
+                     enemy_state = ENEMY_STATE.CHASE;
+                } else {
+                     enemy_state = ENEMY_STATE.PATROL;
+                }
+                state_initialized = false;
+            }
         }
     
         // --- DYNAMIC ATTACK BEHAVIOR ---
-        if (enemy_attack_behavior != noone) {
-            enemy_attack_behavior();
+        if (state_initialized && !attack_finished) {
+            if (enemy_attack_behavior != noone) {
+                enemy_attack_behavior();
+            }
         }
-        
-        // --- STATE EXIT LOGIC (Per-frame logic) ---
+    
+        // --- STATE EXIT LOGIC ---
         if (attack_finished) {
             // Attack is over, decide what to do next based on player position.
             var _player_exists = instance_exists(oPlayer);
-            if (_player_exists && point_distance(x, y, oPlayer.x, oPlayer.y) < attack_range) {
-                // If player is STILL in attack range, we can attack again (after cooldown).
-                // We'll reset the state to re-evaluate.
-                state_initialized = false; 
-            } else if (_player_exists && point_distance(x, y, oPlayer.x, oPlayer.y) < deaggro_distance_from_chase) {
+            if (_player_exists && point_distance(x, y, oPlayer.x, oPlayer.y) < deaggro_distance_from_chase) {
                 // If player is out of attack range but still close, chase them.
                 enemy_state = ENEMY_STATE.CHASE;
                 state_initialized = false;
