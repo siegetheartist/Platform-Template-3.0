@@ -38,11 +38,11 @@ switch (state) {
         vspeed = lerp(vspeed, fall_speed, 0.05);
         y += vspeed;
         
-        var collision_tileset = [layer_tilemap_get_id("tsCollision"), layer_tilemap_get_id("tlSlopes"), objDestructableWall, objTimedPlatform, oInvisibleBlock];
+        var hazard_collisions = global.collision_environment;
 
         // Check for collision with the ground
-        for (var i = 0; i < array_length(collision_tileset); i++) {
-            if (place_meeting(x, y + vspeed, collision_tileset[i])) {
+        for (var i = 0; i < array_length(hazard_collisions); i++) {
+            if (place_meeting(x, y + vspeed, hazard_collisions[i])) {
                 // Call the destruction script
                 scr_stalagmite_destroy();
                 break; 

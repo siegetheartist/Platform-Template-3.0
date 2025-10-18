@@ -28,7 +28,7 @@ enemy_damage = 1; // Default damage this enemy deals (children will override)
 
 // In oEnemy Create Event
 invulnerable_timer = 0;
-invulnerable_duration = 30; // This is about 0.5 seconds, you can adjust as needed.
+invulnerable_duration = 0; // This is about 0.5 seconds, you can adjust as needed.
 
 // Knockback resistance (how much this enemy *resists* incoming knockback - multiplier)
 knockback_h_resistance = 1.0;  // 1.0 = full knockback, 0.75 = 25% reduction
@@ -129,3 +129,5 @@ snd_hurt = noone;
 snd_death = noone;
 snd_attack = noone;
 #endregion
+
+

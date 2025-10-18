@@ -1,12 +1,8 @@
 #region VARIABLES
-//  Get tilemap ID for collision 
-var _main_tileset = layer_tilemap_get_id("tsCollision"); // Get the ID of the collision tilemap layer
-var collision_slopes = layer_tilemap_get_id("tlSlopes"); // new layer to handle slopes
-var collision_tileset = [_main_tileset, collision_slopes, oInvisibleBlock, objDestructableWall, objTimedPlatform, objSlope01, objSlope02, objSlope03, objSlope04, objSlope05]; // Get the ID of the collision tilemap layer
  
 // Declare all local variables
 var _player_instance = instance_find(oPlayer, 0); // Reference to the player object
-_on_ground = place_meeting(x, y + 1, collision_tileset);
+_on_ground = place_meeting(x, y + 1, collision_tileset_env);
 var _distance_to_player = 0; // Distance from enemy to player
 var _line_of_sight_clear = false; // True if enemy has clear sight to player
 var _target_hsp = 0; // Desired horizontal speed based on current state
@@ -52,7 +48,7 @@ if (enemy_state != ENEMY_STATE.DEATH) {
         
         // Check for line of sight to the player using the collision tilemap
         // The line should be from the enemy's feet to the player feet,
-        _line_of_sight_clear = !collision_line(x, _enemy_los_y, _player_instance.x, _player_los_y, collision_tileset, false, true);
+        _line_of_sight_clear = !collision_line(x, _enemy_los_y, _player_instance.x, _player_los_y, collision_tileset_env, false, true);
     
         // Determine if player is in front or behind
         _player_is_in_front = (sign(_player_instance.x - x) == current_dir);
@@ -172,13 +168,13 @@ switch (enemy_state) {
         var _proactive_ledge_check_y = y + _ground_check_offset;
         var _proactive_wall_check_x = x + (current_dir * wall_detect_distance);
         
-        if (!place_meeting(_proactive_ledge_check_x, _proactive_ledge_check_y, collision_tileset)) {
+        if (!place_meeting(_proactive_ledge_check_x, _proactive_ledge_check_y, collision_tileset_env)) {
             // Ledge detected!
             enemy_start_wait_and_turn();
         } 
         
         // 2. Proactive Wall Detection
-        else if (place_meeting(_proactive_wall_check_x, y, collision_tileset)) {
+        else if (place_meeting(_proactive_wall_check_x, y, collision_tileset_env)) {
             // Wall detected!
             enemy_start_wait_and_turn();
         }
@@ -426,7 +422,7 @@ if (enemy_state == ENEMY_STATE.PATROL && !knockback_active && enemy_state != ENE
     var _edge_check_x = x + (current_dir * _edge_check_offset);
     var _edge_check_y = y + _ground_check_offset;
  
-    if (!place_meeting(_edge_check_x, _edge_check_y, collision_tileset)) {
+    if (!place_meeting(_edge_check_x, _edge_check_y, collision_tileset_env)) {
         current_dir *= -1;
     }
 }
@@ -496,7 +492,7 @@ if (_on_ground && !knockback_active && enemy_state != ENEMY_STATE.ATTACK) {
 
 
 // Commit to movement
-scr_move_and_collide(collision_tileset);
+scr_move_and_collide(collision_tileset_env);
 
 
 // Flip the sprite horizontally based on the current direction.

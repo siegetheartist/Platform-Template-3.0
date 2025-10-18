@@ -1,1 +1,1 @@
-/// @description Weapon Stats
+event_inherited()

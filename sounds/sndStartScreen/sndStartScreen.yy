@@ -10,7 +10,7 @@
   "compression":3,
   "compressionQuality":4,
   "conversionMode":0,
-  "duration":96.0,
+  "duration":69.818184,
   "exportDir":"",
   "name":"sndStartScreen",
   "parent":{
@@ -21,6 +21,6 @@
   "resourceType":"GMSound",
   "resourceVersion":"2.0",
   "sampleRate":44100,
-  "soundFile":"sndStartScreen.mp3",
-  "volume":0.31,
+  "soundFile":"sndStartScreen.wav",
+  "volume":0.3,
 }

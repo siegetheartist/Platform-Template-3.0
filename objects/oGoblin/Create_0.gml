@@ -91,6 +91,10 @@ function leap_attack() {
         hsp = current_dir * leap_h_speed;
         vsp = leap_v_speed;
         
+        // Spawn hitbox
+        hitbox = instance_create_layer(x, y, "ilTop", objGoblinAttackHitbox01);
+        hitbox.weapon_owner = id; // store THIS goblin’s instance ID
+        
         // Play a sound for feedback
         audio_play_sound(sndGoblinAttack01, 10, false);
     }
@@ -116,6 +120,10 @@ function leap_attack() {
         hsp = 0 // lerp(hsp, 0, 0.6); Smoothly decelerate hsp to 0 by 20% each frame
         // The attack is now officially over.
         attack_finished = true;
+        if (instance_exists(hitbox)) {
+            with (hitbox) instance_destroy();
+        }
+        hitbox = noone;
     }
 }
 #endregion

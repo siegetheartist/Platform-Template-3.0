@@ -3,7 +3,6 @@
   "%Name":"objOrcAttackSwing01Hitbox",
   "eventList":[
     {"$GMEvent":"v1","%Name":"","collisionObjectId":null,"eventNum":0,"eventType":0,"isDnD":false,"name":"","resourceType":"GMEvent","resourceVersion":"2.0",},
-    {"$GMEvent":"v1","%Name":"","collisionObjectId":{"name":"oPlayer","path":"objects/oPlayer/oPlayer.yy",},"eventNum":0,"eventType":4,"isDnD":false,"name":"","resourceType":"GMEvent","resourceVersion":"2.0",},
   ],
   "managed":true,
   "name":"objOrcAttackSwing01Hitbox",
@@ -12,7 +11,10 @@
     "name":"Enemies",
     "path":"folders/Objects/Enemies.yy",
   },
-  "parentObjectId":null,
+  "parentObjectId":{
+    "name":"objEnemyHitboxParent",
+    "path":"objects/objEnemyHitboxParent/objEnemyHitboxParent.yy",
+  },
   "persistent":false,
   "physicsAngularDamping":0.1,
   "physicsDensity":0.5,
@@ -30,7 +32,10 @@
   "resourceType":"GMObject",
   "resourceVersion":"2.0",
   "solid":false,
-  "spriteId":null,
+  "spriteId":{
+    "name":"sprOrcAttackSwing01Hitbox",
+    "path":"sprites/sprOrcAttackSwing01Hitbox/sprOrcAttackSwing01Hitbox.yy",
+  },
   "spriteMaskId":null,
   "visible":true,
 }

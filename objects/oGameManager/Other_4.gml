@@ -1,3 +1,20 @@
+#region SHARED ENVIRONMENT COLLISION LIST
+// Tilemaps
+global.collision_tsCollision = layer_tilemap_get_id("tsCollision");
+global.collision_tlSlopes   = layer_tilemap_get_id("tlSlopes");
+
+// Shared environment collidables
+global.collision_environment = [
+    global.collision_tsCollision,
+    global.collision_tlSlopes,
+    oInvisibleBlock,
+    objDestructableWall,
+    objTimedPlatform,
+    objSlope, objSlope01, objSlope02, objSlope03, objSlope04, objSlope05
+];
+#endregion
+
+
 // Set the default respawn position to the player's starting position in this room.
 // This ensures we always have a valid respawn point if no checkpoint is activated.
 if (instance_exists(oPlayer)) {
