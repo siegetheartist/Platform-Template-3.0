@@ -6,7 +6,7 @@
   "name":"scr_stalagmite_destroy",
   "parent":{
     "name":"scrHazards",
-    "path":"folders/scrHazards.yy",
+    "path":"folders/Scripts/scrHazards.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

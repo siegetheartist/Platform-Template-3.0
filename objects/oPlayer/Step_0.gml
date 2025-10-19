@@ -24,9 +24,8 @@ var _dir = input.dir;
 
 
 // --- Collision Tileset --- 
-// Kept in the oGameManager persistent object for single source of all collidables
+// Kept in the oGameManager persistent object for single source of all collidables.
 collision_tileset = global.collision_environment;
-
 
 
 // This group contains only the objects that should NOT allow wall grabs.

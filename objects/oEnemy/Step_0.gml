@@ -1,4 +1,6 @@
 #region VARIABLES
+
+collision_tileset_env = global.collision_environment;
  
 // Declare all local variables
 var _player_instance = instance_find(oPlayer, 0); // Reference to the player object
@@ -10,6 +12,9 @@ var _pixel_step = 0; // For pixel-by-pixel collision adjustment
 var _player_is_in_front = false;
 var _player_is_behind = false;
 #endregion
+
+
+
 
 
 // --- HIGH PRIORITY CHECK: DEATH (Must run before timers) ---

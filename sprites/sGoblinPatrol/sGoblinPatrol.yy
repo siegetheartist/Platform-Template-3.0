@@ -29,7 +29,7 @@
   "origin":7,
   "parent":{
     "name":"sprGoblins",
-    "path":"folders/Sprites/sprGoblins.yy",
+    "path":"folders/Sprites/sprEnemies/sprGoblins.yy",
   },
   "preMultiplyAlpha":false,
   "resourceType":"GMSprite",

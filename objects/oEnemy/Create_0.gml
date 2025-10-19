@@ -15,7 +15,7 @@ hsp_max = 0; // Current maximum horizontal speed (dynamically set by state)
 vsp_max = 10; // Maximum falling speed to prevent excessive velocity
 
 current_dir = 1; // 1 is right, -1 is left (initial movement direction)
-grav = 0.4; // Gravity strength pulling the enemy down
+grav = 0.2; // Gravity strength pulling the enemy down
 #endregion
 
 #region ENEMY STATS
@@ -130,4 +130,4 @@ snd_death = noone;
 snd_attack = noone;
 #endregion
 
-
+// collision_tileset_env = global.collision_environment;

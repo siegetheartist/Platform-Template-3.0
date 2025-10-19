@@ -1,4 +1,4 @@
-//  Orc Specific Initialization 
+/// @description Orc Specific Initialization 
 
 // Inherit all variables and settings from the parent oEnemy
 event_inherited(); 
@@ -60,34 +60,59 @@ snd_death = sndOrcDeath;
 snd_attack = noone;
 #endregion
 
-#region GOBLIN ATTACK VARIABLES
-// LEAP
-spr_swipe_attack_01 = sprOrcAttackSwing01;
-leap_attack_range = 96;
-attack_range = leap_attack_range; // Currently only 1 attack, but in future other attacks will have to override this
-leap_h_speed = 3;         // Horizontal speed of the leap
-leap_v_speed = -6;       // Vertical speed of the leap (negative for upward)
-leap_cooldown = 90; 
-attack_cooldown_duration = leap_cooldown;
+#region ORC ATTACK VARIABLES
+// SWING
+spr_orc_attack_swing_01 = sprOrcAttackSwing01;
+orc_attack_swing_range = 48;
+attack_range = orc_attack_swing_range; 
+orc_attack_swing_cooldown = 90; 
+attack_cooldown_duration = orc_attack_swing_cooldown;
+
+// Track spawned hitbox
+hitbox = noone;
 #endregion
 
-// ORC ATTACK BEHAVIORS
-function swing_attack() {
-    if (sprite_index != sprOrcAttackSwing01) {
-        sprite_index = sprOrcAttackSwing01;
+
+#region ORC ATTACK BEHAVIORS
+function orc_attack_swing() {
+    // 1. If not already in swing animation, start it
+    if (sprite_index != spr_orc_attack_swing_01) {
+        sprite_index = spr_orc_attack_swing_01;
         image_index = 0;
-        image_speed = 1;
-        hsp = 0; // Orc plants feet
+        image_speed = 1; // adjust for timing
+        hsp = 0; // stop movement
+        return;
     }
 
-    // Example: spawn hitbox at frame 3
-    if (image_index == 3 && !hitbox_spawned) {
-        instance_create_layer(x + current_dir * 8, y, "Instances", objOrcAttackSwing01Hitbox);
-        hitbox_spawned = true;
+    // 2. When we reach the 4th frame, spawn hitbox and play sound
+    if (sprite_index == spr_orc_attack_swing_01 && image_index >= .6 && hitbox == noone) {
+        var _hitbox = instance_create_layer(x, y, "ilTop", objOrcAttackSwing01Hitbox);
+        _hitbox.weapon_owner = id; // assign THIS orc as owner
+        hitbox = _hitbox;
+
+        audio_play_sound(sndOrcTaunt, 10, false);
+    }
+
+    // 3. When animation finishes, end attack and clean up hitbox
+    if (sprite_index == spr_orc_attack_swing_01 && image_index >= image_number - 1) {
+        attack_finished = true;
+
+        if (instance_exists(hitbox)) {
+            with (hitbox) instance_destroy();
+        }
+        hitbox = noone;
     }
 }
+#endregion
 
-function choose_orc_attack() {
-    // Orc might only have one attack for now
-    enemy_attack_behavior = swing_attack;
+
+// -- ATTACK SELECTION LOGIC --
+// This is the "selector" function. It decides WHICH attack to use.
+enemy_attack_behavior = function() {
+    
+    // Initialize Attacks
+    // if attack is available (cooldown is 0), initialize it, in order of priority
+    
+    // If an attack has been initialized, run it's code, as many times as needed, frame by frame, until it is finished.
+    orc_attack_swing();
 }

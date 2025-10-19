@@ -23,7 +23,7 @@
   ],
   "name":"sprStalagmite",
   "nineSlice":null,
-  "origin":1,
+  "origin":0,
   "parent":{
     "name":"sprHazards",
     "path":"folders/Sprites/sprHazards.yy",
@@ -75,7 +75,7 @@
     ],
     "visibleRange":null,
     "volume":1.0,
-    "xorigin":32,
+    "xorigin":0,
     "yorigin":0,
   },
   "swatchColours":null,
@@ -86,5 +86,5 @@
   },
   "type":0,
   "VTile":false,
-  "width":64,
+  "width":32,
 }

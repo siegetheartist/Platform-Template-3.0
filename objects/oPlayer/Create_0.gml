@@ -28,7 +28,7 @@ can_control = false;
 #region BASE MOVEMENT 
 // Horizontal speedS
 hsp = 0; // Horizontal speed (pixels per frame)
-max_hsp = 2.75; // Maximum horizontal speed the player can reach (Original speed 3)
+max_hsp = 2.50; // Maximum horizontal speed the player can reach (Original speed 3)
 
 // vertical speedS
 vsp = 0; // Vertical speed (pixels per frame)
@@ -41,12 +41,12 @@ decel = 0.5; // Rate at which horizontal speed decreases
 
 #region GRAVITY SETTINGS
 // Gravity settings for normal falling
-grav = 0.5; // Strength of gravity pulling the player down
-grav_max = 12; // Maximum vertical speed due to normal gravity
+grav = 0.2; // Strength of gravity pulling the player down
+grav_max = 10; // Maximum vertical speed due to normal gravity
 
 // Gravity settings while sliding on a wall
 grav_wall = 0.1; // Reduced gravity strength for wall sliding
-grav_wall_max = 5; // Maximum vertical speed while wall sliding
+grav_wall_max = 3.25; // Maximum vertical speed while wall sliding
 #endregion
 
 
@@ -55,8 +55,8 @@ grav_wall_max = 5; // Maximum vertical speed while wall sliding
 ground_check_dist = 12; // Pixels below player to check for solid ground
 
 // Jumping
-jump_height_min = -2.5; // Minimum upward velocity when jump key is released early
-jump_height = -7.5; // Initial upward velocity for a full jump
+jump_height_min = -1.5; // Minimum upward velocity when jump key is released early
+jump_height = -4.5; // Initial upward velocity for a full jump
 
 // Frames to buffer jump input before landing
 jump_buffer_max = 4; // Max frames to buffer a jump input (immediately derements 1 in the same frame. so add 1 to intended number)
@@ -79,7 +79,7 @@ wall_grab_timer_max = 8; // Max frames to "hang" on wall before sliding
 
 // Wall jump
 wall_jump_horizontal_push_off = 2; // Horizontal push when jumping off a wall
-wall_jump_height = -8; // Initial upward velocity for a wall jump
+wall_jump_height = -4.5; // Initial upward velocity for a wall jump
 
 // Timer to suppress gravity after wall jump or wall grab
 wall_jump_gravity_bypass_max = 5; // Max frames to bypass gravity after wall interaction

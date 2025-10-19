@@ -37,5 +37,5 @@
     "path":"sprites/sprGoblinAttack01Hitbox/sprGoblinAttack01Hitbox.yy",
   },
   "spriteMaskId":null,
-  "visible":true,
+  "visible":false,
 }

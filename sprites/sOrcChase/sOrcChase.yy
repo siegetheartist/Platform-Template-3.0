@@ -29,7 +29,7 @@
   "origin":7,
   "parent":{
     "name":"sprOrcs",
-    "path":"folders/Sprites/sprOrcs.yy",
+    "path":"folders/Sprites/sprEnemies/sprOrcs.yy",
   },
   "preMultiplyAlpha":false,
   "resourceType":"GMSprite",

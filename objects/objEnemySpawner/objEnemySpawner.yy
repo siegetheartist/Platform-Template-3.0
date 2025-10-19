@@ -28,14 +28,18 @@
   "physicsStartAwake":true,
   "properties":[
     {"$GMObjectProperty":"v2","%Name":"sprite_index","filters":[],"listItems":[],"multiselect":false,"name":"sprite_index","rangeEnabled":false,"rangeMax":10.0,"rangeMin":0.0,"resourceType":"GMObjectProperty","resourceVersion":"2.0","value":"sprite_index","varType":4,},
+    {"$GMObjectProperty":"v2","%Name":"spawn_object","filters":[],"listItems":[],"multiselect":false,"name":"spawn_object","rangeEnabled":false,"rangeMax":10.0,"rangeMin":0.0,"resource":{"name":"objStalagmite","path":"objects/objStalagmite/objStalagmite.yy",},"resourceType":"GMObjectProperty","resourceVersion":"2.0","value":"objStalagmite","varType":5,},
   ],
   "resourceType":"GMObject",
   "resourceVersion":"2.0",
   "solid":false,
-  "spriteId":null,
+  "spriteId":{
+    "name":"sprEnemySpawner",
+    "path":"sprites/sprEnemySpawner/sprEnemySpawner.yy",
+  },
   "spriteMaskId":{
     "name":"sInvisibleBlock",
     "path":"sprites/sInvisibleBlock/sInvisibleBlock.yy",
   },
-  "visible":true,
+  "visible":false,
 }

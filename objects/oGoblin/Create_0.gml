@@ -6,7 +6,7 @@ event_inherited();
 #region PARENT OVERRIDES for Goblin's behavior
 // Define movement speeds for different states
 patrol_hsp_max = 1; // Default slower speed for patrolling
-chase_hsp_max = 2.75;  // Default faster speed for chasing
+chase_hsp_max = 2.50;  // Default faster speed for chasing
 
 // Acceleration and deceleration values for smoother movement
 hsp_accel = 0.1; // How quickly the enemy speeds up horizontally
@@ -63,7 +63,7 @@ spr_leap_attack_2 = sprGoblinAttackLeap2;
 leap_attack_range = 96;
 attack_range = leap_attack_range; // Currently only 1 attack, but in future other attacks will have to override this
 leap_h_speed = 3;         // Horizontal speed of the leap
-leap_v_speed = -6;       // Vertical speed of the leap (negative for upward)
+leap_v_speed = -4.0;       // Vertical speed of the leap (negative for upward)
 leap_cooldown = 90; 
 attack_cooldown_duration = leap_cooldown;
 #endregion

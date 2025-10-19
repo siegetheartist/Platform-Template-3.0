@@ -6,7 +6,7 @@
   "name":"scr_trap_extend_retract",
   "parent":{
     "name":"scrHazards",
-    "path":"folders/scrHazards.yy",
+    "path":"folders/Scripts/scrHazards.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

@@ -5,8 +5,8 @@
   "isDnD":false,
   "name":"scr_enemy_spawner",
   "parent":{
-    "name":"scrHazards",
-    "path":"folders/scrHazards.yy",
+    "name":"scrEnemies",
+    "path":"folders/Scripts/scrEnemies.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

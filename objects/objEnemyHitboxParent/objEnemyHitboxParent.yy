@@ -32,7 +32,10 @@
   "resourceType":"GMObject",
   "resourceVersion":"2.0",
   "solid":false,
-  "spriteId":null,
+  "spriteId":{
+    "name":"sprGoblinAttack01Hitbox",
+    "path":"sprites/sprGoblinAttack01Hitbox/sprGoblinAttack01Hitbox.yy",
+  },
   "spriteMaskId":null,
   "visible":true,
 }
