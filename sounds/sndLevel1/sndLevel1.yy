@@ -10,7 +10,7 @@
   "compression":3,
   "compressionQuality":4,
   "conversionMode":0,
-  "duration":56.040863,
+  "duration":57.857143,
   "exportDir":"",
   "name":"sndLevel1",
   "parent":{
@@ -22,5 +22,5 @@
   "resourceVersion":"2.0",
   "sampleRate":44100,
   "soundFile":"sndLevel1.mp3",
-  "volume":0.05,
+  "volume":0.39,
 }

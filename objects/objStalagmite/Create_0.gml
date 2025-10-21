@@ -2,10 +2,10 @@
 
 // --- Core Properties ---
 hp = 1;                         // Health points
-fall_speed = 8;                 // The maximum speed the stalagmite will fall at
+fall_speed = 4;                 // The maximum speed the stalagmite will fall at
 trigger_mode = "proximity";       // "proximity" or "timer"
 trigger_timer = 120;              // Time in frames before falling (if in timer mode)
-proximity_width = 96;             // The horizontal distance from the center to trigger the fall
+proximity_width = 48;             // The horizontal distance from the center to trigger the fall
 
 // --- Effects Properties ---
 snd_destroy = sndWallDestroyed; // Sound to play on destruction

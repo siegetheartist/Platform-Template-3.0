@@ -6,7 +6,7 @@ event_inherited();
 #region PARENT OVERRIDES for Goblin's behavior
 // Define movement speeds for different states
 patrol_hsp_max = .5; // Default slower speed for patrolling
-chase_hsp_max = 2.00;  // Default faster speed for chasing
+chase_hsp_max = 1.75;  // Default faster speed for chasing
 
 // Acceleration and deceleration values for smoother movement
 hsp_accel = 0.07; // How quickly the enemy speeds up horizontally

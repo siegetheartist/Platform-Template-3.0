@@ -163,3 +163,4 @@ switch (current_state) {
 
 // PARALLAX SCROLLING
 scr_parallax_scrolling(view_camera[0], "Background_1", 0.08, "Background_2", 0.06, "Background_3", 0.02);
+scr_parallax_scrolling(view_camera[0], "tsForeground", 0.08, "tsMidground", 0.06, "tsBackground", 0.02);

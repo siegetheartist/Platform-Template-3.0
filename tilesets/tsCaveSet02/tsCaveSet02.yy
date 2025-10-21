@@ -1,17 +1,14 @@
 {
   "$GMTileSet":"v1",
-  "%Name":"tTileSet",
-  "autoTileSets":[
-    {"$GMAutoTileSet":"","%Name":"cave01","closed_edge":false,"name":"cave01","resourceType":"GMAutoTileSet","resourceVersion":"2.0","tiles":[12,6,8,2,16,10,0,1,18,0,14,3,22,21,23,0,],},
-  ],
+  "%Name":"tsCaveSet02",
+  "autoTileSets":[],
   "macroPageTiles":{
-    "SerialiseHeight":2,
-    "SerialiseWidth":7,
-    "TileCompressedData":[-8,0,6,1,3,0,268435459,268435458,268435457,],
-    "TileDataFormat":1,
+    "SerialiseHeight":0,
+    "SerialiseWidth":0,
+    "TileSerialiseData":[],
   },
-  "name":"tTileSet",
-  "out_columns":5,
+  "name":"tsCaveSet02",
+  "out_columns":59,
   "out_tilehborder":2,
   "out_tilevborder":2,
   "parent":{
@@ -21,8 +18,8 @@
   "resourceType":"GMTileSet",
   "resourceVersion":"2.0",
   "spriteId":{
-    "name":"sTileSet",
-    "path":"sprites/sTileSet/sTileSet.yy",
+    "name":"sprTileSetCave02",
+    "path":"sprites/sprTileSetCave02/sprTileSetCave02.yy",
   },
   "spriteNoExport":false,
   "textureGroupId":{
@@ -37,5 +34,5 @@
   "tileWidth":16,
   "tilexoff":0,
   "tileyoff":0,
-  "tile_count":25,
+  "tile_count":3528,
 }
