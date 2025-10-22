@@ -48,7 +48,7 @@ switch (menu_state) {
             }
 
             // Handle confirmation
-            if (_input.jump_pressed) {
+            if (_input.confirm_pressed) {
                 switch (selected_button) {
                     case 0: // "Start Game"
                         audio_play_sound(sndButtonConfirm, 10, false);

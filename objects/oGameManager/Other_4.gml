@@ -34,10 +34,14 @@ audio_stop_all();
 // Use a switch statement to play a specific sound based on the room name.
 // This is a robust way to handle multiple music tracks for different levels.
 switch (room) {
+    case rStartScreen:
+        // You can have a different music track for your menu screen
+        audio_play_sound(sndStartScreen, 10, true);
+        break;
     case rLevel1:
         audio_play_sound(sndLevel1, 10, true);
         break;
-    case rStartScreen:
+    case rEndScreen:
         // You can have a different music track for your menu screen
         audio_play_sound(sndStartScreen, 10, true);
         break;
