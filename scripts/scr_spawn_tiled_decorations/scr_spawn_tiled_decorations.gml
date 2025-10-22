@@ -32,7 +32,7 @@ function scr_spawn_tiled_decorations(_spr_overlay, _spr_underlay) {
                 for (var i = 0; i < _tile_count; i++) {
                     // Calculate the center position for the current tile
                     var _current_x = _start_x + (_tile_width / 2) + (i * _tile_width);
-                    layer_sprite_create("alForeground", _current_x, y, _spr_overlay);
+                    layer_sprite_create("alMiddle", _current_x, y, _spr_overlay);
                 }
             }
         }

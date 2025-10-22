@@ -16,6 +16,7 @@ function scr_player_get_input() {
         right_pressed: 0,
         jump_pressed: 0,
         attack_pressed: 0,
+        back_pressed: 0, // New input for back/cancel
         
         // Final direction axis
         dir: 0
@@ -30,10 +31,11 @@ function scr_player_get_input() {
     var _key_right_kb_pressed = keyboard_check_pressed(ord("D")) || keyboard_check_pressed(vk_right);
     var _key_jump_kb_pressed = keyboard_check_pressed(vk_space);
     var _key_attack_kb_pressed = keyboard_check_pressed(ord("J"));
+    var _key_back_kb_pressed = keyboard_check_pressed(vk_escape); 
 
     // --- Gamepad Input ---
     var _gp_left_held = 0, _gp_right_held = 0, _gp_jump_held = 0;
-    var _gp_left_pressed = 0, _gp_right_pressed = 0, _gp_jump_pressed = 0, _gp_attack_pressed = 0;
+    var _gp_left_pressed = 0, _gp_right_pressed = 0, _gp_jump_pressed = 0, _gp_attack_pressed = 0, _gp_back_pressed = 0;
 
     // Loop through all connected gamepads.
     var _gp_count = gamepad_get_device_count();
@@ -52,6 +54,7 @@ function scr_player_get_input() {
             _gp_right_pressed += gamepad_button_check_pressed(i, gp_padr);
             _gp_jump_pressed += gamepad_button_check_pressed(i, gp_face1);
             _gp_attack_pressed += gamepad_button_check_pressed(i, gp_face3);
+            _gp_back_pressed += gamepad_button_check_pressed(i, gp_face4);
         }
     }
 
@@ -64,6 +67,7 @@ function scr_player_get_input() {
     _input_data.right_pressed = clamp(_key_right_kb_pressed + _gp_right_pressed, 0, 1);
     _input_data.jump_pressed = clamp(_key_jump_kb_pressed + _gp_jump_pressed, 0, 1);
     _input_data.attack_pressed = clamp(_key_attack_kb_pressed + _gp_attack_pressed, 0, 1);
+    _input_data.back_pressed = clamp(_key_back_kb_pressed + _gp_back_pressed, 0, 1);
     
     _input_data.dir = _input_data.right_held - _input_data.left_held;
 
