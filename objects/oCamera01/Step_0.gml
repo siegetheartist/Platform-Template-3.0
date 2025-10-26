@@ -10,7 +10,7 @@ if (!instance_exists(target)) {
 
 
 // --- DETERMINE PLAYER DIRECTION ---
-var move_dir = sign(target.hsp); // Assuming target.hsp is horizontal speed
+var move_dir = sign(target.x_speed); // Assuming target.x_speed is horizontal speed
 
 // --- UPDATE FORWARD OFFSET ---
 var desired_offset = move_dir * focus_offset_max;

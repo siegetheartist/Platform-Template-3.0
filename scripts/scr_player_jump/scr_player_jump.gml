@@ -33,14 +33,14 @@ function scr_player_jump(_jump_type, _wall_dir=0) {
     // Apply the correct jump impulse based on the jump type.
     switch (_jump_type) {
         case "ground":
-            vsp = jump_height;
+            y_speed = jump_height;
             // After a ground jump, we transition to the AIR state.
             player_state = PlayerState.AIR;
             break;
         case "wall":
             // The wall jump impulse needs to be handled here.
-            vsp = wall_jump_height;
-            hsp = -_wall_dir * wall_jump_horizontal_push_off;
+            y_speed = wall_jump_height;
+            x_speed = -_wall_dir * wall_jump_horizontal_push_off;
 
             // After a wall jump, we suppress gravity to prevent an immediate re-grab.
             wall_jump_gravity_bypass = wall_jump_gravity_bypass_max;

@@ -7,14 +7,11 @@ var _player_instance = instance_find(oPlayer, 0); // Reference to the player obj
 _on_ground = place_meeting(x, y + 1, collision_tileset_env);
 var _distance_to_player = 0; // Distance from enemy to player
 var _line_of_sight_clear = false; // True if enemy has clear sight to player
-var _target_hsp = 0; // Desired horizontal speed based on current state
+var _target_x_speed = 0; // Desired horizontal speed based on current state
 var _pixel_step = 0; // For pixel-by-pixel collision adjustment
 var _player_is_in_front = false;
 var _player_is_behind = false;
 #endregion
-
-
-
 
 
 // --- HIGH PRIORITY CHECK: DEATH (Must run before timers) ---
@@ -147,7 +144,7 @@ if (enemy_state != ENEMY_STATE.ATTACK && enemy_state != ENEMY_STATE.HURT && inst
 #region ENEMY STATE MACHINE
 switch (enemy_state) {
     case ENEMY_STATE.PATROL:
-        hsp_max = patrol_hsp_max;
+        x_speed_max = patrol_x_speed_max;
 
         if (!state_initialized) {
             sprite_index = spr_patrol;
@@ -163,7 +160,7 @@ switch (enemy_state) {
             
             // Halt horizontal movement immediately to prevent sliding into collision
             if (!knockback_active) { 
-                hsp = 0; 
+                x_speed = 0; 
             }
         }
 
@@ -228,7 +225,7 @@ switch (enemy_state) {
             // Use 'break' to immediately exit the switch case and prevent the PATROL exit logic from running.
             break; 
         }
-        hsp_max = 0; // Ensure no horizontal movement while waiting
+        x_speed_max = 0; // Ensure no horizontal movement while waiting
         
         if (!state_initialized) {
             sprite_index = spr_inspect;
@@ -247,7 +244,7 @@ switch (enemy_state) {
         }
         break;
     case ENEMY_STATE.ALERT:
-        hsp_max = 0;
+        x_speed_max = 0;
         
         if (!state_initialized) {
             if (snd_alert != noone) { 
@@ -281,7 +278,7 @@ switch (enemy_state) {
         if (instance_exists(oPlayer)) {
             current_dir = sign(oPlayer.x - x); // Continuously update direction towards the player.
         }
-        hsp_max = chase_hsp_max;
+        x_speed_max = chase_x_speed_max;
         
         if (!state_initialized) {
             if (snd_chase != noone && enemy_state_previous != ENEMY_STATE.HURT) { 
@@ -294,7 +291,7 @@ switch (enemy_state) {
         }
         break;
     case ENEMY_STATE.TAUNT:
-        hsp_max = 0;
+        x_speed_max = 0;
         
         if (!state_initialized) {
             if (snd_taunt != noone) { audio_play_sound(snd_taunt, 10, false); }
@@ -312,7 +309,7 @@ switch (enemy_state) {
         break;
     case ENEMY_STATE.ATTACK:
         show_debug_message("ENEMY STATE: ATTACK");
-        hsp_max = 0; // Stop horizontal movement
+        x_speed_max = 0; // Stop horizontal movement
 
         // --- STATE INITIALIZATION (Runs once) ---
         if (!state_initialized) {
@@ -358,7 +355,7 @@ switch (enemy_state) {
         }
         break;
     case ENEMY_STATE.HURT:
-        hsp_max = 0;
+        x_speed_max = 0;
         if (!state_initialized) {
             if (snd_hurt != noone) { 
                 audio_play_sound(snd_hurt, 10, false); 
@@ -379,8 +376,8 @@ switch (enemy_state) {
         break;
     case ENEMY_STATE.DEATH:
         // Stop all movement immediately
-        hsp = 0;
-        vsp = 0;
+        x_speed = 0;
+        y_speed = 0;
                 
         // On the first frame of entering the death state...
         if (!state_initialized) {
@@ -437,32 +434,32 @@ if (enemy_state == ENEMY_STATE.PATROL && !knockback_active && enemy_state != ENE
 #region MOVEMENT ACCELERATION / DECELERATION
 if (knockback_active) {
     // KNOCKBACK MOVEMENT: Apply friction to quickly stop horizontal movement.
-    if (abs(hsp) > knockback_h_friction) {
-        hsp -= sign(hsp) * knockback_h_friction;
+    if (abs(x_speed) > knockback_h_friction) {
+        x_speed -= sign(x_speed) * knockback_h_friction;
     } else {
-        hsp = 0; // Snap to zero if movement is minimal
+        x_speed = 0; // Snap to zero if movement is minimal
     }
 } else if (enemy_state == ENEMY_STATE.ATTACK) {
-    // hsp/vsp is set directly on state entry. No further manipulation here.
+    // x_speed/y_speed is set directly on state entry. No further manipulation here.
 } else { // Normal AI movement
-    _target_hsp = current_dir * hsp_max;
+    _target_x_speed = current_dir * x_speed_max;
  
     // If the enemy needs to change speed (either accelerate or decelerate)
-    if (hsp != _target_hsp) {
+    if (x_speed != _target_x_speed) {
         // If the target speed is 0 (e.g., in ALERT state or stopping), use deceleration
-        if (_target_hsp == 0) {
-            if (abs(hsp) < hsp_decel) { // If very close to 0, snap to 0
-                hsp = 0;
+        if (_target_x_speed == 0) {
+            if (abs(x_speed) < x_speed_decel) { // If very close to 0, snap to 0
+                x_speed = 0;
             } else { // Decelerate towards 0
-                hsp -= sign(hsp) * hsp_decel;
+                x_speed -= sign(x_speed) * x_speed_decel;
             }
         }    
         // Otherwise, accelerate towards the target speed
         else {
-            if (abs(_target_hsp - hsp) < hsp_accel) { // If very close to target, snap to target
-                hsp = _target_hsp;
+            if (abs(_target_x_speed - x_speed) < x_speed_accel) { // If very close to target, snap to target
+                x_speed = _target_x_speed;
             } else { // Accelerate towards target
-                hsp += sign(_target_hsp - hsp) * hsp_accel;
+                x_speed += sign(_target_x_speed - x_speed) * x_speed_accel;
             }
         }
     }
@@ -472,14 +469,14 @@ if (knockback_active) {
 
 #region VERTICAL SPEED / GRAVITY & KNOCKBACK CLEANUP
 // Apply gravity and clamp speed (always applies)
-vsp += grav;
-vsp = clamp(vsp, -vsp_max, vsp_max);
+y_speed += grav;
+y_speed = clamp(y_speed, -y_speed_max, y_speed_max);
  
 // Knockback Duration Cleanup (PHYSICS OVERRIDE EXIT)
 if (knockback_active && knockback_duration_timer <= 0) {
     knockback_active = false;
-    hsp = 0; // Snap to stop any residual physics movement
-    vsp = 0; // Snap to stop any residual physics movement
+    x_speed = 0; // Snap to stop any residual physics movement
+    y_speed = 0; // Snap to stop any residual physics movement
  
     // Re-evaluate AI direction immediately after knockback ends.
     if (instance_exists(_player_instance)) {
@@ -489,15 +486,15 @@ if (knockback_active && knockback_duration_timer <= 0) {
     }
 }
 
-// If on ground, only set vsp=0 if NOT actively being knocked or performing an attack leap.
+// If on ground, only set y_speed=0 if NOT actively being knocked or performing an attack leap.
 if (_on_ground && !knockback_active && enemy_state != ENEMY_STATE.ATTACK) {
-    vsp = 0;
+    y_speed = 0;
 }
 #endregion
 
-
+// need to modify new player movement for use
 // Commit to movement
-scr_move_and_collide(collision_tileset_env);
+//scr_move_and_collide(collision_tileset_env);
 
 
 // Flip the sprite horizontally based on the current direction.

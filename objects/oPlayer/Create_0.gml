@@ -27,11 +27,11 @@ can_control = false;
 
 #region BASE MOVEMENT 
 // Horizontal speedS
-hsp = 0; // Horizontal speed (pixels per frame)
-max_hsp = 2.50; // Maximum horizontal speed the player can reach (Original speed 3)
+x_speed = 0; // Horizontal speed (pixels per frame)
+max_x_speed = 2.50; // Maximum horizontal speed the player can reach (Original speed 3)
 
 // vertical speedS
-vsp = 0; // Vertical speed (pixels per frame)
+y_speed = 0; // Vertical speed (pixels per frame)
 
 // Acceleration and deceleration for smooth movement
 accel = 0.3; // Rate at which horizontal speed increases

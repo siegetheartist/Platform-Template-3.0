@@ -10,7 +10,7 @@
   "compression":3,
   "compressionQuality":4,
   "conversionMode":0,
-  "duration":57.857143,
+  "duration":115.71429,
   "exportDir":"",
   "name":"sndLevel1",
   "parent":{

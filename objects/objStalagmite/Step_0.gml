@@ -35,14 +35,14 @@ switch (state) {
 
      case "falling":
         // --- Fall and Collide ---
-        vspeed = lerp(vspeed, fall_speed, 0.05);
-        y += vspeed;
+        y_speedeed = lerp(y_speedeed, fall_speed, 0.05);
+        y += y_speedeed;
         
         var hazard_collisions = global.collision_environment;
 
         // Check for collision with the ground
         for (var i = 0; i < array_length(hazard_collisions); i++) {
-            if (place_meeting(x, y + vspeed, hazard_collisions[i])) {
+            if (place_meeting(x, y + y_speedeed, hazard_collisions[i])) {
                 // Call the destruction script
                 scr_stalagmite_destroy();
                 break; 

@@ -63,8 +63,8 @@ switch (current_state) {
                         enemy_state = ENEMY_STATE.PATROL;
                         enemy_state_previous = ENEMY_STATE.PATROL;
                         state_initialized = false;
-                        hsp = 0;
-                        vsp = 0;
+                        x_speed = 0;
+                        y_speed = 0;
                         x = start_x;
                         y = start_y;
                         current_dir = 1;

@@ -33,7 +33,7 @@ function scr_player_get_input() {
     var _key_jump_kb_pressed = keyboard_check_pressed(vk_space);
     var _key_attack_kb_pressed = keyboard_check_pressed(ord("J"));
     var _key_back_kb_pressed = keyboard_check_pressed(vk_escape);
-    var _key_confirm_kb_pressed = keyboard_check_pressed(ord("J")); // NEW: Keyboard confirm is "J"
+    var _key_confirm_kb_pressed = keyboard_check_pressed(ord("J")) || keyboard_check_pressed(ord("E")) || keyboard_check_pressed(vk_enter);
 
     // --- Gamepad Input ---
     var _gp_left_held = 0, _gp_right_held = 0, _gp_jump_held = 0;
@@ -71,7 +71,7 @@ function scr_player_get_input() {
     _input_data.jump_pressed = clamp(_key_jump_kb_pressed + _gp_jump_pressed, 0, 1);
     _input_data.attack_pressed = clamp(_key_attack_kb_pressed + _gp_attack_pressed, 0, 1);
     _input_data.back_pressed = clamp(_key_back_kb_pressed + _gp_back_pressed, 0, 1);
-    _input_data.confirm_pressed = clamp(_key_confirm_kb_pressed + _gp_confirm_pressed, 0, 1); // NEW
+    _input_data.confirm_pressed = clamp(_key_confirm_kb_pressed + _gp_confirm_pressed, 0, 1);
     
     _input_data.dir = _input_data.right_held - _input_data.left_held;
 

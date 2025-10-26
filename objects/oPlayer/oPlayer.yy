@@ -37,8 +37,8 @@
     "path":"sprites/sPlayerIdle/sPlayerIdle.yy",
   },
   "spriteMaskId":{
-    "name":"sPlayerIdle",
-    "path":"sprites/sPlayerIdle/sPlayerIdle.yy",
+    "name":"sprPlayerCollisionMask",
+    "path":"sprites/sprPlayerCollisionMask/sprPlayerCollisionMask.yy",
   },
   "visible":true,
 }

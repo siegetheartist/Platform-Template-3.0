@@ -14,5 +14,5 @@ particle_y_offset = 80;           // Vertical offset for particles
 
 // --- Internal Variables ---
 state = "idle";                   // "idle", "shaking", "falling"
-vspeed = 0;                       // Initial vertical speed
+y_speedeed = 0;                       // Initial vertical speed
 shake_duration = 60;              // How long to shake before falling (in frames)

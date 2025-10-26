@@ -37,5 +37,5 @@
     "path":"sprites/sprOrcAttackSwing01Hitbox/sprOrcAttackSwing01Hitbox.yy",
   },
   "spriteMaskId":null,
-  "visible":true,
+  "visible":false,
 }

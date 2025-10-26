@@ -5,12 +5,12 @@ event_inherited();
 
 #region PARENT OVERRIDES for Goblin's behavior
 // Define movement speeds for different states
-patrol_hsp_max = .5; // Default slower speed for patrolling
-chase_hsp_max = 1.75;  // Default faster speed for chasing
+patrol_x_speed_max = .5; // Default slower speed for patrolling
+chase_x_speed_max = 1.75;  // Default faster speed for chasing
 
 // Acceleration and deceleration values for smoother movement
-hsp_accel = 0.07; // How quickly the enemy speeds up horizontally
-// hsp_decel = 0.4; // How quickly the enemy slows down horizontally
+x_speed_accel = 0.07; // How quickly the enemy speeds up horizontally
+// x_speed_decel = 0.4; // How quickly the enemy slows down horizontally
 
 // Detection ranges 
 sight_distance = 175; // Distance for front-facing, line-of-sight detection (triggers CHASE)
@@ -80,12 +80,12 @@ function orc_attack_swing() {
         sprite_index = spr_orc_attack_swing_01;
         image_index = 0;
         image_speed = 1; // adjust for timing
-        hsp = 0; // stop movement
+        x_speed = 0; // stop movement
         return;
     }
 
     // 2. When we reach the 4th frame, spawn hitbox and play sound
-    if (sprite_index == spr_orc_attack_swing_01 && image_index >= .6 && hitbox == noone) {
+    if (sprite_index == spr_orc_attack_swing_01 && image_index >= 2.5 && hitbox == noone) {
         var _hitbox = instance_create_layer(x, y, "ilTop", objOrcAttackSwing01Hitbox);
         _hitbox.weapon_owner = id; // assign THIS orc as owner
         hitbox = _hitbox;

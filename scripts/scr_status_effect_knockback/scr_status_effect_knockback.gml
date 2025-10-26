@@ -24,8 +24,8 @@ function scr_status_effect_knockback(_target_instance, _attacker_x, _inflicting_
         }
  
         // Apply knockback impulse to the target's horizontal and vertical speeds.
-        _target_instance.hsp = _knockback_dir * _final_h_strength;
-        _target_instance.vsp = _final_v_strength;
+        _target_instance.x_speed = _knockback_dir * _final_h_strength;
+        _target_instance.y_speed = _final_v_strength;
  
         // Activate the knockback state and set up its duration and cooldown timers.
         _target_instance.knockback_active = true;

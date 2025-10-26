@@ -15,15 +15,15 @@ if (!instance_exists(target)) {
 var player_relative_to_cam_center_x = target.x - cam_x;
 
 // 2. Determine player's current horizontal movement direction.
-var player_current_hsp_dir = sign(target.hsp);
+var player_current_x_speed_dir = sign(target.x_speed);
 
 // 3. Check for focus direction change based on player's relative position and movement.
 if (camera_focus_dir == 1) { // Currently focused right
-    if (player_current_hsp_dir < 0 && player_relative_to_cam_center_x < -outer_threshold_offset) {
+    if (player_current_x_speed_dir < 0 && player_relative_to_cam_center_x < -outer_threshold_offset) {
         camera_focus_dir = -1; // Flip focus to the left
     }
 } else { // Currently focused left
-    if (player_current_hsp_dir > 0 && player_relative_to_cam_center_x > outer_threshold_offset) {
+    if (player_current_x_speed_dir > 0 && player_relative_to_cam_center_x > outer_threshold_offset) {
         camera_focus_dir = 1; // Flip focus to the right
     }
 }
@@ -44,7 +44,7 @@ if (abs(dx) > cam_x_deadzone) {
 // --- VERTICAL LOGIC (STATE-BASED) ---
 
 // 1. Handle the GROUNDED state. This is also where we RESET the camera's fall mode.
-if (target.is_on_ground && target.vsp == 0) {
+if (target.is_on_ground && target.y_speed == 0) {
     camera_fall_mode = false; // Reset the camera's state upon landing.
     
     // Smoothly lerp to the standard grounded position.

@@ -15,19 +15,19 @@ if (!instance_exists(target)) {
 var player_relative_to_cam_center_x = target.x - cam_x;
  
 // 2. Determine player's current horizontal movement direction.
-var player_current_hsp_dir = sign(target.hsp);
+var player_current_x_speed_dir = sign(target.x_speed);
  
 // 3. Check for focus direction change based on player's relative position and movement.
 //    Only change focus if the player is moving in the *opposite* direction of the current camera focus
 //    AND has crossed the *outer* threshold for that opposite direction.
 if (camera_focus_dir == 1) { // Currently focused right (player is ideally to the left of camera center)
     // If player is moving left AND has crossed the outer left threshold
-    if (player_current_hsp_dir < 0 && player_relative_to_cam_center_x < -outer_threshold_offset) {
+    if (player_current_x_speed_dir < 0 && player_relative_to_cam_center_x < -outer_threshold_offset) {
         camera_focus_dir = -1; // Switch focus to left
     }
 } else { // Currently focused left (player is ideally to the right of camera center)
     // If player is moving right AND has crossed the outer right threshold
-    if (player_current_hsp_dir > 0 && player_relative_to_cam_center_x > outer_threshold_offset) {
+    if (player_current_x_speed_dir > 0 && player_relative_to_cam_center_x > outer_threshold_offset) {
         camera_focus_dir = 1; // Switch focus to right
     }
 }

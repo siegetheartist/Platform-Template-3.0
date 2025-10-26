@@ -83,5 +83,6 @@ switch (menu_state) {
         if (instance_exists(oPlayer)) {
             oPlayer.can_control = true;
         }
+        room_goto_next()
         break;
 }

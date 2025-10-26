@@ -1,8 +1,8 @@
 //  Enemy Parent Initialization Variables 
 
 #region INITIALIZATION
-hsp = 0; // Horizontal speed (pixels per frame)
-vsp = 0; // Vertical speed (pixels per frame)
+x_speed = 0; // Horizontal speed (pixels per frame)
+y_speed = 0; // Vertical speed (pixels per frame)
 
 reset_on_respawn = true; // default, but you can toggle per 
 
@@ -11,8 +11,8 @@ start_x = x; // Stores the enemy's initial X position
 start_y = y; // Stores the enemy's initial Y position
 
 // Base horizontal speed will be overridden by state-specific max speeds
-hsp_max = 0; // Current maximum horizontal speed (dynamically set by state)
-vsp_max = 10; // Maximum falling speed to prevent excessive velocity
+x_speed_max = 0; // Current maximum horizontal speed (dynamically set by state)
+y_speed_max = 10; // Maximum falling speed to prevent excessive velocity
 
 current_dir = 1; // 1 is right, -1 is left (initial movement direction)
 grav = 0.2; // Gravity strength pulling the enemy down
@@ -65,12 +65,12 @@ state_initialized = false; // NEW: Flag to prevent sound spamming & sprite loops
 enemy_attack_behavior = noone;
 
 // Define movement speeds for different states (children can override these)
-patrol_hsp_max = 1; // Default slower speed for patrolling
-chase_hsp_max = 3;  // Default faster speed for chasing
+patrol_x_speed_max = 1; // Default slower speed for patrolling
+chase_x_speed_max = 3;  // Default faster speed for chasing
 
 // Acceleration and deceleration values for smoother movement
-hsp_accel = 0.08; // How quickly the enemy speeds up horizontally
-hsp_decel = 0.8; // How quickly the enemy slows down horizontally
+x_speed_accel = 0.08; // How quickly the enemy speeds up horizontally
+x_speed_decel = 0.8; // How quickly the enemy slows down horizontally
 
 // Consolidated detection ranges
 sight_distance = 200; // Distance for front-facing, line-of-sight detection (triggers CHASE)

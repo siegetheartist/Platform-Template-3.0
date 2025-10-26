@@ -27,7 +27,7 @@ function scr_obj_collapse(time_before_collapse, respawn_time, break_sound) {
             visible = true;
             mask_index = original_mask; // Ensure it has the correct mask
             
-            if (instance_exists(oPlayer) && place_meeting(x, y - 1, oPlayer) && oPlayer.vsp >= 0) {
+            if (instance_exists(oPlayer) && place_meeting(x, y - 1, oPlayer) && oPlayer.y_speed >= 0) {
                 state = 1; // TRIGGERED
                 break_timer = time_before_collapse;
             }

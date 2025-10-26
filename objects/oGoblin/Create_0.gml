@@ -5,12 +5,12 @@ event_inherited();
 
 #region PARENT OVERRIDES for Goblin's behavior
 // Define movement speeds for different states
-patrol_hsp_max = 1; // Default slower speed for patrolling
-chase_hsp_max = 2.50;  // Default faster speed for chasing
+patrol_x_speed_max = 1; // Default slower speed for patrolling
+chase_x_speed_max = 2.50;  // Default faster speed for chasing
 
 // Acceleration and deceleration values for smoother movement
-hsp_accel = 0.1; // How quickly the enemy speeds up horizontally
-// hsp_decel = 0.4; // How quickly the enemy slows down horizontally
+x_speed_accel = 0.1; // How quickly the enemy speeds up horizontally
+// x_speed_decel = 0.4; // How quickly the enemy slows down horizontally
 
 // Detection ranges 
 sight_distance = 150; // Distance for front-facing, line-of-sight detection (triggers CHASE)
@@ -77,7 +77,7 @@ function leap_attack() {
         sprite_index = spr_leap_attack_1;
         image_index = 0;
         image_speed = 1;
-        hsp = 0; // Make sure the goblin stops moving while getting ready
+        x_speed = 0; // Make sure the goblin stops moving while getting ready
         return; // Wait until next frame
     }
 
@@ -88,8 +88,8 @@ function leap_attack() {
         image_speed = 1;
         
         // Apply the leap speed
-        hsp = current_dir * leap_h_speed;
-        vsp = leap_v_speed;
+        x_speed = current_dir * leap_h_speed;
+        y_speed = leap_v_speed;
         
         // Spawn hitbox
         hitbox = instance_create_layer(x, y, "ilTop", objGoblinAttackHitbox01);
@@ -105,8 +105,8 @@ function leap_attack() {
         var _player_hit = instance_place(x, y, oPlayer);
         if (_player_hit != noone) {
             // Player was hit! Apply knockback to self (bounce back)
-            hsp = -current_dir * (leap_h_speed * 1.0); // Bounce back with more force
-            vsp = leap_v_speed * 0.25; // A small hop up
+            x_speed = -current_dir * (leap_h_speed * 1.0); // Bounce back with more force
+            y_speed = leap_v_speed * 0.25; // A small hop up
             
             // End the attack immediately after bouncing
             attack_finished = true;
@@ -116,8 +116,8 @@ function leap_attack() {
 
     // 4. After leaping, check if we have landed on the ground.
     // We only run this check if we are in the leap animation and haven't already finished the attack
-    if (sprite_index == spr_leap_attack_2 && _on_ground && vsp > 0) {
-        hsp = 0 // lerp(hsp, 0, 0.6); Smoothly decelerate hsp to 0 by 20% each frame
+    if (sprite_index == spr_leap_attack_2 && _on_ground && y_speed > 0) {
+        x_speed = 0 // lerp(x_speed, 0, 0.6); Smoothly decelerate x_speed to 0 by 20% each frame
         // The attack is now officially over.
         attack_finished = true;
         if (instance_exists(hitbox)) {

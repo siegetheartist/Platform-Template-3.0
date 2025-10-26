@@ -2,7 +2,7 @@
   "$GMTileSet":"v1",
   "%Name":"tsCaveSet01",
   "autoTileSets":[
-    {"$GMAutoTileSet":"","%Name":"cave01","closed_edge":false,"name":"cave01","resourceType":"GMAutoTileSet","resourceVersion":"2.0","tiles":[8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,0,],},
+    {"$GMAutoTileSet":"","%Name":"cave01","closed_edge":false,"name":"cave01","resourceType":"GMAutoTileSet","resourceVersion":"2.0","tiles":[8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,],},
   ],
   "macroPageTiles":{
     "SerialiseHeight":2,
@@ -21,8 +21,8 @@
   "resourceType":"GMTileSet",
   "resourceVersion":"2.0",
   "spriteId":{
-    "name":"sTileSet",
-    "path":"sprites/sTileSet/sTileSet.yy",
+    "name":"sprTileSetCave01",
+    "path":"sprites/sprTileSetCave01/sprTileSetCave01.yy",
   },
   "spriteNoExport":false,
   "textureGroupId":{
@@ -30,7 +30,7 @@
     "path":"texturegroups/Default",
   },
   "tileAnimationFrames":[],
-  "tileAnimationSpeed":15.0,
+  "tileAnimationSpeed":10.0,
   "tileHeight":16,
   "tilehsep":0,
   "tilevsep":0,
