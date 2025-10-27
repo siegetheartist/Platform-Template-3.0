@@ -78,6 +78,7 @@
   },
   "name":"Project Template 3.0",
   "resources":[
+    {"id":{"name":"fnt_debug_txt","path":"fonts/fnt_debug_txt/fnt_debug_txt.yy",},},
     {"id":{"name":"fnt_game_Over","path":"fonts/fnt_game_Over/fnt_game_Over.yy",},},
     {"id":{"name":"fnt_hud_default","path":"fonts/fnt_hud_default/fnt_hud_default.yy",},},
     {"id":{"name":"fnt_player_hud_txt","path":"fonts/fnt_player_hud_txt/fnt_player_hud_txt.yy",},},
@@ -314,6 +315,6 @@
   ],
   "templateType":"game",
   "TextureGroups":[
-    {"$GMTextureGroup":"","%Name":"Default","autocrop":true,"border":0,"compressFormat":"bz2","customOptions":"","directory":"","groupParent":null,"isScaled":true,"loadType":"default","mipsToGenerate":0,"name":"Default","resourceType":"GMTextureGroup","resourceVersion":"2.0","targets":-1,},
+    {"$GMTextureGroup":"","%Name":"Default","autocrop":true,"border":8,"compressFormat":"bz2","customOptions":"","directory":"","groupParent":null,"isScaled":true,"loadType":"default","mipsToGenerate":-1,"name":"Default","resourceType":"GMTextureGroup","resourceVersion":"2.0","targets":-1,},
   ],
 }

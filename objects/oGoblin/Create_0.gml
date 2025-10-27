@@ -116,7 +116,7 @@ function leap_attack() {
 
     // 4. After leaping, check if we have landed on the ground.
     // We only run this check if we are in the leap animation and haven't already finished the attack
-    if (sprite_index == spr_leap_attack_2 && _on_ground && y_speed > 0) {
+    if (sprite_index == spr_leap_attack_2 && on_ground && y_speed > 0) {
         x_speed = 0 // lerp(x_speed, 0, 0.6); Smoothly decelerate x_speed to 0 by 20% each frame
         // The attack is now officially over.
         attack_finished = true;

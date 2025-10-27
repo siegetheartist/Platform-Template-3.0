@@ -43,7 +43,7 @@ if (abs(dx) > cam_x_deadzone) {
 
 // --- VERTICAL LOGIC ---
 // This block handles both grounded and aerial camera movement cleanly.
-if (target.is_on_ground && target.y_speed == 0) { // was >= 0
+if (target.on_ground && target.y_speed == 0) { // was >= 0
     // --- GROUNDED LOGIC ---
     // Goal: Align the player's feet (target.y) with the bottom of the camera's vertical deadzone.
     var desired_y = target.y - (vertical_offset + cam_y_deadzone);

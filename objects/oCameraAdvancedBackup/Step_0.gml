@@ -44,7 +44,7 @@ if (abs(dx) > cam_x_deadzone) {
 // --- VERTICAL LOGIC (STATE-BASED) ---
 
 // 1. Handle the GROUNDED state. This is also where we RESET the camera's fall mode.
-if (target.is_on_ground && target.y_speed == 0) {
+if (target.on_ground && target.y_speed == 0) {
     camera_fall_mode = false; // Reset the camera's state upon landing.
     
     // Smoothly lerp to the standard grounded position.
@@ -65,7 +65,7 @@ else {
         // - Player is below the vertical deadzone AND
         // - Player's coyote time has expired.
         // - The camera is NOT already at the bottom of the room.
-        if (dy_check > cam_y_deadzone && target.coyote_time <= 0 && cam_y < room_height - cam_height / 2) {
+        if (dy_check > cam_y_deadzone && target.coyote_jump_timer <= 0 && cam_y < room_height - cam_height / 2) {
             camera_fall_mode = true;
         }
     }

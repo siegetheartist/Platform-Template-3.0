@@ -51,21 +51,26 @@ grav_wall_max = 3.25; // Maximum vertical speed while wall sliding
 
 
 #region JUMPING MECHANICS
-// Distance to check below player for ground detection
-ground_check_dist = 12; // Pixels below player to check for solid ground
-
-// Jumping
-jump_height_min = -1.5; // Minimum upward velocity when jump key is released early
-jump_height = -4.5; // Initial upward velocity for a full jump
+// Array is for [0] = Ground Jump, [1] = Air jump
+jump_speed = [-2.25, -1.5]; // Jump Velocity
+jump_speed_sustain_frames = [18, 10]; // "Sustain" windows. Constantly applies jump velocity for x amount of frames.
+jump_speed_sustain_timer = 0;
+jump_max = array_length(jump_speed); // Max amount of aerial multi-jump-sequences. Automatically matches array size
+jump_count = 0; // Jump tracker
 
 // Frames to buffer jump input before landing
-jump_buffer_max = 4; // Max frames to buffer a jump input (immediately derements 1 in the same frame. so add 1 to intended number)
-jump_buffer = 0;
+jump_input_buffer_frames = 7; // Max frames to buffer a jump input (immediately derements 1 in the same frame. so add 1 to intended number)
+jump_input_buffer_timer = 0;
 
-// Frames after leaving ground where jump is still allowed (coyote time)
-coyote_time_max = 6;
-coyote_time = 0;
-// Jump combo variables
+// Frames after leaving ground where jump is still allowed (coyote jump time)
+coyote_jump_frames = 4;
+coyote_jump_timer = 0;
+
+// Frames after leaving ground where gravity is ignored
+coyote_hang_frames = 4;
+coyote_hang_timer = 0;
+
+// Jump sound-combo variables
 consecutive_jumps = 0; // Tracks the number of consecutive jumps for variable sounds
 jump_combo_timer = 0; // Timer to reset the combo if a new jump isn't performed
 jump_combo_timeout = 120; // 2 seconds at 60 FPS
@@ -79,7 +84,7 @@ wall_grab_timer_max = 8; // Max frames to "hang" on wall before sliding
 
 // Wall jump
 wall_jump_horizontal_push_off = 2; // Horizontal push when jumping off a wall
-wall_jump_height = -4.5; // Initial upward velocity for a wall jump
+wall_jump_speed = -4.5; // Initial upward velocity for a wall jump
 
 // Timer to suppress gravity after wall jump or wall grab
 wall_jump_gravity_bypass_max = 5; // Max frames to bypass gravity after wall interaction
@@ -127,9 +132,6 @@ player_state = PlayerState.IDLE; // Initialize the player's state
 player_state_previous = PlayerState.IDLE; // NEW: Store the previous state for on-entry logic
 #endregion
 
-// Add these public variables for camera to track
-is_on_ground = false;
-
 
 #region VISUALS
 facing_direction = 1; // 1 for right, -1 for left
@@ -146,3 +148,23 @@ image_index_previous = 0;
 
 // ADD A LIST OF VARIABLES WITH ALL AVAILABLE SOUND EFFECTS TO THE PLAYER
 
+
+on_ground = false;
+
+set_on_ground = function (_val = true) {
+    if (_val == true) {
+    	on_ground = true;
+        coyote_hang_timer = coyote_hang_frames;
+        coyote_jump_timer = coyote_jump_frames;
+        jump_count = 0; // Reset jump count when back on the ground, otherwise you won't be able to jump anymore.
+        jump_speed_sustain_timer = 0;
+        
+    } else {
+    	on_ground = false;
+        coyote_hang_timer = 0;
+        
+        if (jump_count == 0 && coyote_jump_timer <= 0) {
+        jump_count = 1; // If you are in the air, and didn't get in the air by jumping, remove a jump
+        }
+    }
+}

@@ -4,7 +4,7 @@ collision_tileset_env = global.collision_environment;
  
 // Declare all local variables
 var _player_instance = instance_find(oPlayer, 0); // Reference to the player object
-_on_ground = place_meeting(x, y + 1, collision_tileset_env);
+on_ground = place_meeting(x, y + 1, collision_tileset_env);
 var _distance_to_player = 0; // Distance from enemy to player
 var _line_of_sight_clear = false; // True if enemy has clear sight to player
 var _target_x_speed = 0; // Desired horizontal speed based on current state
@@ -368,7 +368,7 @@ switch (enemy_state) {
         }
 
         // Transition out of HURT once the physics override is finished
-        if (!knockback_active && _on_ground) {
+        if (!knockback_active && on_ground) {
             enemy_state = enemy_state_previous;
             enemy_state_previous = ENEMY_STATE.HURT; // Use in other states to prevent loops.
             state_initialized = false;
@@ -487,7 +487,7 @@ if (knockback_active && knockback_duration_timer <= 0) {
 }
 
 // If on ground, only set y_speed=0 if NOT actively being knocked or performing an attack leap.
-if (_on_ground && !knockback_active && enemy_state != ENEMY_STATE.ATTACK) {
+if (on_ground && !knockback_active && enemy_state != ENEMY_STATE.ATTACK) {
     y_speed = 0;
 }
 #endregion

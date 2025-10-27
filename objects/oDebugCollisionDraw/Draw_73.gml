@@ -76,6 +76,13 @@ if (global.debug_draw_collision) {
 
     // --- Player collision mask + paired edge highlight ---
     if (instance_exists(oPlayer)) {
+        
+        // Store original draw settings ONCE before drawing any text
+        var _original_font = draw_get_font();
+        var _original_halign = draw_get_halign();
+        var _original_valign = draw_get_valign();
+        var _original_color = draw_get_color();
+        
         with (oPlayer) {
             var left   = bbox_left;
             var right  = bbox_right;
@@ -121,6 +128,109 @@ if (global.debug_draw_collision) {
                 
                 draw_set_alpha(1); // Reset alpha
             }
+            
+            
+            
+            
+            
+            
+            // --- Draw Text Above Player ---
+        if (font_exists(fnt_debug_txt)) {
+            // Set draw settings for text above player
+            draw_set_font(fnt_debug_txt);
+            draw_set_halign(fa_left);   
+            draw_set_valign(fa_bottom); 
+            draw_set_color(c_white);    
+            
+            with (oPlayer) { // Get player vars relative to player
+                // Starting position (adjusted from your code)
+                var _text_x = x - 32; 
+                var _text_y = bbox_top - 20; 
+                var _line_height = string_height(" ") + 2; // Adjusted gap
+                
+                // Draw Jump Counter
+                draw_text(_text_x, _text_y, "Jump Count: " + string(jump_count)); 
+                _text_y -= _line_height; 
+
+                // Draw Coyote Time Timer
+                draw_text(_text_x, _text_y, "Coyote Time: " + string(coyote_jump_timer)); 
+                _text_y -= _line_height; 
+                
+                // Draw Jump Buffer Timer
+                draw_text(_text_x, _text_y, "Jump Buffer: " + string(jump_input_buffer_timer)); 
+                 _text_y -= _line_height; 
+                
+                // Draw Current State
+                var _state_string_name = "Unknown"; 
+                switch (player_state) {
+                    case PlayerState.IDLE:       _state_string_name = "Idle"; break;
+                    case PlayerState.RUN:        _state_string_name = "Run"; break;
+                    case PlayerState.AIR:        _state_string_name = "Air"; break;
+                    case PlayerState.WALL_GRAB:  _state_string_name = "Wall Grab"; break;
+                    case PlayerState.WALL_SLIDE: _state_string_name = "Wall Slide"; break;
+                    case PlayerState.ATTACK:     _state_string_name = "Attack"; break;
+                    case PlayerState.DEAD:       _state_string_name = "Dead"; break;
+                }
+                draw_text(_text_x, _text_y, "State: " + _state_string_name);
+                // We don't need _text_y -= _line_height; here anymore
+            } // End with(oPlayer) for text above player
+        } else {
+             show_debug_message("Warning: Debug font 'fnt_debug_txt' not found for player text.");
+        }
+
+        // --- Draw Text in Top-Right Corner ---
+        if (font_exists(fnt_debug_txt)) {
+             // Set draw settings for top-right text
+            draw_set_font(fnt_debug_txt);
+            draw_set_halign(fa_right); // Right align text
+            draw_set_valign(fa_top);   // Align from the top down
+            draw_set_color(c_white);   
+            
+            // Starting position (Top-Right corner of the VIEW + padding)
+            var _corner_text_x = view_x + view_w - 10; // 10px padding from right
+            var _corner_text_y = view_y + 10;          // 10px padding from top
+            var _corner_line_height = string_height(" ") + 2; // Height + 2px gap
+
+            // Draw Y Position (formatted to 0 decimal places)
+            draw_text(_corner_text_x, _corner_text_y, "Y Pos: " + string_format(oPlayer.y, 1, 0));
+            _corner_text_y += _corner_line_height; // Move down for the next line
+
+            // Draw X Position (formatted to 0 decimal places)
+            draw_text(_corner_text_x, _corner_text_y, "X Pos: " + string_format(oPlayer.x, 1, 0));
+            _corner_text_y += _corner_line_height; // Move down for the next line
+            
+            // Draw Y Speed (using y_speed) - formatted to 2 decimal places
+            draw_text(_corner_text_x, _corner_text_y, "Y Speed: " + string_format(oPlayer.y_speed, 1, 3));
+             _corner_text_y += _corner_line_height; // Move down for the next line
+            
+            // Draw X Speed (using x_speed) - formatted to 2 decimal places
+            draw_text(_corner_text_x, _corner_text_y, "X Speed: " + string_format(oPlayer.x_speed, 1, 3));
+            _corner_text_y += _corner_line_height; // Move down for the next line
+            
+            // Draw X Speed (using x_speed) - formatted to 2 decimal places
+            var _is_on_ground = oPlayer.on_ground;
+            if (_is_on_ground) {
+            	_is_on_ground = "True";
+            } else {
+            	_is_on_ground = "False";
+            }
+            draw_text(_corner_text_x, _corner_text_y, "On Ground: " + string(_is_on_ground));
+            
+        } else {
+             show_debug_message("Warning: Debug font 'fnt_debug_txt' not found for corner text.");
+        }
+        
+        // Restore original draw settings AFTER all text is drawn
+        draw_set_font(_original_font);
+        draw_set_halign(_original_halign);
+        draw_set_valign(_original_valign);
+        draw_set_color(_original_color);
+            
+            
+            
+            
+            
+            
     
             // --- Bottom collision ---
             // Use 'bottom' (which is bbox_bottom) to check 1px *below* the mask's last pixel
