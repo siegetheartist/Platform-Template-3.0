@@ -148,17 +148,21 @@ if (global.debug_draw_collision) {
                 var _text_y = bbox_top - 20; 
                 var _line_height = string_height(" ") + 2; // Adjusted gap
                 
-                // Draw Jump Counter
-                draw_text(_text_x, _text_y, "Jump Count: " + string(jump_count)); 
+                // Draw Coyote Hang TImer
+                draw_text(_text_x, _text_y, "Coyote Hang Timer: " + string(coyote_hang_timer)); 
                 _text_y -= _line_height; 
-
-                // Draw Coyote Time Timer
-                draw_text(_text_x, _text_y, "Coyote Time: " + string(coyote_jump_timer)); 
+                
+                // Draw Coyote Jump Grace Timer
+                draw_text(_text_x, _text_y, "Coyote Jump Grace: " + string(coyote_jump_timer)); 
                 _text_y -= _line_height; 
                 
                 // Draw Jump Buffer Timer
                 draw_text(_text_x, _text_y, "Jump Buffer: " + string(jump_input_buffer_timer)); 
                  _text_y -= _line_height; 
+                
+                // Draw Jump Counter
+                draw_text(_text_x, _text_y, "Jump Count: " + string(jump_count) + "/" + string(jump_max)); 
+                _text_y -= _line_height; 
                 
                 // Draw Current State
                 var _state_string_name = "Unknown"; 
@@ -192,29 +196,35 @@ if (global.debug_draw_collision) {
             var _corner_line_height = string_height(" ") + 2; // Height + 2px gap
 
             // Draw Y Position (formatted to 0 decimal places)
-            draw_text(_corner_text_x, _corner_text_y, "Y Pos: " + string_format(oPlayer.y, 1, 0));
+            draw_text(_corner_text_x, _corner_text_y, "Y Pos: " + string_format(y, 1, 0));
             _corner_text_y += _corner_line_height; // Move down for the next line
 
             // Draw X Position (formatted to 0 decimal places)
-            draw_text(_corner_text_x, _corner_text_y, "X Pos: " + string_format(oPlayer.x, 1, 0));
+            draw_text(_corner_text_x, _corner_text_y, "X Pos: " + string_format(x, 1, 0));
             _corner_text_y += _corner_line_height; // Move down for the next line
             
             // Draw Y Speed (using y_speed) - formatted to 2 decimal places
-            draw_text(_corner_text_x, _corner_text_y, "Y Speed: " + string_format(oPlayer.y_speed, 1, 3));
+            draw_text(_corner_text_x, _corner_text_y, "Y Speed: " + string_format(y_speed, 1, 3));
              _corner_text_y += _corner_line_height; // Move down for the next line
             
             // Draw X Speed (using x_speed) - formatted to 2 decimal places
-            draw_text(_corner_text_x, _corner_text_y, "X Speed: " + string_format(oPlayer.x_speed, 1, 3));
+            draw_text(_corner_text_x, _corner_text_y, "X Speed: " + string_format(x_speed, 1, 3));
             _corner_text_y += _corner_line_height; // Move down for the next line
             
-            // Draw X Speed (using x_speed) - formatted to 2 decimal places
-            var _is_on_ground = oPlayer.on_ground;
+            // Draw On ground
+            var _is_on_ground = on_ground;
             if (_is_on_ground) {
             	_is_on_ground = "True";
             } else {
             	_is_on_ground = "False";
             }
             draw_text(_corner_text_x, _corner_text_y, "On Ground: " + string(_is_on_ground));
+            _corner_text_y += _corner_line_height; // Move down for the next line
+            
+            //draw_text(_corner_text_x, _corner_text_y, "Coyote Hang time: " + string(coyote_hang_timer));
+            //_corner_text_y += _corner_line_height; // Move down for the next line
+            
+            //draw_text(_corner_text_x, _corner_text_y, "Coyote Jump grace: " + string(coyote_jump_timer));
             
         } else {
              show_debug_message("Warning: Debug font 'fnt_debug_txt' not found for corner text.");

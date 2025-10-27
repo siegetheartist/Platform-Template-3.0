@@ -3,7 +3,7 @@
 /// @arg {real} [_wall_dir] Optional. The direction of the wall (-1 or 1) for a wall jump.
 function scr_player_jump(_jump_type, _wall_dir=0) {
     
-
+    jump_input_buffer_timer = 0;
 	
 	#region	JUMP SOUNDS
     /// Play the correct jump sound based on the player's consecutive jumps and manages the jump combo.
@@ -36,12 +36,11 @@ function scr_player_jump(_jump_type, _wall_dir=0) {
         case "ground":
         case "double":
             // Reset forgiveness systems
-            jump_input_buffer_timer = 0;
+            
             coyote_jump_timer = 0;
             
             // Increment jump count
             jump_count++; 
-            
             
             jump_speed_sustain_timer = jump_speed_sustain_frames[jump_count - 1]; // Start sustain window based on current jump
             y_speed = jump_speed[jump_count - 1]; // initial impulse always applied here

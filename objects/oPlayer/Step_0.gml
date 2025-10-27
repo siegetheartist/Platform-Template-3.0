@@ -32,8 +32,6 @@ var non_grabbable_solids = [oInvisibleBlock];
 
 
 #region COLLISION CHECKS
-
-
 // --- Vertical State Checks ---
 var _is_ascending = y_speed < 0;
 
@@ -379,7 +377,7 @@ if (knockback_active) {
     }
     
     // Handle going down slopes
-    if (y_speed >= 0 && !place_meeting(x + x_speed, y + 1, collision_tileset) && place_meeting(x + x_speed, y + abs(x_speed) + 1, collision_tileset)) {
+    if (y_speed >= 0 && !place_meeting(x + x_speed, y + 1, collision_tileset) && place_meeting(x + x_speed, y + abs(x_speed) + 1, collision_tileset)) {2
         while (!place_meeting(x + x_speed, y + _sub_pixel,collision_tileset)) {
             y += _sub_pixel;
         }
@@ -423,14 +421,13 @@ if (did_request_jump) {
     scr_player_jump("ground");
 }
 
-// --- Variable Jump Sustain ---
+// --- Set variable jump sustain ---
 if (_key_jump_held && jump_speed_sustain_timer > 0) {
     y_speed = jump_speed[jump_count -1];   // sustain upward velocity
 } else if (!_key_jump_held) {
     jump_speed_sustain_timer = 0;    // cutoff if released
 }
-
-// --- Jump sustain timer ---
+// --- Variable jump sustain timer ---
 if (jump_speed_sustain_timer > 0) { 
     jump_speed_sustain_timer--; 
 }
@@ -440,10 +437,11 @@ if (coyote_jump_timer > 0) {
     coyote_jump_timer--;
 }
 
-// --- Jump Input-Buffer grace timer ---
+// Set jump input buffer
 if (_key_jump && !on_ground) {
     jump_input_buffer_timer = jump_input_buffer_frames;
 }
+// --- Jump Input-Buffer grace timer ---
 if (jump_input_buffer_timer > 0) { 
     jump_input_buffer_timer--; 
 }
@@ -476,7 +474,7 @@ if (place_meeting(x, y + y_speed, collision_tileset)) {
 // --- Ground Check ---
 if (y_speed >= 0 && place_meeting(x, y + 1, collision_tileset)) {
     set_on_ground(true);
-} 
+}
 
 // --- Commit Vertical Movement if no collision ---
 y += y_speed;

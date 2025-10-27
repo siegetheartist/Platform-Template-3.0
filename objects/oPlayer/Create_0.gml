@@ -55,7 +55,8 @@ grav_wall_max = 3.25; // Maximum vertical speed while wall sliding
 jump_speed = [-2.25, -1.5]; // Jump Velocity
 jump_speed_sustain_frames = [18, 10]; // "Sustain" windows. Constantly applies jump velocity for x amount of frames.
 jump_speed_sustain_timer = 0;
-jump_max = array_length(jump_speed); // Max amount of aerial multi-jump-sequences. Automatically matches array size
+jump_max = 2;
+// jump_max = array_length(jump_speed); // Max amount of aerial multi-jump-sequences. Automatically matches array size
 jump_count = 0; // Jump tracker
 
 // Frames to buffer jump input before landing
@@ -63,7 +64,7 @@ jump_input_buffer_frames = 7; // Max frames to buffer a jump input (immediately 
 jump_input_buffer_timer = 0;
 
 // Frames after leaving ground where jump is still allowed (coyote jump time)
-coyote_jump_frames = 4;
+coyote_jump_frames = 7;
 coyote_jump_timer = 0;
 
 // Frames after leaving ground where gravity is ignored
@@ -154,11 +155,14 @@ on_ground = false;
 set_on_ground = function (_val = true) {
     if (_val == true) {
     	on_ground = true;
-        coyote_hang_timer = coyote_hang_frames;
-        coyote_jump_timer = coyote_jump_frames;
-        jump_count = 0; // Reset jump count when back on the ground, otherwise you won't be able to jump anymore.
+        
+        // Reset jump count otherwise you won't be able to jump anymore.
+        jump_count = 0;
         jump_speed_sustain_timer = 0;
         
+        // Refill coyote timers
+        coyote_hang_timer = coyote_hang_frames;
+        coyote_jump_timer = coyote_jump_frames;
     } else {
     	on_ground = false;
         coyote_hang_timer = 0;
