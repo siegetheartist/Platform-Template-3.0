@@ -1,6 +1,6 @@
 #region PLAYER INPUT
 if (can_control && player_state != PlayerState.DEAD) {
-    // Get keyboard/gamepad inputs and sets variables like key_left, key_right, key_jump, etc.
+    // Get keyboard/gamepad inputs and sets variables like key_left, key_right, _key_jump, etc.
     input = scr_player_get_input(); 
 } else {
     // If we can't control the player, create a "zeroed-out" input struct
@@ -32,9 +32,6 @@ var non_grabbable_solids = [oInvisibleBlock];
 
 
 #region COLLISION CHECKS
-// --- Vertical State Checks ---
-var _is_ascending = y_speed < 0;
-
 // --- Wall Check ---
 var _on_wall = place_meeting(x + 1, y, collision_tileset) - place_meeting(x - 1, y, collision_tileset);
 var _is_touching_wall = (_on_wall != 0);
@@ -77,7 +74,7 @@ if (wall_jump_move_loss > 0) {
 
 #region PLAYER ACTIONS
 // --- Process Jump Input ---
-var did_request_jump = scr_player_input_jump(_key_jump, on_ground);
+var _did_request_jump = action_request_jump(_key_jump);
 
 // --- Process Attack Input ---
 // This script checks attack conditions and initiates the attack state/action
@@ -195,7 +192,7 @@ switch (player_state) {
     
         // Check for a jump input. A wall jump can be performed from a grab.
         if (_key_jump) {
-            scr_player_jump("wall", _on_wall);
+            action_execute_jump("wall", _on_wall);
             return;
         }
     
@@ -242,7 +239,7 @@ switch (player_state) {
     
         // Check for wall jump input.
         if (_key_jump) {
-            scr_player_jump("wall", _on_wall);
+            action_execute_jump("wall", _on_wall);
         }
         
         // Dust cloud spawning
@@ -377,7 +374,7 @@ if (knockback_active) {
     }
     
     // Handle going down slopes
-    if (y_speed >= 0 && !place_meeting(x + x_speed, y + 1, collision_tileset) && place_meeting(x + x_speed, y + abs(x_speed) + 1, collision_tileset)) {2
+    if (y_speed >= 0 && !place_meeting(x + x_speed, y + 1, collision_tileset) && place_meeting(x + x_speed, y + abs(x_speed) + 1, collision_tileset)) {
         while (!place_meeting(x + x_speed, y + _sub_pixel,collision_tileset)) {
             y += _sub_pixel;
         }
@@ -398,6 +395,7 @@ if (knockback_active) {
 if (player_state != PlayerState.WALL_SLIDE && player_state != PlayerState.WALL_GRAB) {
     
     // Delay Gravity if you have Coyote Hang time left
+    // BUG: WHEN COYOTE HANG TIMER IS SET TO 0. MAKES JUMP COUNTER SET TO MAX FOR SOME REASON. NEEDS FIXING.
     if (coyote_hang_timer > 0) { 
         coyote_hang_timer--; 
     } else {
@@ -417,8 +415,8 @@ if (player_state != PlayerState.WALL_SLIDE && player_state != PlayerState.WALL_G
 
 #region JUMP LOGIC
 // --- Execute Jump ---
-if (did_request_jump) {
-    scr_player_jump("ground");
+if (_did_request_jump) {
+    action_execute_jump("ground");
 }
 
 // --- Set variable jump sustain ---

@@ -155,7 +155,6 @@
     {"id":{"name":"scr_parallax_scrolling","path":"scripts/scr_parallax_scrolling/scr_parallax_scrolling.yy",},},
     {"id":{"name":"scr_player_get_input","path":"scripts/scr_player_get_input/scr_player_get_input.yy",},},
     {"id":{"name":"scr_player_input_attack","path":"scripts/scr_player_input_attack/scr_player_input_attack.yy",},},
-    {"id":{"name":"scr_player_input_jump","path":"scripts/scr_player_input_jump/scr_player_input_jump.yy",},},
     {"id":{"name":"scr_player_jump","path":"scripts/scr_player_jump/scr_player_jump.yy",},},
     {"id":{"name":"scr_spawn_dust_cloud","path":"scripts/scr_spawn_dust_cloud/scr_spawn_dust_cloud.yy",},},
     {"id":{"name":"scr_spawn_layer_decoration","path":"scripts/scr_spawn_layer_decoration/scr_spawn_layer_decoration.yy",},},
