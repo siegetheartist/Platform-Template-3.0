@@ -204,11 +204,11 @@ if (global.debug_draw_collision) {
             _corner_text_y += _corner_line_height; // Move down for the next line
             
             // Draw Y Speed (using y_speed) - formatted to 2 decimal places
-            draw_text(_corner_text_x, _corner_text_y, "Y Speed: " + string_format(y_speed, 1, 3));
+            draw_text(_corner_text_x, _corner_text_y, "Y Speed: " + string_format(y_speed, 1, 2));
              _corner_text_y += _corner_line_height; // Move down for the next line
             
             // Draw X Speed (using x_speed) - formatted to 2 decimal places
-            draw_text(_corner_text_x, _corner_text_y, "X Speed: " + string_format(x_speed, 1, 3));
+            draw_text(_corner_text_x, _corner_text_y, "X Speed: " + string_format(x_speed, 1, 2));
             _corner_text_y += _corner_line_height; // Move down for the next line
             
             // Draw On ground
@@ -221,8 +221,8 @@ if (global.debug_draw_collision) {
             draw_text(_corner_text_x, _corner_text_y, "On Ground: " + string(_is_on_ground));
             _corner_text_y += _corner_line_height; // Move down for the next line
             
-            //draw_text(_corner_text_x, _corner_text_y, "Coyote Hang time: " + string(coyote_hang_timer));
-            //_corner_text_y += _corner_line_height; // Move down for the next line
+            draw_text(_corner_text_x, _corner_text_y, "Wall Grab Timer: " + string(wall_grab_timer));
+            _corner_text_y += _corner_line_height; // Move down for the next line
             
             //draw_text(_corner_text_x, _corner_text_y, "Coyote Jump grace: " + string(coyote_jump_timer));
             

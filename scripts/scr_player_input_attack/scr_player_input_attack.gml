@@ -1,4 +1,4 @@
-/// @description Checks for attack input and initiates the attack state.
+/// @description Checks for attack input and initiates the attack state. Takes priority over other transitions)
 /// @arg {bool} _key_attack_pressed Is the attack key pressed this frame?
 function scr_player_input_attack(_key_attack_pressed) {
     if (_key_attack_pressed && player_state != PlayerState.ATTACK && player_state != PlayerState.DEAD) {

@@ -43,24 +43,6 @@ function scr_move_and_collide(_collision_map) {
     x = clamp(x, _half_sprite_mask, room_width - _half_sprite_mask);
     #endregion
     
-    // JUMP
-    
-    #region GENERAL VERTICAL MOVEMENT PHYSICS
-    // Wall slide and wall grab states handle their own vertical movement, overriding default gravity.
-    // Therefore, only apply general gravity if not in those states.
-    if (player_state != PlayerState.WALL_SLIDE && player_state != PlayerState.WALL_GRAB) {
-        // Apply gravity to vertical speed.
-        y_speed += grav;
-        y_speed = min(y_speed, grav_max); // Clamp vertical speed to prevent it from exceeding max falling speed.
-        
-        // No upper clamp for y_speed when knocked back, allowing full upward impulse.
-        // Otherwise, clamp to normal max upward speed for regular jumps.
-        if (!knockback_active) {
-            y_speed = max(y_speed, -grav_max);
-        }
-    }
-#endregion
-    
 
     #region VERTICAL
     // --- Move vertically until collision ---

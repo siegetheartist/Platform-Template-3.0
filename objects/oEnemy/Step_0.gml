@@ -492,9 +492,9 @@ if (on_ground && !knockback_active && enemy_state != ENEMY_STATE.ATTACK) {
 }
 #endregion
 
-// need to modify new player movement for use
+
 // Commit to movement
-//scr_move_and_collide(collision_tileset_env);
+scr_move_and_collide(collision_tileset_env);
 
 
 // Flip the sprite horizontally based on the current direction.

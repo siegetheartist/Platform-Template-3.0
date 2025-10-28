@@ -34,12 +34,11 @@ var non_grabbable_solids = [oInvisibleBlock];
 #region COLLISION CHECKS
 // --- Wall Check ---
 var _on_wall = place_meeting(x + 1, y, collision_tileset) - place_meeting(x - 1, y, collision_tileset);
-var _is_touching_wall = (_on_wall != 0);
 var _is_pressing_wall = (sign(_dir) == _on_wall) && (_dir != 0);
 
 // Check if the wall being touched is GRABBABLE
 var _is_touching_grabbable_wall = false;
-if (_is_touching_wall) {
+if (_on_wall != 0) {
     // A wall is grabbable if it is NOT in the non-grabbable list.
     if (!place_meeting(x + _on_wall, y, non_grabbable_solids)) {
         _is_touching_grabbable_wall = true;
@@ -77,9 +76,7 @@ if (wall_jump_move_loss > 0) {
 var _did_request_jump = action_request_jump(_key_jump);
 
 // --- Process Attack Input ---
-// This script checks attack conditions and initiates the attack state/action
-// Attack Input Check (takes priority over other transitions)
-scr_player_input_attack(_key_attack_pressed); // This script will handle the transition to ATTACK state
+scr_player_input_attack(_key_attack_pressed);
 #endregion
 
 
@@ -92,7 +89,6 @@ if (on_ground && player_state == PlayerState.WALL_SLIDE) {
         player_state = PlayerState.IDLE;
     }
 }
-
 
 // Universal transition from air to ground
 if (on_ground && player_state == PlayerState.AIR) {
@@ -318,20 +314,28 @@ switch (player_state) {
 
 
 #region HORIZONTAL MOVEMENT PHYSICS (ACCEL / DECEL AND KNOCKBACK)
+
+// --- Knockback Physics ---
 if (knockback_active) {
+    
     // Apply knockback-specific friction/deceleration
     if (abs(x_speed) > knockback_h_friction) {
         x_speed -= sign(x_speed) * knockback_h_friction;
     } else {
         x_speed = 0;
     }
+
     // End knockback if duration timer runs out
     if (knockback_duration_timer <= 0) {
         knockback_active = false;
         x_speed = 0;
         y_speed = 0;
     }
-} else { // Normal movement physics if not knocked back
+}
+
+// --- Normal Movement Physics ---
+if (!knockback_active) {
+    
     if (_dir != 0) {
         // Accelerate towards max speed in the input direction
         x_speed += _dir * accel;
@@ -345,6 +349,7 @@ if (knockback_active) {
         }
     }
 }
+
 #endregion
 
 
@@ -375,7 +380,7 @@ if (knockback_active) {
     
     // Handle going down slopes
     if (y_speed >= 0 && !place_meeting(x + x_speed, y + 1, collision_tileset) && place_meeting(x + x_speed, y + abs(x_speed) + 1, collision_tileset)) {
-        while (!place_meeting(x + x_speed, y + _sub_pixel,collision_tileset)) {
+        while (!place_meeting(x + x_speed, y + _sub_pixel, collision_tileset)) {
             y += _sub_pixel;
         }
     }
@@ -389,22 +394,19 @@ if (knockback_active) {
 #endregion
 
 
-#region VERTICAL MOVEMENT PHYSICS (GRAVITY, JUMP, AND KNOCKBACK)
+#region VERTICAL MOVEMENT PHYSICS (GRAVITY AND KNOCKBACK)
+
 // Wall slide and wall grab states handle their own vertical movement, overriding default gravity.
 // Therefore, only apply general gravity if not in those states.
 if (player_state != PlayerState.WALL_SLIDE && player_state != PlayerState.WALL_GRAB) {
     
-    // Delay Gravity if you have Coyote Hang time left
-    // BUG: WHEN COYOTE HANG TIMER IS SET TO 0. MAKES JUMP COUNTER SET TO MAX FOR SOME REASON. NEEDS FIXING.
-    if (coyote_hang_timer > 0) { 
-        coyote_hang_timer--; 
-    } else {
-    	// Apply gravity
-    	y_speed += grav;
-        y_speed = min(y_speed, grav_max); // Clamp vertical speed to prevent it from exceeding max falling speed.
+    // Only apply gravity if coyote hang has expired
+    if (coyote_hang_timer <= 0) {
+        y_speed += grav;
+        y_speed = min(y_speed, grav_max); // Clamp vertical speed to prevent exceeding max falling speed
         set_on_ground(false);
     }
-    
+
     // No upper clamp for y_speed when knocked back, allowing full upward impulse.
     // Otherwise, clamp to normal max upward speed for regular jumps.
     if (!knockback_active) {
@@ -412,8 +414,11 @@ if (player_state != PlayerState.WALL_SLIDE && player_state != PlayerState.WALL_G
     }
 }
 
+#endregion
+
 
 #region JUMP LOGIC
+
 // --- Execute Jump ---
 if (_did_request_jump) {
     action_execute_jump("ground");
@@ -425,32 +430,38 @@ if (_key_jump_held && jump_speed_sustain_timer > 0) {
 } else if (!_key_jump_held) {
     jump_speed_sustain_timer = 0;    // cutoff if released
 }
+
 // --- Variable jump sustain timer ---
 if (jump_speed_sustain_timer > 0) { 
     jump_speed_sustain_timer--; 
 }
 
 // --- Coyote Jump grace timer ---
+// Count down here, since it's part of jump grace logic, not gravity.
 if (coyote_jump_timer > 0) {
     coyote_jump_timer--;
 }
 
-// Set jump input buffer
+// --- Coyote Hang timer ---
+// This is where we decrement it now, separated from gravity.
+if (coyote_hang_timer > 0) {
+    coyote_hang_timer--;
+}
+
+// --- Jump Input Buffer ---
 if (_key_jump && !on_ground) {
     jump_input_buffer_timer = jump_input_buffer_frames;
 }
-// --- Jump Input-Buffer grace timer ---
 if (jump_input_buffer_timer > 0) { 
     jump_input_buffer_timer--; 
 }
 
-// Jump sound combo logic
+// --- Jump Sound Combo ---
 if (jump_combo_timer > 0) {
     jump_combo_timer--;
 } else {
     consecutive_jumps = 0;
 }
-#endregion
 
 #endregion
 
@@ -474,7 +485,7 @@ if (y_speed >= 0 && place_meeting(x, y + 1, collision_tileset)) {
     set_on_ground(true);
 }
 
-// --- Commit Vertical Movement if no collision ---
+// --- Commit Vertical Movement ---
 y += y_speed;
 #endregion
 
