@@ -78,19 +78,19 @@ jump_combo_timeout = 120; // 2 seconds at 60 FPS
 #region WALL INTERACTIONS
 // Timer for how long the player "grabs" the wall before sliding
 wall_grab_timer = 0;
-wall_grab_timer_max = 8; // Max frames to "hang" on wall before sliding
+wall_grab_timer_max = 10; // Max frames to "hang" on wall before sliding
 
 // Wall jump
-wall_jump_horizontal_push_off = 4; // Horizontal push when jumping off a wall
-wall_jump_speed = -4.5; // Initial upward velocity for a wall jump
+wall_jump_horizontal_push_off = 6; // Horizontal push when jumping off a wall
+wall_jump_speed = -4.0; // Initial upward velocity for a wall jump
 
 // Timer to suppress gravity after wall jump or wall grab
-wall_jump_gravity_bypass_max = 5; // Max frames to bypass gravity after wall interaction
+wall_jump_gravity_bypass_max = 7; // Max frames to bypass gravity after wall interaction
 wall_jump_gravity_bypass = 0; // Current timer for gravity suppression
 
 // Timer for how long horizontal control is disabled after wall jump
-wall_jump_move_loss = 0; // Current timer for wall jump input lockout
-wall_jump_move_loss_max = 10; // Max frames for horizontal input lockout after wall jump
+wall_jump_move_loss_timer = 0; // Current timer for wall jump input lockout
+wall_jump_move_loss_frames = 20; // Max frames for horizontal input lockout after wall jump
 
 wall_slide_dust_timer = 0;
 wall_slide_dust_timer_max = 8; // Adjust for desired frequency
@@ -150,17 +150,33 @@ image_index_previous = 0;
 on_ground = false;
 
 
-/// @description If jump conditions are met: returns true (a jump can be executed). True value used in the jump execution call.
-/// @arg {real} _key_jump Is the jump key pressed this frame?
+/// @description Determines what kind of jump is requested.
+/// @arg {bool} _key_jump
 action_request_jump = function (_key_jump) {
-    // --- Jump request ---
-	if ((_key_jump && (on_ground || coyote_jump_timer > 0 || jump_count < jump_max)) || (on_ground && jump_input_buffer_timer > 0)) {
-        return true; // intent only
+    if (!_key_jump) return "";
+
+    // Ground jump (includes coyote + buffer)
+    if (on_ground || coyote_jump_timer > 0 || jump_input_buffer_timer > 0) {
+        if (jump_count < jump_max) {
+            return "ground";
+        }
     }
-    return false;
+
+    // Wall jump (only if in wall states and have jumps left)
+    if ((player_state == PlayerState.WALL_GRAB || player_state == PlayerState.WALL_SLIDE) && jump_count < jump_max) {
+        return "wall";
+    }
+
+    // Air jump (in air, not on wall, with jumps left)
+    if (player_state == PlayerState.AIR && jump_count < jump_max) {
+        return "air";
+    }
+
+    return "";
 }
 
-/// @description Executes a jump, handling the impulse, sounds, and combo logic.
+
+/// @description Executes a jump of the given type and sounds.
 /// @arg {string} _jump_type The type of jump ("ground" or "wall").
 /// @arg {real} [_wall_dir] Optional. The direction of the wall (-1 or 1) for a wall jump.
 action_execute_jump = function (_jump_type, _wall_dir=0) {
@@ -191,32 +207,32 @@ action_execute_jump = function (_jump_type, _wall_dir=0) {
     
     
     #region JUMP LOGIC
-    // Apply the correct jump impulse based on the jump type.
+    // Apply the correct jump based on the jump type.
     switch (_jump_type) {
         case "ground":
-        case "double":
-            // Reset forgiveness systems
             jump_input_buffer_timer = 0;
             coyote_jump_timer = 0;
-            
-            // Increment jump count
-            jump_count++; 
-            
-            jump_speed_sustain_timer = jump_speed_sustain_frames[jump_count - 1]; // Start sustain window based on current jump
-            //y_speed = jump_speed[jump_count - 1]; // initial impulse always applied here
-            
+            jump_count++;
+            y_speed = jump_speed[jump_count - 1];
+            jump_speed_sustain_timer = jump_speed_sustain_frames[jump_count - 1];
             set_on_ground(false);
             player_state = PlayerState.AIR;
             break;
+
+        case "air":
+            jump_count++;
+            y_speed = jump_speed[jump_count - 1];
+            jump_speed_sustain_timer = jump_speed_sustain_frames[jump_count - 1];
+            player_state = PlayerState.AIR;
+            break;
+
         case "wall":
-            // The wall jump impulse needs to be handled here.
+            jump_count++;
             y_speed = wall_jump_speed;
             x_speed = -_wall_dir * wall_jump_horizontal_push_off;
-
-            // After a wall jump, we suppress gravity to prevent an immediate re-grab.
             wall_jump_gravity_bypass = wall_jump_gravity_bypass_max;
-            // After a wall jump, we transition to the AIR state and horizontal move loss.
-            wall_jump_move_loss = wall_jump_move_loss_max;
+            wall_jump_move_loss_timer = wall_jump_move_loss_frames;
+            last_wall_dir = _wall_dir; // remember which wall we jumped from
             player_state = PlayerState.AIR;
             break;
     }

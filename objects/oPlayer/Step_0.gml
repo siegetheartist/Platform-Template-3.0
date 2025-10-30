@@ -60,12 +60,12 @@ if (knockback_duration_timer > 0) { knockback_duration_timer--; }
 if (wall_jump_gravity_bypass > 0) { wall_jump_gravity_bypass--; }
     
 // Wall jump move loss timer
-if (wall_jump_move_loss > 0) {
-    wall_jump_move_loss--;
-    _dir = 0; // Input is locked during wall jump move loss
-    // Only transition to AIR if not currently attacking when the move loss ends
-    if (wall_jump_move_loss <= 0 && player_state != PlayerState.ATTACK) {
-        player_state = PlayerState.AIR;
+if (wall_jump_move_loss_timer > 0) {
+    wall_jump_move_loss_timer--;
+    
+    // If player is pressing back toward the wall we just jumped from, ignore it
+    if (sign(_dir) == last_wall_dir) {
+        _dir = 0;
     }
 }
 #endregion
@@ -73,14 +73,14 @@ if (wall_jump_move_loss > 0) {
 
 #region PLAYER ACTIONS
 // --- Process Jump Input ---
-var _did_request_jump = action_request_jump(_key_jump);
+var _jump_type = action_request_jump(_key_jump);
 
 // --- Process Attack Input ---
 scr_player_input_attack(_key_attack_pressed);
 #endregion
 
 
-#region STATE TRANSITIONS
+#region  STATE TRANSITIONS (PLAYER INPUT BASED)
 // Transition from wall slide to ground
 if (on_ground && player_state == PlayerState.WALL_SLIDE) {
     if (_dir != 0) {
@@ -164,12 +164,13 @@ switch (player_state) {
             sprite_index = sPlayerAirDescending;
             image_speed = 1;
         }
-    
+        
         // Check if the player can transition to the wall grab state.
         if (_is_touching_grabbable_wall && _is_pressing_wall && y_speed > 0 && wall_jump_gravity_bypass <= 0) {
             player_state = PlayerState.WALL_GRAB;
     
             wall_grab_timer = 0; // Reset the timer for the new grab
+            jump_count = 1; // reset jumps on wall grab
             
             // Play sound effect for entering wall grab
             audio_play_sound(sndPlayerStep01, 1, false);
@@ -185,12 +186,6 @@ switch (player_state) {
         image_xscale = -_on_wall;
         x_speed = 0;
         y_speed = 0;
-    
-        // Check for a jump input. A wall jump can be performed from a grab.
-        if (_key_jump) {
-            action_execute_jump("wall", _on_wall);
-            return;
-        }
     
         // Check if the player has let go of the directional input.
         if (!_is_pressing_wall) {
@@ -231,11 +226,6 @@ switch (player_state) {
         // The player should only transition out of this state if they stop pressing the input key.
         if (!_is_pressing_wall) {
             player_state = PlayerState.AIR;
-        }
-    
-        // Check for wall jump input.
-        if (_key_jump) {
-            action_execute_jump("wall", _on_wall);
         }
         
         // Dust cloud spawning
@@ -420,8 +410,8 @@ if (player_state != PlayerState.WALL_SLIDE && player_state != PlayerState.WALL_G
 #region JUMP LOGIC
 
 // --- Execute Jump ---
-if (_did_request_jump) {
-    action_execute_jump("ground");
+if (_jump_type != "") {
+    action_execute_jump(_jump_type, _on_wall);
 }
 
 // --- Set variable jump sustain ---
@@ -490,6 +480,11 @@ y += y_speed;
 #endregion
 
 
+#region STATE TRANSITIONS 2 (PHYSICS/COLLISION-DRIVEN, i.e: grounded, wall contact, ceiling bonk)
+
+#endregion
+
+
 #region UPDATE VISUALS
 // Update facing direction based on input or momentum
 if (player_state != PlayerState.ATTACK && !knockback_active) { // Prevent changing direction during attack or knockback
@@ -502,6 +497,8 @@ if (player_state != PlayerState.ATTACK && !knockback_active) { // Prevent changi
 #endregion
 
 
+#region BOOKKEEPING
 // Keep track of previous variable values
 image_index_previous = image_index; // // Update previous image index for animation sound logic
 player_state_previous = player_state;
+#endregion
