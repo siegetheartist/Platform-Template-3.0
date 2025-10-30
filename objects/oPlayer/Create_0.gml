@@ -147,7 +147,7 @@ image_index_previous = 0;
 // ADD A LIST OF VARIABLES WITH ALL AVAILABLE SOUND EFFECTS TO THE PLAYER
 
 
-on_ground = false;
+on_ground = false; // needed explicitely declared, in create event, for camera object code to use
 
 
 /// @description Determines what kind of jump is requested.

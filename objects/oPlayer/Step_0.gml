@@ -21,6 +21,14 @@ var _key_jump_held = input.jump_held;
 var _key_attack_pressed = input.attack_pressed;
 var _dir = input.dir;
 
+// Apply wall jump input lockout
+if (wall_jump_move_loss_timer > 0) {
+    // If player is pressing back toward the wall we just jumped from, ignore it
+    if (sign(_dir) == last_wall_dir) {
+        _dir = 0;
+    }
+}
+
 
 // --- Collision Tileset --- 
 // Kept in the oGameManager persistent object for single source of all collidables.
@@ -62,11 +70,6 @@ if (wall_jump_gravity_bypass > 0) { wall_jump_gravity_bypass--; }
 // Wall jump move loss timer
 if (wall_jump_move_loss_timer > 0) {
     wall_jump_move_loss_timer--;
-    
-    // If player is pressing back toward the wall we just jumped from, ignore it
-    if (sign(_dir) == last_wall_dir) {
-        _dir = 0;
-    }
 }
 #endregion
 
