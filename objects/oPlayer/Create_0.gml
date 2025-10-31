@@ -146,9 +146,7 @@ image_index_previous = 0;
 
 // ADD A LIST OF VARIABLES WITH ALL AVAILABLE SOUND EFFECTS TO THE PLAYER
 
-
 on_ground = false; // needed explicitely declared, in create event, for camera object code to use
-
 
 /// @description Determines what kind of jump is requested.
 /// @arg {bool} _key_jump
@@ -215,7 +213,6 @@ action_execute_jump = function (_jump_type, _wall_dir=0) {
             jump_count++;
             y_speed = jump_speed[jump_count - 1];
             jump_speed_sustain_timer = jump_speed_sustain_frames[jump_count - 1];
-            set_on_ground(false);
             player_state = PlayerState.AIR;
             break;
 
@@ -233,6 +230,7 @@ action_execute_jump = function (_jump_type, _wall_dir=0) {
             wall_jump_gravity_bypass = wall_jump_gravity_bypass_max;
             wall_jump_move_loss_timer = wall_jump_move_loss_frames;
             last_wall_dir = _wall_dir; // remember which wall we jumped from
+            audio_stop_sound(sndPlayerWallSlide);
             player_state = PlayerState.AIR;
             break;
     }
@@ -242,9 +240,9 @@ action_execute_jump = function (_jump_type, _wall_dir=0) {
 
 /// @description Set's on ground variables (i.e: on_ground, jump_count, jump_speed_sustain_timer, coyote_hang_timer, coyote_jump_timer). Set's in air variables (i.e: coyote_hang_timer, jump_count)
 set_on_ground = function (_val = true) {
+    on_ground = _val; // Set on_ground to whatever was passed in
+    
     if (_val == true) {
-    	on_ground = true;
-        
         // Reset jump count otherwise you won't be able to jump anymore.
         jump_count = 0;
         jump_speed_sustain_timer = 0;
@@ -253,11 +251,6 @@ set_on_ground = function (_val = true) {
         coyote_hang_timer = coyote_hang_frames;
         coyote_jump_timer = coyote_jump_frames;
     } else {
-    	on_ground = false;
         coyote_hang_timer = 0;
-        
-        if (jump_count == 0 && coyote_jump_timer <= 0) {
-        jump_count = 1; // If you are in the air, and didn't get in the air by jumping, remove a jump
-        }
     }
 }

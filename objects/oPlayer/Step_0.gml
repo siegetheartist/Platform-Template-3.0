@@ -39,22 +39,6 @@ var non_grabbable_solids = [oInvisibleBlock];
 #endregion
 
 
-#region COLLISION CHECKS
-// --- Wall Check ---
-var _on_wall = place_meeting(x + 1, y, collision_tileset) - place_meeting(x - 1, y, collision_tileset);
-var _is_pressing_wall = (sign(_dir) == _on_wall) && (_dir != 0);
-
-// Check if the wall being touched is GRABBABLE
-var _is_touching_grabbable_wall = false;
-if (_on_wall != 0) {
-    // A wall is grabbable if it is NOT in the non-grabbable list.
-    if (!place_meeting(x + _on_wall, y, non_grabbable_solids)) {
-        _is_touching_grabbable_wall = true;
-    }
-}
-#endregion
-
-
 #region PLAYER TIMER MANAGEMENT
 if (invulnerable_timer > 0) { invulnerable_timer--; }
 if (flash_timer > 0) { flash_timer--; }
@@ -83,43 +67,129 @@ scr_player_input_attack(_key_attack_pressed);
 #endregion
 
 
-#region  STATE TRANSITIONS (PLAYER INPUT BASED)
-// Transition from wall slide to ground
-if (on_ground && player_state == PlayerState.WALL_SLIDE) {
-    if (_dir != 0) {
-        player_state = PlayerState.RUN;
+#region COLLISION CHECKS
+// --- Wall Check ---
+var _on_wall = place_meeting(x + 1, y, collision_tileset) - place_meeting(x - 1, y, collision_tileset);
+var _is_pressing_wall = (sign(_dir) == _on_wall) && (_dir != 0);
+
+
+// Check if the wall being touched is GRABBABLE
+var _is_touching_grabbable_wall = false;
+if (_on_wall != 0) {
+    // A wall is grabbable if it is NOT in the non-grabbable list.
+    if (!place_meeting(x + _on_wall, y, non_grabbable_solids)) {
+        _is_touching_grabbable_wall = true;
+    }
+}
+#endregion
+
+
+#region HORIZONTAL MOVEMENT PHYSICS (ACCEL / DECEL AND KNOCKBACK)
+// --- Knockback Physics ---
+if (knockback_active) {
+    
+    // Apply knockback-specific friction/deceleration
+    if (abs(x_speed) > knockback_h_friction) {
+        x_speed -= sign(x_speed) * knockback_h_friction;
     } else {
-        player_state = PlayerState.IDLE;
+        x_speed = 0;
+    }
+
+    // End knockback if duration timer runs out
+    if (knockback_duration_timer <= 0) {
+        knockback_active = false;
+        x_speed = 0;
+        y_speed = 0;
     }
 }
 
-// Universal transition from air to ground
-if (on_ground && player_state == PlayerState.AIR) {
+// --- Normal Movement Physics ---
+if (!knockback_active) {
+    
+    if (_dir != 0) {
+        // Accelerate towards max speed in the input direction
+        x_speed += _dir * accel;
+        x_speed = clamp(x_speed, -max_x_speed, max_x_speed);
+    } else {
+        // If no horizontal input, apply deceleration
+        if (abs(x_speed) > decel) {
+            x_speed -= sign(x_speed) * decel;
+        } else {
+            x_speed = 0;
+        }
+    }
+}
+#endregion
 
-    // Check if the player was truly in an AIR state in the previous frame
-    // to prevent playing the landing sound immediately after initiating a jump.
-    if (player_state_previous == PlayerState.AIR) {
-        audio_play_sound(sndPlayerJumpLanding, 10, false);
-        scr_spawn_dust_cloud(x, y, facing_direction);
+
+#region VERTICAL MOVEMENT PHYSICS (GRAVITY AND KNOCKBACK)
+// Wall slide and wall grab states handle their own vertical movement, overriding default gravity.
+// Therefore, only apply general gravity if not in those states.
+if (player_state != PlayerState.WALL_SLIDE && player_state != PlayerState.WALL_GRAB) {
+    
+    // Only apply gravity if coyote hang has expired
+    if (coyote_hang_timer <= 0) {
+        y_speed += grav;
+        y_speed = min(y_speed, grav_max); // Clamp vertical speed to prevent exceeding max falling speed
     }
     
-    // Transition to appropriate ground state
-    if (_dir != 0) {
-        player_state = PlayerState.RUN;
-    } else {
-        player_state = PlayerState.IDLE;
+    // If you are in the air, and didn't get in the air by jumping, remove a jump (i.e. walked off ledge)
+    if (coyote_hang_timer <= 0 && (jump_count == 0 && coyote_jump_timer <= 0)) {
+    	jump_count = 1; 
+    }
+
+    // No upper clamp for y_speed when knocked back, allowing full upward impulse.
+    // Otherwise, clamp to normal max upward speed for regular jumps.
+    if (!knockback_active) {
+        y_speed = max(y_speed, -grav_max);
     }
 }
+#endregion
 
-// Universal transition from ground to air (e.g., walking off a ledge)
-// Also ensure we don't transition if actively in knockback.
-if (!on_ground && (player_state == PlayerState.IDLE || player_state == PlayerState.RUN) && player_state != PlayerState.ATTACK && !knockback_active) {
-    player_state = PlayerState.AIR;
+
+#region JUMP LOGIC
+// --- Execute Jump ---
+if (_jump_type != "") {
+    action_execute_jump(_jump_type, _on_wall);
 }
 
-// Check for DEATH transition (if not already dead)
-if ((player_health <= 0 || y > fall_threshold) && player_state != PlayerState.DEAD) {
-    player_state = PlayerState.DEAD;
+// --- Set variable jump sustain ---
+if (_key_jump_held && jump_speed_sustain_timer > 0) {
+    y_speed = jump_speed[jump_count -1];   // sustain upward velocity
+} else if (!_key_jump_held) {
+    jump_speed_sustain_timer = 0;    // cutoff if released
+}
+
+// --- Variable jump sustain timer ---
+if (jump_speed_sustain_timer > 0) { 
+    jump_speed_sustain_timer--; 
+}
+
+// --- Coyote Jump grace timer ---
+// Count down here, since it's part of jump grace logic, not gravity.
+if (coyote_jump_timer > 0) {
+    coyote_jump_timer--;
+}
+
+// --- Coyote Hang timer ---
+// This is where we decrement it now, separated from gravity.
+if (coyote_hang_timer > 0) {
+    coyote_hang_timer--;
+}
+
+// --- Jump Input Buffer ---
+if (_key_jump && !on_ground) {
+    jump_input_buffer_timer = jump_input_buffer_frames;
+}
+if (jump_input_buffer_timer > 0) { 
+    jump_input_buffer_timer--; 
+}
+
+// --- Jump Sound Combo ---
+if (jump_combo_timer > 0) {
+    jump_combo_timer--;
+} else {
+    consecutive_jumps = 0;
 }
 #endregion
 
@@ -137,6 +207,7 @@ switch (player_state) {
         }
         break;
     case PlayerState.RUN:
+        show_debug_message("Run");
         // Set the sprite and image speed for the running state.
         sprite_index = sPlayerRun;
         image_speed = 1;
@@ -160,6 +231,7 @@ switch (player_state) {
         }
         break;
     case PlayerState.AIR:
+        show_debug_message("Air");
         // Set air sprite depending on if ascending or descending
         if (y_speed < 0) {
             sprite_index = sPlayerAirAscending;
@@ -183,6 +255,7 @@ switch (player_state) {
         }
         break;
     case PlayerState.WALL_GRAB:
+        show_debug_message("Wall Grab");
         // Set sprite and stop all movement for the duration of the grab.
         sprite_index = sPlayerOnWall;
         image_speed = 0;
@@ -201,17 +274,22 @@ switch (player_state) {
             // Once the timer runs out, transition to the wall slide state.
             if (wall_grab_timer >= wall_grab_timer_max) {
                 player_state = PlayerState.WALL_SLIDE;
+                audio_play_sound(sndPlayerWallSlide, 10, false);
             }
         }
         break;
     case PlayerState.WALL_SLIDE:
-        // Play wall slide sound
-        if (player_state == PlayerState.WALL_SLIDE) {
-            if (!audio_is_playing(sndPlayerWallSlide)) {
-                audio_play_sound(sndPlayerWallSlide, 10, false);
-            }
-        } else if (audio_is_playing(sndPlayerWallSlide)) {
+        // Check if the player has left the wall.
+        // The player should only transition out of this state if they stop pressing the input key.
+        if (!_is_pressing_wall || !_is_touching_grabbable_wall) {
+            player_state = PlayerState.AIR;
             audio_stop_sound(sndPlayerWallSlide);
+            break;
+        }
+        
+        // Play wall slide sound
+        if (!audio_is_playing(sndPlayerWallSlide)) {
+            audio_play_sound(sndPlayerWallSlide, 10, false);
         }
     
         // Set the sprite and image speed for the wall slide state.
@@ -224,12 +302,6 @@ switch (player_state) {
     
         // Stop horizontal movement.
         x_speed = 0;
-    
-        // Check if the player has left the wall.
-        // The player should only transition out of this state if they stop pressing the input key.
-        if (!_is_pressing_wall) {
-            player_state = PlayerState.AIR;
-        }
         
         // Dust cloud spawning
         wall_slide_dust_timer++;
@@ -306,46 +378,6 @@ switch (player_state) {
 #endregion
 
 
-#region HORIZONTAL MOVEMENT PHYSICS (ACCEL / DECEL AND KNOCKBACK)
-
-// --- Knockback Physics ---
-if (knockback_active) {
-    
-    // Apply knockback-specific friction/deceleration
-    if (abs(x_speed) > knockback_h_friction) {
-        x_speed -= sign(x_speed) * knockback_h_friction;
-    } else {
-        x_speed = 0;
-    }
-
-    // End knockback if duration timer runs out
-    if (knockback_duration_timer <= 0) {
-        knockback_active = false;
-        x_speed = 0;
-        y_speed = 0;
-    }
-}
-
-// --- Normal Movement Physics ---
-if (!knockback_active) {
-    
-    if (_dir != 0) {
-        // Accelerate towards max speed in the input direction
-        x_speed += _dir * accel;
-        x_speed = clamp(x_speed, -max_x_speed, max_x_speed);
-    } else {
-        // If no horizontal input, apply deceleration
-        if (abs(x_speed) > decel) {
-            x_speed -= sign(x_speed) * decel;
-        } else {
-            x_speed = 0;
-        }
-    }
-}
-
-#endregion
-
-
 #region HORIZONTAL MOVEMENT RESOLUTION
     
     var _sub_pixel = .5;
@@ -387,78 +419,6 @@ if (!knockback_active) {
 #endregion
 
 
-#region VERTICAL MOVEMENT PHYSICS (GRAVITY AND KNOCKBACK)
-
-// Wall slide and wall grab states handle their own vertical movement, overriding default gravity.
-// Therefore, only apply general gravity if not in those states.
-if (player_state != PlayerState.WALL_SLIDE && player_state != PlayerState.WALL_GRAB) {
-    
-    // Only apply gravity if coyote hang has expired
-    if (coyote_hang_timer <= 0) {
-        y_speed += grav;
-        y_speed = min(y_speed, grav_max); // Clamp vertical speed to prevent exceeding max falling speed
-        set_on_ground(false);
-    }
-
-    // No upper clamp for y_speed when knocked back, allowing full upward impulse.
-    // Otherwise, clamp to normal max upward speed for regular jumps.
-    if (!knockback_active) {
-        y_speed = max(y_speed, -grav_max);
-    }
-}
-
-#endregion
-
-
-#region JUMP LOGIC
-
-// --- Execute Jump ---
-if (_jump_type != "") {
-    action_execute_jump(_jump_type, _on_wall);
-}
-
-// --- Set variable jump sustain ---
-if (_key_jump_held && jump_speed_sustain_timer > 0) {
-    y_speed = jump_speed[jump_count -1];   // sustain upward velocity
-} else if (!_key_jump_held) {
-    jump_speed_sustain_timer = 0;    // cutoff if released
-}
-
-// --- Variable jump sustain timer ---
-if (jump_speed_sustain_timer > 0) { 
-    jump_speed_sustain_timer--; 
-}
-
-// --- Coyote Jump grace timer ---
-// Count down here, since it's part of jump grace logic, not gravity.
-if (coyote_jump_timer > 0) {
-    coyote_jump_timer--;
-}
-
-// --- Coyote Hang timer ---
-// This is where we decrement it now, separated from gravity.
-if (coyote_hang_timer > 0) {
-    coyote_hang_timer--;
-}
-
-// --- Jump Input Buffer ---
-if (_key_jump && !on_ground) {
-    jump_input_buffer_timer = jump_input_buffer_frames;
-}
-if (jump_input_buffer_timer > 0) { 
-    jump_input_buffer_timer--; 
-}
-
-// --- Jump Sound Combo ---
-if (jump_combo_timer > 0) {
-    jump_combo_timer--;
-} else {
-    consecutive_jumps = 0;
-}
-
-#endregion
-
-
 #region VERTICAL MOVEMENT RESOLUTION
 // --- Move vertically until collision ---
 if (place_meeting(x, y + y_speed, collision_tileset)) {
@@ -474,17 +434,58 @@ if (place_meeting(x, y + y_speed, collision_tileset)) {
 }
 
 // --- Ground Check ---
-if (y_speed >= 0 && place_meeting(x, y + 1, collision_tileset)) {
-    set_on_ground(true);
-}
+// This is now the *only* place that determines if we are on the ground.
+var _is_on_ground = (y_speed >= 0 && place_meeting(x, y + 1, collision_tileset));
+set_on_ground(_is_on_ground);
 
 // --- Commit Vertical Movement ---
 y += y_speed;
 #endregion
 
 
-#region STATE TRANSITIONS 2 (PHYSICS/COLLISION-DRIVEN, i.e: grounded, wall contact, ceiling bonk)
+#region  STATE TRANSITIONS (PLAYER INPUT BASED)
+// DEATH transition (if not already dead)
+if ((player_health <= 0 || y > fall_threshold) && player_state != PlayerState.DEAD) {
+    player_state = PlayerState.DEAD;
+}
+#endregion
 
+
+#region STATE TRANSITIONS 2 (PHYSICS/COLLISION-DRIVEN, i.e: grounded, wall contact, ceiling bonk)
+// WALL SLIDE / WALL GRAB → GROUND transition
+// on_ground && (player_state == PlayerState.WALL_SLIDE || player_state == PlayerState.WALL_GRAB)
+if (on_ground && player_state == PlayerState.WALL_SLIDE) {
+    if (_dir != 0) {
+        player_state = PlayerState.RUN;
+    } else {
+        player_state = PlayerState.IDLE;
+    }
+    audio_stop_sound(sndPlayerWallSlide);
+}
+
+// AIR → GROUND transition
+if (on_ground && player_state == PlayerState.AIR) {
+
+    // Check if the player was truly in an AIR state in the previous frame
+    // to prevent playing the landing sound immediately after initiating a jump.
+    if (player_state_previous == PlayerState.AIR) {
+        audio_play_sound(sndPlayerJumpLanding, 10, false);
+        scr_spawn_dust_cloud(x, y, facing_direction);
+    }
+    
+    // Transition to appropriate ground state
+    if (_dir != 0) {
+        player_state = PlayerState.RUN;
+    } else {
+        player_state = PlayerState.IDLE;
+    }
+}
+
+// GROUND → AIR transition (e.g., walking off a ledge)
+// Also ensure we don't transition if actively in knockback.
+if (!on_ground && (player_state == PlayerState.IDLE || player_state == PlayerState.RUN) && player_state != PlayerState.ATTACK && !knockback_active) {
+    player_state = PlayerState.AIR;
+}
 #endregion
 
 
