@@ -67,13 +67,9 @@ scr_player_input_attack(_key_attack_pressed);
 #endregion
 
 
-#region COLLISION CHECKS
-// --- Wall Check ---
+#region COLLISION CHECKS (PRE MOVEMENT
 var _on_wall = place_meeting(x + 1, y, collision_tileset) - place_meeting(x - 1, y, collision_tileset);
 var _is_pressing_wall = (sign(_dir) == _on_wall) && (_dir != 0);
-
-
-// Check if the wall being touched is GRABBABLE
 var _is_touching_grabbable_wall = false;
 if (_on_wall != 0) {
     // A wall is grabbable if it is NOT in the non-grabbable list.
@@ -241,7 +237,7 @@ switch (player_state) {
         }
         
         // Check if the player can transition to the wall grab state.
-        if (_is_touching_grabbable_wall && _is_pressing_wall && y_speed > 0 && wall_jump_gravity_bypass <= 0) {
+        if (!on_ground && _is_touching_grabbable_wall && _is_pressing_wall && y_speed > 0 && wall_jump_gravity_bypass <= 0) {
             player_state = PlayerState.WALL_GRAB;
     
             wall_grab_timer = 0; // Reset the timer for the new grab
@@ -380,42 +376,43 @@ switch (player_state) {
 
 #region HORIZONTAL MOVEMENT RESOLUTION
     
-    var _sub_pixel = .5;
+var _sub_pixel = .5;
+
+// --- Move horizontally until collision ---
+if (place_meeting(x + x_speed, y, collision_tileset)) {
     
-    // --- Move horizontally until collision ---
-    if (place_meeting(x + x_speed, y, collision_tileset)) {
-        
-        // Handle upward slope movement
-        // If there is collision to the sides, but not up and to sides, then there is a slope
-        if (!place_meeting(x + x_speed, y - abs(x_speed) -1, collision_tileset)) { 
-            while (place_meeting(x + x_speed, y, collision_tileset)) {
-                y -= _sub_pixel;
-            }
-        } 
-        
-        // Normal movement (no slopes)
-        else { 
-            var _x_pixel_step = _sub_pixel * sign(x_speed);
-            while (!place_meeting(x + _x_pixel_step, y, collision_tileset)) {
-                x += _x_pixel_step;
-            }
-            x_speed = 0;
+    // Handle upward slope movement
+    // && !place_meeting(x + x_speed, y - 1, collision_tileset) // but not a vertical wall
+    if (!place_meeting(x + x_speed, y - abs(x_speed) - 1, collision_tileset)) 
+    {
+        while (place_meeting(x + x_speed, y, collision_tileset)) {
+            y -= _sub_pixel;
         }
     }
-    
-    // Handle going down slopes
-    if (y_speed >= 0 && !place_meeting(x + x_speed, y + 1, collision_tileset) && place_meeting(x + x_speed, y + abs(x_speed) + 1, collision_tileset)) {
-        while (!place_meeting(x + x_speed, y + _sub_pixel, collision_tileset)) {
-            y += _sub_pixel;
+
+    // Normal movement (no slopes)
+    else { 
+        var _x_pixel_step = _sub_pixel * sign(x_speed);
+        while (!place_meeting(x + _x_pixel_step, y, collision_tileset)) {
+            x += _x_pixel_step;
         }
+        x_speed = 0;
     }
-    
-    // --- Commit to horizontal movement ---
-    x += x_speed;
-    
-    // --- Clamp horizontal position to room bounds based on mask of the instance ---
-    var _half_sprite_mask = .5 * (bbox_right - bbox_left);
-    x = clamp(x, _half_sprite_mask, room_width - _half_sprite_mask);
+}
+
+// Handle going down slopes
+if (y_speed >= 0 && !place_meeting(x + x_speed, y + 1, collision_tileset) && place_meeting(x + x_speed, y + abs(x_speed) + 1, collision_tileset)) {
+    while (!place_meeting(x + x_speed, y + _sub_pixel, collision_tileset)) {
+        y += _sub_pixel;
+    }
+}
+
+// --- Commit to horizontal movement ---
+x += x_speed;
+
+// --- Clamp horizontal position to room bounds based on mask of the instance ---
+var _half_sprite_mask = .5 * (bbox_right - bbox_left);
+x = clamp(x, _half_sprite_mask, room_width - _half_sprite_mask);
 #endregion
 
 
@@ -452,7 +449,7 @@ if ((player_health <= 0 || y > fall_threshold) && player_state != PlayerState.DE
 
 
 #region STATE TRANSITIONS 2 (PHYSICS/COLLISION-DRIVEN, i.e: grounded, wall contact, ceiling bonk)
-// WALL SLIDE / WALL GRAB → GROUND transition
+// WALL SLIDE → GROUND transition
 // on_ground && (player_state == PlayerState.WALL_SLIDE || player_state == PlayerState.WALL_GRAB)
 if (on_ground && player_state == PlayerState.WALL_SLIDE) {
     if (_dir != 0) {
