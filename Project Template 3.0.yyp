@@ -274,6 +274,7 @@
     {"id":{"name":"sprOrcAttackSwing01Hitbox","path":"sprites/sprOrcAttackSwing01Hitbox/sprOrcAttackSwing01Hitbox.yy",},},
     {"id":{"name":"sprOrcInspect","path":"sprites/sprOrcInspect/sprOrcInspect.yy",},},
     {"id":{"name":"sprPlayerCollisionMask","path":"sprites/sprPlayerCollisionMask/sprPlayerCollisionMask.yy",},},
+    {"id":{"name":"sprPlayerLedgeGrab","path":"sprites/sprPlayerLedgeGrab/sprPlayerLedgeGrab.yy",},},
     {"id":{"name":"sprPurpleBox","path":"sprites/sprPurpleBox/sprPurpleBox.yy",},},
     {"id":{"name":"sprSlope","path":"sprites/sprSlope/sprSlope.yy",},},
     {"id":{"name":"sprSpikedTerrain","path":"sprites/sprSpikedTerrain/sprSpikedTerrain.yy",},},

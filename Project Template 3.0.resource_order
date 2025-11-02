@@ -215,6 +215,7 @@
     {"name":"sprOrcAttackSwing01Hitbox","order":12,"path":"sprites/sprOrcAttackSwing01Hitbox/sprOrcAttackSwing01Hitbox.yy",},
     {"name":"sprOrcInspect","order":10,"path":"sprites/sprOrcInspect/sprOrcInspect.yy",},
     {"name":"sprPlayerCollisionMask","order":12,"path":"sprites/sprPlayerCollisionMask/sprPlayerCollisionMask.yy",},
+    {"name":"sprPlayerLedgeGrab","order":13,"path":"sprites/sprPlayerLedgeGrab/sprPlayerLedgeGrab.yy",},
     {"name":"sprPurpleBox","order":22,"path":"sprites/sprPurpleBox/sprPurpleBox.yy",},
     {"name":"sprSlope","order":17,"path":"sprites/sprSlope/sprSlope.yy",},
     {"name":"sprSpikedTerrain","order":1,"path":"sprites/sprSpikedTerrain/sprSpikedTerrain.yy",},

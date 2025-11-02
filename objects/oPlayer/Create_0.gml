@@ -52,7 +52,7 @@ grav_wall_max = 3.25; // Maximum vertical speed while wall sliding
 jump_speed = [-2.25, -1.5]; // Jump Velocity
 jump_speed_sustain_frames = [18, 10]; // "Sustain" windows. Constantly applies jump velocity for x amount of frames.
 jump_speed_sustain_timer = 0;
-jump_max = 2;
+jump_max = 1;
 // jump_max = array_length(jump_speed); // Max amount of aerial multi-jump-sequences. Automatically matches array size
 jump_count = 0; // Jump tracker
 
@@ -76,6 +76,9 @@ jump_combo_timeout = 120; // 2 seconds at 60 FPS
 
 
 #region WALL INTERACTIONS
+ledge_grab_timer = 0;
+ledge_grab_frames = 60; // How many frames player hangs on a ledge
+
 // Timer for how long the player "grabs" the wall before sliding
 wall_grab_timer = 0;
 wall_grab_timer_max = 10; // Max frames to "hang" on wall before sliding
@@ -85,8 +88,8 @@ wall_jump_horizontal_push_off = 6; // Horizontal push when jumping off a wall
 wall_jump_speed = -4.0; // Initial upward velocity for a wall jump
 
 // Timer to suppress gravity after wall jump or wall grab
-wall_jump_gravity_bypass_max = 7; // Max frames to bypass gravity after wall interaction
-wall_jump_gravity_bypass = 0; // Current timer for gravity suppression
+wall_jump_gravity_bypass_frames = 0; // Max frames to bypass gravity after wall interaction (was 7)
+wall_jump_gravity_bypass_timer = 0; // Current timer for gravity suppression
 
 // Timer for how long horizontal control is disabled after wall jump
 wall_jump_move_loss_timer = 0; // Current timer for wall jump input lockout
@@ -121,6 +124,7 @@ enum PlayerState {
     IDLE,
     RUN,
     AIR,
+    LEDGE_GRAB,
     WALL_GRAB,
     WALL_SLIDE,
     ATTACK,
@@ -227,7 +231,7 @@ action_execute_jump = function (_jump_type, _wall_dir=0) {
             jump_count++;
             y_speed = wall_jump_speed;
             x_speed = -_wall_dir * wall_jump_horizontal_push_off;
-            wall_jump_gravity_bypass = wall_jump_gravity_bypass_max;
+            wall_jump_gravity_bypass_timer = wall_jump_gravity_bypass_frames;
             wall_jump_move_loss_timer = wall_jump_move_loss_frames;
             last_wall_dir = _wall_dir; // remember which wall we jumped from
             audio_stop_sound(sndPlayerWallSlide);

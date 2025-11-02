@@ -48,13 +48,14 @@ if (attack_timer > 0) { attack_timer--; }
 if (knockback_cooldown_timer > 0) { knockback_cooldown_timer--; }
 if (knockback_duration_timer > 0) { knockback_duration_timer--; }
 
-// // Wall grab timer and wall jump gravity bypass
-if (wall_jump_gravity_bypass > 0) { wall_jump_gravity_bypass--; }
+// Ledge grab timer
+if (ledge_grab_timer > 0) { ledge_grab_timer--;  }
+
+// Wall jump gravity bypass
+if (wall_jump_gravity_bypass_timer > 0) { wall_jump_gravity_bypass_timer--; }
     
 // Wall jump move loss timer
-if (wall_jump_move_loss_timer > 0) {
-    wall_jump_move_loss_timer--;
-}
+if (wall_jump_move_loss_timer > 0) { wall_jump_move_loss_timer--; }
 #endregion
 
 
@@ -67,7 +68,7 @@ scr_player_input_attack(_key_attack_pressed);
 #endregion
 
 
-#region COLLISION CHECKS (PRE MOVEMENT
+#region COLLISION CHECKS (PRE MOVEMENT)
 var _on_wall = place_meeting(x + 1, y, collision_tileset) - place_meeting(x - 1, y, collision_tileset);
 var _is_pressing_wall = (sign(_dir) == _on_wall) && (_dir != 0);
 var _is_touching_grabbable_wall = false;
@@ -193,23 +194,26 @@ if (jump_combo_timer > 0) {
 #region STATE MACHINE LOGIC
 switch (player_state) {
     case PlayerState.IDLE:
+        show_debug_message("IN IDLE STATE");
         // Set the sprite and image speed for the idle state.
         sprite_index = sPlayerIdle;
         image_speed = 1;
     
         // Check for horizontal input. If present, switch to the RUN state.
         if (_dir != 0) {
+            show_debug_message("IDLE -> RUN");
             player_state = PlayerState.RUN;
         }
         break;
     case PlayerState.RUN:
-        show_debug_message("Run");
+        show_debug_message("IN RUN STATE");
         // Set the sprite and image speed for the running state.
         sprite_index = sPlayerRun;
         image_speed = 1;
     
         // Check for a lack of horizontal input.
         if (_dir == 0) { // If no input, switch to the IDLE state.
+            show_debug_message("RUN -> IDLE");
             player_state = PlayerState.IDLE;
         }
     
@@ -227,7 +231,7 @@ switch (player_state) {
         }
         break;
     case PlayerState.AIR:
-        show_debug_message("Air");
+        show_debug_message("IN AIR STATE");
         // Set air sprite depending on if ascending or descending
         if (y_speed < 0) {
             sprite_index = sPlayerAirAscending;
@@ -235,29 +239,22 @@ switch (player_state) {
             sprite_index = sPlayerAirDescending;
             image_speed = 1;
         }
-        
-        // Check if the player can transition to the wall grab state.
-        if (!on_ground && _is_touching_grabbable_wall && _is_pressing_wall && y_speed > 0 && wall_jump_gravity_bypass <= 0) {
-            player_state = PlayerState.WALL_GRAB;
-    
-            wall_grab_timer = 0; // Reset the timer for the new grab
-            jump_count = 1; // reset jumps on wall grab
-            
-            // Play sound effect for entering wall grab
-            audio_play_sound(sndPlayerStep01, 1, false);
-            
-            // Spawn dust cloud on wall grab
-            scr_spawn_dust_cloud(x, y, -_on_wall, _on_wall);
-        }
         break;
     case PlayerState.WALL_GRAB:
-        show_debug_message("Wall Grab");
+        show_debug_message("IN WALL GRAB STATE");
         // Set sprite and stop all movement for the duration of the grab.
         sprite_index = sPlayerOnWall;
         image_speed = 0;
         image_xscale = -_on_wall;
         x_speed = 0;
         y_speed = 0;
+        
+        // Dynamic Jump Count
+        if (jump_max > 1) {
+            jump_count = jump_max - 1;
+        } else {
+            jump_count = 0;
+        }
     
         // Check if the player has let go of the directional input.
         if (!_is_pressing_wall) {
@@ -275,6 +272,7 @@ switch (player_state) {
         }
         break;
     case PlayerState.WALL_SLIDE:
+        show_debug_message("IN WALL SLIDE STATE");
         // Check if the player has left the wall.
         // The player should only transition out of this state if they stop pressing the input key.
         if (!_is_pressing_wall || !_is_touching_grabbable_wall) {
@@ -383,8 +381,7 @@ if (place_meeting(x + x_speed, y, collision_tileset)) {
     
     // Handle upward slope movement
     // && !place_meeting(x + x_speed, y - 1, collision_tileset) // but not a vertical wall
-    if (!place_meeting(x + x_speed, y - abs(x_speed) - 1, collision_tileset)) 
-    {
+    if (!place_meeting(x + x_speed, y - abs(x_speed) - 1, collision_tileset)) {
         while (place_meeting(x + x_speed, y, collision_tileset)) {
             y -= _sub_pixel;
         }
@@ -440,47 +437,64 @@ y += y_speed;
 #endregion
 
 
-#region  STATE TRANSITIONS (PLAYER INPUT BASED)
+
+
+#region STATE TRANSITIONS
 // DEATH transition (if not already dead)
 if ((player_health <= 0 || y > fall_threshold) && player_state != PlayerState.DEAD) {
     player_state = PlayerState.DEAD;
 }
-#endregion
 
-
-#region STATE TRANSITIONS 2 (PHYSICS/COLLISION-DRIVEN, i.e: grounded, wall contact, ceiling bonk)
-// WALL SLIDE → GROUND transition
-// on_ground && (player_state == PlayerState.WALL_SLIDE || player_state == PlayerState.WALL_GRAB)
-if (on_ground && player_state == PlayerState.WALL_SLIDE) {
+// WALL SLIDE → IDLE/RUN
+if (player_state == PlayerState.WALL_SLIDE && on_ground && y_speed >= 0) {
     if (_dir != 0) {
+        show_debug_message("WALL SLIDE -> RUN");
         player_state = PlayerState.RUN;
     } else {
+        show_debug_message("WALL SLIDE -> IDLE");
         player_state = PlayerState.IDLE;
     }
     audio_stop_sound(sndPlayerWallSlide);
 }
 
-// AIR → GROUND transition
-if (on_ground && player_state == PlayerState.AIR) {
-
-    // Check if the player was truly in an AIR state in the previous frame
-    // to prevent playing the landing sound immediately after initiating a jump.
-    if (player_state_previous == PlayerState.AIR) {
-        audio_play_sound(sndPlayerJumpLanding, 10, false);
-        scr_spawn_dust_cloud(x, y, facing_direction);
+// AIR transitions
+if (player_state == PlayerState.AIR) {
+    
+    // AIR → WALL_GRAB (First priority)
+    if (!on_ground 
+        && _is_touching_grabbable_wall 
+        && _is_pressing_wall 
+        && y_speed > 0 
+        && wall_jump_gravity_bypass_timer <= 0) 
+    {
+        player_state = PlayerState.WALL_GRAB;
+        wall_grab_timer = 0; // Reset the timer for the new grab
+        jump_count = 1; // reset jumps on wall grab
+        audio_play_sound(sndPlayerStep01, 1, false);
+        scr_spawn_dust_cloud(x, y, -_on_wall, _on_wall);
     }
     
-    // Transition to appropriate ground state
-    if (_dir != 0) {
-        player_state = PlayerState.RUN;
-    } else {
-        player_state = PlayerState.IDLE;
+    // AIR → IDLE/RUN (Second priority: ground landing)
+    else if (on_ground) {
+        // Check if the player was truly in an AIR state in the previous frame
+        // to prevent playing the landing sound immediately after initiating a jump.
+        if (player_state_previous == PlayerState.AIR) {
+            audio_play_sound(sndPlayerJumpLanding, 10, false);
+            scr_spawn_dust_cloud(x, y, facing_direction);
+        }
+        if (_dir != 0) {
+            show_debug_message("AIR -> RUN");
+            player_state = PlayerState.RUN;
+        } else {
+            show_debug_message("AIR -> RUN");
+            player_state = PlayerState.IDLE;
+        }
     }
 }
 
-// GROUND → AIR transition (e.g., walking off a ledge)
-// Also ensure we don't transition if actively in knockback.
+// IDLE/RUN → AIR (e.g., walking off a ledge or actively in knockback)
 if (!on_ground && (player_state == PlayerState.IDLE || player_state == PlayerState.RUN) && player_state != PlayerState.ATTACK && !knockback_active) {
+    show_debug_message("IDLE/RUN -> AIR");
     player_state = PlayerState.AIR;
 }
 #endregion
