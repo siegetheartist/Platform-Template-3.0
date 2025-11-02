@@ -129,11 +129,6 @@ if (player_state != PlayerState.WALL_SLIDE && player_state != PlayerState.WALL_G
         y_speed += grav;
         y_speed = min(y_speed, grav_max); // Clamp vertical speed to prevent exceeding max falling speed
     }
-    
-    // If you are in the air, and didn't get in the air by jumping, remove a jump (i.e. walked off ledge)
-    if (coyote_hang_timer <= 0 && (jump_count == 0 && coyote_jump_timer <= 0)) {
-    	jump_count = 1; 
-    }
 
     // No upper clamp for y_speed when knocked back, allowing full upward impulse.
     // Otherwise, clamp to normal max upward speed for regular jumps.
@@ -248,13 +243,6 @@ switch (player_state) {
         image_xscale = -_on_wall;
         x_speed = 0;
         y_speed = 0;
-        
-        // Dynamic Jump Count
-        if (jump_max > 1) {
-            jump_count = jump_max - 1;
-        } else {
-            jump_count = 0;
-        }
     
         // Check if the player has let go of the directional input.
         if (!_is_pressing_wall) {
@@ -266,6 +254,7 @@ switch (player_state) {
     
             // Once the timer runs out, transition to the wall slide state.
             if (wall_grab_timer >= wall_grab_timer_max) {
+                show_debug_message("IN WALL GRAB STATE -> WALL SLIDE");
                 player_state = PlayerState.WALL_SLIDE;
                 audio_play_sound(sndPlayerWallSlide, 10, false);
             }
@@ -446,7 +435,7 @@ if ((player_health <= 0 || y > fall_threshold) && player_state != PlayerState.DE
 }
 
 // WALL SLIDE → IDLE/RUN
-if (player_state == PlayerState.WALL_SLIDE && on_ground && y_speed >= 0) {
+if (player_state == PlayerState.WALL_SLIDE && on_ground && y_speed == 0) {
     if (_dir != 0) {
         show_debug_message("WALL SLIDE -> RUN");
         player_state = PlayerState.RUN;
@@ -467,9 +456,10 @@ if (player_state == PlayerState.AIR) {
         && y_speed > 0 
         && wall_jump_gravity_bypass_timer <= 0) 
     {
+        show_debug_message("AIR -> WALL GRAB");
         player_state = PlayerState.WALL_GRAB;
         wall_grab_timer = 0; // Reset the timer for the new grab
-        jump_count = 1; // reset jumps on wall grab
+        jump_count = 0; // reset jumps on wall grab
         audio_play_sound(sndPlayerStep01, 1, false);
         scr_spawn_dust_cloud(x, y, -_on_wall, _on_wall);
     }
@@ -496,6 +486,11 @@ if (player_state == PlayerState.AIR) {
 if (!on_ground && (player_state == PlayerState.IDLE || player_state == PlayerState.RUN) && player_state != PlayerState.ATTACK && !knockback_active) {
     show_debug_message("IDLE/RUN -> AIR");
     player_state = PlayerState.AIR;
+    
+    // If you are in the air, and didn't get in the air by jumping, remove a jump (i.e. walked off ledge)
+    if (coyote_hang_timer <= 0 && (jump_count == 0 && coyote_jump_timer <= 0)) {
+    	jump_count = jump_max - 1; 
+    }
 }
 #endregion
 
