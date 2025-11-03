@@ -61,7 +61,7 @@ jump_input_buffer_frames = 7; // Max frames to buffer a jump input (immediately 
 jump_input_buffer_timer = 0;
 
 // Frames after leaving ground where jump is still allowed (coyote jump time)
-coyote_jump_frames = 7;
+coyote_jump_frames = 4;
 coyote_jump_timer = 0;
 
 // Frames after leaving ground where gravity is ignored
@@ -151,6 +151,7 @@ image_index_previous = 0;
 // ADD A LIST OF VARIABLES WITH ALL AVAILABLE SOUND EFFECTS TO THE PLAYER
 
 on_ground = false; // needed explicitely declared, in create event, for camera object code to use
+on_wall = false;
 
 /// @description Determines what kind of jump is requested.
 /// @arg {bool} _key_jump
@@ -206,7 +207,6 @@ action_execute_jump = function (_jump_type, _wall_dir=0) {
     }
     audio_play_sound(_jump_sound_to_play, 10, false);
 	#endregion
-    
     
     #region JUMP LOGIC
     // Apply the correct jump based on the jump type.
