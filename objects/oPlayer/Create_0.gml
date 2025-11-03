@@ -88,7 +88,7 @@ wall_jump_horizontal_push_off = 6; // Horizontal push when jumping off a wall
 wall_jump_speed = -4.0; // Initial upward velocity for a wall jump
 
 // Timer to suppress gravity after wall jump or wall grab
-wall_jump_gravity_bypass_frames = 0; // Max frames to bypass gravity after wall interaction (was 7)
+wall_jump_gravity_bypass_frames = 20; // Max frames to bypass gravity after wall interaction (was 7)
 wall_jump_gravity_bypass_timer = 0; // Current timer for gravity suppression
 
 // Timer for how long horizontal control is disabled after wall jump

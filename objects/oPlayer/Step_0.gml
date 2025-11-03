@@ -300,14 +300,12 @@ if ((player_health <= 0 || y > fall_threshold) && player_state != PlayerState.DE
 #region STATE MACHINE - Post movement
 switch (player_state) {
     case PlayerState.IDLE:
-        show_debug_message("IN IDLE STATE");
         // Set the sprite and image speed for the idle state.
         sprite_index = sPlayerIdle;
         image_speed = 1;
         
         // IDLE → AIR (e.g., walking off a ledge or actively in knockback)
         if (!on_ground && !knockback_active) {
-            show_debug_message("IDLE -> AIR");
             player_state = PlayerState.AIR;
             jump_count = 1;
         }
