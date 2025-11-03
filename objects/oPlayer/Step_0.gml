@@ -143,13 +143,11 @@ if (jump_speed_sustain_timer > 0) {
 }
 
 // --- Coyote Jump grace timer ---
-// Count down here, since it's part of jump grace logic, not gravity.
 if (coyote_jump_timer > 0) {
     coyote_jump_timer--;
 }
 
 // --- Coyote Hang timer ---
-// This is where we decrement it now, separated from gravity.
 if (coyote_hang_timer > 0) {
     coyote_hang_timer--;
 }
@@ -210,13 +208,13 @@ switch (player_state) {
 
 
 #region HORIZONTAL MOVEMENT RESOLUTION
-    
-var _sub_pixel = .5;
 
 // --- Move horizontally until collision ---
+var _sub_pixel = .5;
+
 if (place_meeting(x + x_speed, y, collision_tileset)) {
+    
     // Handle upward slope movement
-    // && !place_meeting(x + x_speed, y - 1, collision_tileset) // but not a vertical wall
     if (!place_meeting(x + x_speed, y - abs(x_speed) - 1, collision_tileset)) {
         while (place_meeting(x + x_speed, y, collision_tileset)) {
             y -= _sub_pixel;
@@ -300,7 +298,6 @@ if ((player_health <= 0 || y > fall_threshold) && player_state != PlayerState.DE
 #region STATE MACHINE - Post movement
 switch (player_state) {
     case PlayerState.IDLE:
-        // Set the sprite and image speed for the idle state.
         sprite_index = sPlayerIdle;
         image_speed = 1;
         
@@ -312,13 +309,10 @@ switch (player_state) {
     
         // IDLE -> RUN
         else if (_dir != 0) {
-            show_debug_message("IDLE -> RUN");
             player_state = PlayerState.RUN;
         }
         break;
     case PlayerState.RUN:
-        show_debug_message("IN RUN STATE");
-        // Set the sprite and image speed for the running state.
         sprite_index = sPlayerRun;
         image_speed = 1;
     
@@ -337,20 +331,16 @@ switch (player_state) {
         
         // RUN → AIR (e.g., walking off a ledge or actively in knockback)
         if (!on_ground && !knockback_active) {
-            show_debug_message("RUN -> AIR");
             player_state = PlayerState.AIR;
             jump_count = 1;
         }
         
         // RUN -> IDLE
         else if (_dir == 0) { // If no input, switch to the IDLE state.
-            show_debug_message("RUN -> IDLE");
             player_state = PlayerState.IDLE;
         }
         break;
     case PlayerState.AIR:
-        show_debug_message("IN AIR STATE");
-        // Set air sprite depending on if ascending or descending
         if (y_speed < 0) {
             sprite_index = sPlayerAirAscending;
         } else {
@@ -360,7 +350,6 @@ switch (player_state) {
         
         // AIR → WALL_GRAB (First priority)
         if (!on_ground && _is_touching_grabbable_wall && _is_pressing_wall && y_speed > 0 && wall_jump_gravity_bypass_timer <= 0) {
-            show_debug_message("AIR -> WALL GRAB");
             player_state = PlayerState.WALL_GRAB;
             wall_grab_timer = 0; // Reset the timer for the new grab
             jump_count = 0; // reset jumps on wall grab
@@ -377,17 +366,13 @@ switch (player_state) {
                 scr_spawn_dust_cloud(x, y, facing_direction);
             }
             if (_dir != 0) {
-                show_debug_message("AIR -> RUN");
                 player_state = PlayerState.RUN;
             } else {
-                show_debug_message("AIR -> IDLE");
                 player_state = PlayerState.IDLE;
             }
         }
         break;
     case PlayerState.WALL_GRAB:
-        show_debug_message("IN WALL GRAB STATE");
-        // Set sprite for the duration of the grab.
         sprite_index = sPlayerOnWall;
         image_speed = 0;
         image_xscale = -on_wall;
@@ -401,39 +386,31 @@ switch (player_state) {
     
             // WALL GRAB -> WALL SLIDE
             if (wall_grab_timer >= wall_grab_timer_max) {
-                show_debug_message("IN WALL GRAB STATE -> WALL SLIDE");
                 player_state = PlayerState.WALL_SLIDE;
                 audio_play_sound(sndPlayerWallSlide, 10, false);
             }
         }
         break;
     case PlayerState.WALL_SLIDE:
-       show_debug_message("IN WALL SLIDE STATE");
-   
-       // Play wall slide sound
-       if (!audio_is_playing(sndPlayerWallSlide)) {
-           audio_play_sound(sndPlayerWallSlide, 10, false);
-       }
-   
-       // Set sprite
-       sprite_index = sPlayerOnWall;
-       image_speed = 1;
-       image_xscale = -on_wall;
-   
-       // Dust cloud spawning
-       wall_slide_dust_timer++;
-       if (wall_slide_dust_timer >= wall_slide_dust_timer_max) {
-           wall_slide_dust_timer = 0;
-           scr_spawn_dust_cloud(x, y, -on_wall, on_wall);
-       }
+        sprite_index = sPlayerOnWall;
+        image_speed = 1;
+        image_xscale = -on_wall;
+        if (!audio_is_playing(sndPlayerWallSlide)) {
+            audio_play_sound(sndPlayerWallSlide, 10, false);
+        }
+        
+        // Dust cloud spawning
+        wall_slide_dust_timer++;
+        if (wall_slide_dust_timer >= wall_slide_dust_timer_max) {
+            wall_slide_dust_timer = 0;
+            scr_spawn_dust_cloud(x, y, -on_wall, on_wall);
+        }
    
        // WALL SLIDE → IDLE/RUN (only after lock expires)
        if (on_ground && y_speed >= 0) {
            if (_dir != 0) {
-               show_debug_message("WALL SLIDE -> RUN");
                player_state = PlayerState.RUN;
            } else {
-               show_debug_message("WALL SLIDE -> IDLE");
                player_state = PlayerState.IDLE;
            }
            audio_stop_sound(sndPlayerWallSlide);
@@ -456,7 +433,6 @@ switch (player_state) {
                 sprite_index = sPlayerAttack;
             }
             
-            // Play attack sound
             audio_play_sound(sndPlayerAttack, 10, false); 
             
             // Create the attack slash object
@@ -475,12 +451,10 @@ switch (player_state) {
      
         // When attack animation is over
         if (attack_timer <= 0) {
-    
             // Transition back to an appropriate state based on whether the player is on the ground
             if (on_ground) {
-                // After a ground attack, revert to IDLE since x_speed was forced to 0.
                 player_state = PlayerState.IDLE;
-            } else { // If not on ground, go to AIR
+            } else {
                 player_state = PlayerState.AIR;
             }
         }
