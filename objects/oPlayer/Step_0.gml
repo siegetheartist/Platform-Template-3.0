@@ -51,24 +51,26 @@ if (knockback_duration_timer > 0) { knockback_duration_timer--; }
 // Ledge grab timer
 if (ledge_grab_timer > 0) { ledge_grab_timer--;  }
 
-// Wall jump gravity bypass
+// Wall jump timers
 if (wall_jump_gravity_bypass_timer > 0) { wall_jump_gravity_bypass_timer--; }
-    
-// Wall jump move loss timer
 if (wall_jump_move_loss_timer > 0) { wall_jump_move_loss_timer--; }
+    
+// --- Variable jump sustain timer ---
+if (jump_speed_sustain_timer > 0) { jump_speed_sustain_timer--; }
+
+// --- Coyote timers ---
+if (coyote_jump_timer > 0) { coyote_jump_timer--; }
+if (coyote_hang_timer > 0) { coyote_hang_timer--; }
+    
+// --- Jump Input Buffer timer ---
+if (jump_input_buffer_timer > 0) { jump_input_buffer_timer--; }
+    
+// --- Jump Sound Combo timer ---
+if (jump_combo_timer > 0) { jump_combo_timer--; } else { consecutive_jumps = 0; }
 #endregion
 
 
-#region PLAYER ACTIONS
-// --- Process Jump Input ---
-var _jump_type = action_request_jump(_key_jump);
-
-// --- Process Attack Input ---
-scr_player_input_attack(_key_attack_pressed);
-#endregion
-
-
-#region HORIZONTAL MOVEMENT PHYSICS (ACCEL / DECEL AND KNOCKBACK)
+#region HORIZONTAL MOVEMENT PHYSICS (accel, decel, knockback, etc)
 // --- Knockback Physics ---
 if (knockback_active) {
     // Apply knockback-specific friction/deceleration
@@ -88,7 +90,12 @@ if (knockback_active) {
 
 // --- Normal Movement Physics ---
 if (!knockback_active) {
-    if (_dir != 0) {
+    
+    // TODO: Do I need this? We are already overriding in state machine
+    if (player_state == PlayerState.LEDGE_GRAB) {
+        // freeze handled in state override; do nothing here
+    }
+    else if (_dir != 0) {
         // Accelerate towards max speed in the input direction
         x_speed += _dir * accel;
         x_speed = clamp(x_speed, -max_x_speed, max_x_speed);
@@ -104,7 +111,7 @@ if (!knockback_active) {
 #endregion
 
 
-#region VERTICAL MOVEMENT PHYSICS (GRAVITY AND KNOCKBACK)
+#region VERTICAL MOVEMENT PHYSICS (gavity, knockback, etc)
 // Wall slide and wall grab states handle their own vertical movement, overriding default gravity.
 // Therefore, only apply general gravity if not in those states.
 if (player_state != PlayerState.WALL_SLIDE && player_state != PlayerState.WALL_GRAB) {
@@ -124,7 +131,13 @@ if (player_state != PlayerState.WALL_SLIDE && player_state != PlayerState.WALL_G
 #endregion
 
 
-#region JUMP LOGIC
+#region PLAYER ACTIONS (jump, attack, etc)
+// --- Process Attack Input ---
+scr_player_input_attack(_key_attack_pressed);
+
+// --- Process Jump Input ---
+var _jump_type = action_request_jump(_key_jump);
+
 // --- Execute Jump ---
 if (_jump_type != "") {
     action_execute_jump(_jump_type, on_wall);
@@ -137,40 +150,18 @@ if (_key_jump_held && jump_speed_sustain_timer > 0) {
     jump_speed_sustain_timer = 0;    // cutoff if released
 }
 
-// --- Variable jump sustain timer ---
-if (jump_speed_sustain_timer > 0) { 
-    jump_speed_sustain_timer--; 
-}
-
-// --- Coyote Jump grace timer ---
-if (coyote_jump_timer > 0) {
-    coyote_jump_timer--;
-}
-
-// --- Coyote Hang timer ---
-if (coyote_hang_timer > 0) {
-    coyote_hang_timer--;
-}
-
 // --- Jump Input Buffer ---
 if (_key_jump && !on_ground) {
     jump_input_buffer_timer = jump_input_buffer_frames;
 }
-if (jump_input_buffer_timer > 0) { 
-    jump_input_buffer_timer--; 
-}
-
-// --- Jump Sound Combo ---
-if (jump_combo_timer > 0) {
-    jump_combo_timer--;
-} else {
-    consecutive_jumps = 0;
-}
-#endregion
+#endregion End player actions
 
 
 #region STATE PHYSICS OVERRIDES
 switch (player_state) {
+    case PlayerState.LEDGE_GRAB:
+        show_debug_message("LEDGE GRAB STATE - pre movement");
+        // Run through ledge grab into wall grab since they share x_speed and y_speed 
     case PlayerState.WALL_GRAB:
         x_speed = 0;
         y_speed = 0;
@@ -204,7 +195,7 @@ switch (player_state) {
     instance_destroy();
         break;
 }
-#endregion
+#endregion End state physics overrides
 
 
 #region HORIZONTAL MOVEMENT RESOLUTION
@@ -278,6 +269,7 @@ y += y_speed;
 var _is_on_ground = (y_speed >= 0 && place_meeting(x, y + 1, collision_tileset));
 set_on_ground(_is_on_ground);
 
+// --- Wall Checks ---
 on_wall = place_meeting(x + 1, y, collision_tileset) - place_meeting(x - 1, y, collision_tileset);
 var _is_pressing_wall = (sign(_dir) == on_wall) && (_dir != 0);
 var _is_touching_grabbable_wall = false;
@@ -287,6 +279,9 @@ if (on_wall != 0) {
         _is_touching_grabbable_wall = true;
     }
 }
+
+// --- Ledge Checks ---
+
 #endregion
 
 
@@ -304,7 +299,6 @@ switch (player_state) {
         // IDLE → AIR (e.g., walking off a ledge or actively in knockback)
         if (!on_ground && !knockback_active) {
             player_state = PlayerState.AIR;
-            jump_count = 1;
         }
     
         // IDLE -> RUN
@@ -332,7 +326,6 @@ switch (player_state) {
         // RUN → AIR (e.g., walking off a ledge or actively in knockback)
         if (!on_ground && !knockback_active) {
             player_state = PlayerState.AIR;
-            jump_count = 1;
         }
         
         // RUN -> IDLE
@@ -348,16 +341,24 @@ switch (player_state) {
             image_speed = 1;
         }
         
-        // AIR → WALL_GRAB (First priority)
+        // Remove a jump if you got to air state by falling off a ledge and not by jumping
+        if (coyote_jump_timer == 0 && !on_ground && jump_count == 0) {
+            jump_count++;
+        }
+        
+        // AIR -> LEDGE GRAB
+        // logic for entering ledge grab from air grab state
+        
+        // AIR → WALL_GRAB 
         if (!on_ground && _is_touching_grabbable_wall && _is_pressing_wall && y_speed > 0 && wall_jump_gravity_bypass_timer <= 0) {
             player_state = PlayerState.WALL_GRAB;
             wall_grab_timer = 0; // Reset the timer for the new grab
-            jump_count = 0; // reset jumps on wall grab
+            jump_count = 1; // reset jumps on wall grab
             audio_play_sound(sndPlayerStep01, 1, false);
             scr_spawn_dust_cloud(x, y, -on_wall, on_wall);
         }
         
-        // AIR → IDLE/RUN (Second priority: ground landing)
+        // AIR → IDLE/RUN - ground landing
         else if (on_ground) {
             // Check if the player was truly in an AIR state in the previous frame
             // to prevent playing the landing sound immediately after initiating a jump.
@@ -370,6 +371,23 @@ switch (player_state) {
             } else {
                 player_state = PlayerState.IDLE;
             }
+        }
+        break;
+    case PlayerState.LEDGE_GRAB:
+        show_debug_message("LEDGE GRAB STATE - post movement");
+        sprite_index = sPlayerOnWall;
+        image_speed = 0;
+        image_xscale = on_wall;
+    
+        // LEDGE GRAB -> AIR
+        // Exit if timer ran out
+        if (ledge_grab_timer <= 0) {
+            player_state = PlayerState.AIR;
+        }
+        
+        // Exit if let go of ledge
+        else if (!_is_pressing_wall) {
+            player_state = PlayerState.AIR;
         }
         break;
     case PlayerState.WALL_GRAB:

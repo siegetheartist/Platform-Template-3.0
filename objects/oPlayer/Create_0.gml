@@ -52,7 +52,7 @@ grav_wall_max = 3.25; // Maximum vertical speed while wall sliding
 jump_speed = [-2.25, -1.5]; // Jump Velocity
 jump_speed_sustain_frames = [18, 10]; // "Sustain" windows. Constantly applies jump velocity for x amount of frames.
 jump_speed_sustain_timer = 0;
-jump_max = 1;
+jump_max = 2;
 // jump_max = array_length(jump_speed); // Max amount of aerial multi-jump-sequences. Automatically matches array size
 jump_count = 0; // Jump tracker
 
@@ -61,7 +61,7 @@ jump_input_buffer_frames = 7; // Max frames to buffer a jump input (immediately 
 jump_input_buffer_timer = 0;
 
 // Frames after leaving ground where jump is still allowed (coyote jump time)
-coyote_jump_frames = 4;
+coyote_jump_frames = 6;
 coyote_jump_timer = 0;
 
 // Frames after leaving ground where gravity is ignored
@@ -78,6 +78,7 @@ jump_combo_timeout = 120; // 2 seconds at 60 FPS
 #region WALL INTERACTIONS
 ledge_grab_timer = 0;
 ledge_grab_frames = 60; // How many frames player hangs on a ledge
+ledge_jump_speed = -4.0; // Initial upward velocity for a ledge jump
 
 // Timer for how long the player "grabs" the wall before sliding
 wall_grab_timer = 0;
@@ -152,27 +153,37 @@ image_index_previous = 0;
 
 on_ground = false; // needed explicitely declared, in create event, for camera object code to use
 on_wall = false;
+on_ledge = false;
 
 /// @description Determines what kind of jump is requested.
 /// @arg {bool} _key_jump
 action_request_jump = function (_key_jump) {
-    if (!_key_jump) return "";
+    
+    // TODO: Consider turning into enum or switch
+    if (!_key_jump) {
+        return "";
+    }
+        
+    // Ledge jump
+    else if (player_state == PlayerState.LEDGE_GRAB) {
+        return "ledge";
+    }
+    
+    // Wall jump (only if in wall states and have jumps left)
+    else if ((player_state == PlayerState.WALL_GRAB || player_state == PlayerState.WALL_SLIDE) && jump_count < jump_max) {
+        return "wall";
+    }
+    
+    // Air jump (in air, not on wall, with jumps left)
+    else if (player_state == PlayerState.AIR && jump_count < jump_max) {
+        return "air";
+    }
 
     // Ground jump (includes coyote + buffer)
-    if (on_ground || coyote_jump_timer > 0 || jump_input_buffer_timer > 0) {
+    else if (on_ground || coyote_jump_timer > 0 || jump_input_buffer_timer > 0) {
         if (jump_count < jump_max) {
             return "ground";
         }
-    }
-
-    // Wall jump (only if in wall states and have jumps left)
-    if ((player_state == PlayerState.WALL_GRAB || player_state == PlayerState.WALL_SLIDE) && jump_count < jump_max) {
-        return "wall";
-    }
-
-    // Air jump (in air, not on wall, with jumps left)
-    if (player_state == PlayerState.AIR && jump_count < jump_max) {
-        return "air";
     }
 
     return "";
@@ -214,6 +225,7 @@ action_execute_jump = function (_jump_type, _wall_dir=0) {
         case "ground":
             jump_input_buffer_timer = 0;
             coyote_jump_timer = 0;
+            coyote_hang_timer = 0;
             jump_count++;
             y_speed = jump_speed[jump_count - 1];
             jump_speed_sustain_timer = jump_speed_sustain_frames[jump_count - 1];
@@ -237,6 +249,14 @@ action_execute_jump = function (_jump_type, _wall_dir=0) {
             audio_stop_sound(sndPlayerWallSlide);
             player_state = PlayerState.AIR;
             break;
+        case "ledge":
+            jump_count++;
+            y_speed = ledge_jump_speed;
+            x_speed = -on_wall * 1.0; // TODO: Remove x movement after adding re-grab prevention logic
+            ledge_grab_timer = 0;
+            coyote_hang_timer = 0;
+            player_state = PlayerState.AIR;
+            break;
     }
     #endregion
 }
@@ -255,6 +275,6 @@ set_on_ground = function (_val = true) {
         coyote_hang_timer = coyote_hang_frames;
         coyote_jump_timer = coyote_jump_frames;
     } else {
-        coyote_hang_timer = 0;
+        // coyote_hang_timer = 0;
     }
 }
