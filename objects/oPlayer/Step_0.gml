@@ -50,6 +50,7 @@ if (knockback_duration_timer > 0) { knockback_duration_timer--; }
 
 // Ledge grab timer
 if (ledge_grab_timer > 0) { ledge_grab_timer--;  }
+if (ledge_regrab_lockout_timer > 0) { ledge_regrab_lockout_timer--; }
 
 // Wall jump timers
 if (wall_jump_gravity_bypass_timer > 0) { wall_jump_gravity_bypass_timer--; }
@@ -151,8 +152,16 @@ if (_key_jump_held && jump_speed_sustain_timer > 0) {
 }
 
 // --- Jump Input Buffer ---
-if (_key_jump && !on_ground) {
-    jump_input_buffer_timer = jump_input_buffer_frames;
+if (_key_jump && !on_ground && !on_wall &!on_ledge) { // TODO: Consider refactoring to player_state = PlayerState.AIR
+    // ...UNLESS we *just* performed a ledge jump in this same frame.
+    // (player_state_previous still holds LEDGE_GRAB from the start of the frame,
+    // but player_state was just set to AIR by action_execute_jump)
+    var _just_did_ledge_jump = (player_state == PlayerState.AIR && player_state_previous == PlayerState.LEDGE_GRAB);
+    
+    if (!_just_did_ledge_jump) {
+        // This is a valid buffer request (e.g., approaching ground or wall)
+        jump_input_buffer_timer = jump_input_buffer_frames;
+    }
 }
 #endregion End player actions
 
@@ -160,7 +169,7 @@ if (_key_jump && !on_ground) {
 #region STATE PHYSICS OVERRIDES
 switch (player_state) {
     case PlayerState.LEDGE_GRAB:
-        show_debug_message("LEDGE GRAB STATE - pre movement");
+        //show_debug_message("LEDGE GRAB STATE - pre movement");
         // Run through ledge grab into wall grab since they share x_speed and y_speed 
     case PlayerState.WALL_GRAB:
         x_speed = 0;
@@ -272,16 +281,46 @@ set_on_ground(_is_on_ground);
 // --- Wall Checks ---
 on_wall = place_meeting(x + 1, y, collision_tileset) - place_meeting(x - 1, y, collision_tileset);
 var _is_pressing_wall = (sign(_dir) == on_wall) && (_dir != 0);
+var _one_pixel_to_the_side_of_mask = (on_wall == 1) ? (bbox_right + 1) : (bbox_left - 1);
+var _entire_mask_against_wall = false;
 var _is_touching_grabbable_wall = false;
+
+// Ledge logic variables
+var _is_at_ledge = false;
+var _ledge_y_surface = 0; // This will store the Y-coord of the ledge's surface (the air pixel)
+var _ledge_grace_pixels = 4; // Number of pixels to snap upwards to ledge if close enough
+
 if (on_wall != 0) {
-    // A wall is grabbable if it is NOT in the non-grabbable list.
-    if (!place_meeting(x + on_wall, y, non_grabbable_solids)) {
+    
+    // --- Check for a Ledge with Grace ---
+    // We loop from our top pixel (bbox_top) up <_ledge_grace_pixels> pixels
+    for (var i = 0; i < _ledge_grace_pixels; i++) {
+        var _y_check = bbox_top - i; // The Y-pixel we are checking (starts at bbox_top, then bbox_top-1, etc.)
+        
+        // Check for a wall at this pixel
+        var _is_wall_here = position_meeting(_one_pixel_to_the_side_of_mask, _y_check, collision_tileset);
+        
+        // Check for air 1 pixel *above* this wall pixel
+        var _is_air_above = !position_meeting(_one_pixel_to_the_side_of_mask, _y_check - 1, collision_tileset);
+        
+        // If we find a wall with air above it, we've found our ledge!
+        if (_is_wall_here && _is_air_above) {
+            _is_at_ledge = true;
+            _ledge_y_surface = _y_check - 1; // This is the Y-coord of the "air" pixel (the surface we hang from)
+            break; // Stop looping, we found the highest ledge in our grace range
+        }
+    }
+
+    // --- Check for a Wall Grab ---
+    var _top_corner_touching = position_meeting(_one_pixel_to_the_side_of_mask, bbox_top, collision_tileset);
+    var _bottom_corner_touching = position_meeting(_one_pixel_to_the_side_of_mask, bbox_bottom - 8, collision_tileset);
+    _entire_mask_against_wall = _top_corner_touching && _bottom_corner_touching;
+
+    // A wall is grabbable if it is NOT in the non-grabbable list and conditions are met
+    if (!place_meeting(x + on_wall, y, non_grabbable_solids) && _entire_mask_against_wall) {
         _is_touching_grabbable_wall = true;
     }
 }
-
-// --- Ledge Checks ---
-
 #endregion
 
 
@@ -347,13 +386,23 @@ switch (player_state) {
         }
         
         // AIR -> LEDGE GRAB
-        // logic for entering ledge grab from air grab state
+        if (!on_ground && _is_pressing_wall && _is_at_ledge && ledge_regrab_lockout_timer <= 0) {
+        	player_state = PlayerState.LEDGE_GRAB;
+            ledge_grab_timer = ledge_grab_frames;
+            jump_count = 0; // Reset jumps
+            jump_speed_sustain_timer = 0;
+            
+            // Snap the player's Y position to the ledge surface we found
+            var _snap_distance_y = _ledge_y_surface - bbox_top; // This calculates the distance between our top and the ledge.
+            y += _snap_distance_y;
+        }
         
         // AIR → WALL_GRAB 
-        if (!on_ground && _is_touching_grabbable_wall && _is_pressing_wall && y_speed > 0 && wall_jump_gravity_bypass_timer <= 0) {
+        else if (!on_ground && !_is_at_ledge && _is_touching_grabbable_wall && _is_pressing_wall && y_speed > 0 && wall_jump_gravity_bypass_timer <= 0 && ledge_regrab_lockout_timer <= 0) {
             player_state = PlayerState.WALL_GRAB;
             wall_grab_timer = 0; // Reset the timer for the new grab
-            jump_count = 1; // reset jumps on wall grab
+            jump_count = 0; // reset jumps on wall grab
+            jump_speed_sustain_timer = 0;
             audio_play_sound(sndPlayerStep01, 1, false);
             scr_spawn_dust_cloud(x, y, -on_wall, on_wall);
         }
@@ -374,7 +423,7 @@ switch (player_state) {
         }
         break;
     case PlayerState.LEDGE_GRAB:
-        show_debug_message("LEDGE GRAB STATE - post movement");
+        //show_debug_message("LEDGE GRAB STATE - post movement");
         sprite_index = sPlayerOnWall;
         image_speed = 0;
         image_xscale = on_wall;
@@ -383,11 +432,13 @@ switch (player_state) {
         // Exit if timer ran out
         if (ledge_grab_timer <= 0) {
             player_state = PlayerState.AIR;
+            ledge_regrab_lockout_timer = ledge_regrab_lockout_frames; // Start ledge-grab lockout
         }
         
         // Exit if let go of ledge
         else if (!_is_pressing_wall) {
             player_state = PlayerState.AIR;
+            ledge_regrab_lockout_timer = ledge_regrab_lockout_frames; // Start ledge-grab lockout
         }
         break;
     case PlayerState.WALL_GRAB:

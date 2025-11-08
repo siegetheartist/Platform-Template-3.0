@@ -22,7 +22,7 @@
   "option_operagx_scale":0,
   "option_operagx_team_id":"c2ed3c9f-d57f-4f12-8989-076b42c32b3c",
   "option_operagx_team_name":"siegetheartist studio",
-  "option_operagx_texture_page":"4096x4096",
+  "option_operagx_texture_page":"2048x2048",
   "option_operagx_transparent_background":true,
   "option_operagx_version":"1.0.0.1",
   "resourceType":"GMOperaGXOptions",

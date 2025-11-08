@@ -170,6 +170,7 @@ if (global.debug_draw_collision) {
                     case PlayerState.IDLE:       _state_string_name = "Idle"; break;
                     case PlayerState.RUN:        _state_string_name = "Run"; break;
                     case PlayerState.AIR:        _state_string_name = "Air"; break;
+                    case PlayerState.LEDGE_GRAB: _state_string_name = "Ledge Grab"; break;
                     case PlayerState.WALL_GRAB:  _state_string_name = "Wall Grab"; break;
                     case PlayerState.WALL_SLIDE: _state_string_name = "Wall Slide"; break;
                     case PlayerState.ATTACK:     _state_string_name = "Attack"; break;

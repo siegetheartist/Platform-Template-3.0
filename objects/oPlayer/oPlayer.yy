@@ -28,7 +28,9 @@
   "physicsShape":1,
   "physicsShapePoints":[],
   "physicsStartAwake":true,
-  "properties":[],
+  "properties":[
+    {"$GMObjectProperty":"v2","%Name":"sprite_index","filters":[],"listItems":[],"multiselect":false,"name":"sprite_index","rangeEnabled":false,"rangeMax":10.0,"rangeMin":0.0,"resourceType":"GMObjectProperty","resourceVersion":"2.0","value":"sprite_index","varType":4,},
+  ],
   "resourceType":"GMObject",
   "resourceVersion":"2.0",
   "solid":false,
@@ -37,8 +39,8 @@
     "path":"sprites/sPlayerIdle/sPlayerIdle.yy",
   },
   "spriteMaskId":{
-    "name":"sprPlayerCollisionMask",
-    "path":"sprites/sprPlayerCollisionMask/sprPlayerCollisionMask.yy",
+    "name":"sPlayerIdle",
+    "path":"sprites/sPlayerIdle/sPlayerIdle.yy",
   },
   "visible":true,
 }
