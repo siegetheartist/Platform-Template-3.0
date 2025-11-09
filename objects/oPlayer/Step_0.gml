@@ -53,7 +53,6 @@ if (ledge_grab_timer > 0) { ledge_grab_timer--;  }
 if (ledge_regrab_lockout_timer > 0) { ledge_regrab_lockout_timer--; }
 
 // Wall jump timers
-if (wall_jump_gravity_bypass_timer > 0) { wall_jump_gravity_bypass_timer--; }
 if (wall_jump_move_loss_timer > 0) { wall_jump_move_loss_timer--; }
     
 // --- Variable jump sustain timer ---
@@ -113,6 +112,7 @@ if (!knockback_active) {
 
 
 #region VERTICAL MOVEMENT PHYSICS (gavity, knockback, etc)
+// TODO: Can we move wall grab & slide logic to state machine?
 // Wall slide and wall grab states handle their own vertical movement, overriding default gravity.
 // Therefore, only apply general gravity if not in those states.
 if (player_state != PlayerState.WALL_SLIDE && player_state != PlayerState.WALL_GRAB) {
@@ -144,24 +144,17 @@ if (_jump_type != "") {
     action_execute_jump(_jump_type, on_wall);
 }
 
+// TODO: Fixout of range [2] when spamming jump against wall. air wall kick-off is triggering errors
 // --- Set variable jump sustain ---
 if (_key_jump_held && jump_speed_sustain_timer > 0) {
-    y_speed = jump_speed[jump_count -1];   // sustain upward velocity
+    y_speed = jump_speed[jump_count -1];   // // Needs to run every frame to sustain upward velocity
 } else if (!_key_jump_held) {
     jump_speed_sustain_timer = 0;    // cutoff if released
 }
 
 // --- Jump Input Buffer ---
-if (_key_jump && !on_ground && !on_wall &!on_ledge) { // TODO: Consider refactoring to player_state = PlayerState.AIR
-    // ...UNLESS we *just* performed a ledge jump in this same frame.
-    // (player_state_previous still holds LEDGE_GRAB from the start of the frame,
-    // but player_state was just set to AIR by action_execute_jump)
-    var _just_did_ledge_jump = (player_state == PlayerState.AIR && player_state_previous == PlayerState.LEDGE_GRAB);
-    
-    if (!_just_did_ledge_jump) {
-        // This is a valid buffer request (e.g., approaching ground or wall)
+if (_key_jump && !on_ground && !on_wall && !on_ledge && !(player_state == PlayerState.AIR && player_state_previous == PlayerState.LEDGE_GRAB)) {
         jump_input_buffer_timer = jump_input_buffer_frames;
-    }
 }
 #endregion End player actions
 
@@ -380,6 +373,7 @@ switch (player_state) {
             image_speed = 1;
         }
         
+        // TODO: If possible, consolidate jump logic
         // Remove a jump if you got to air state by falling off a ledge and not by jumping
         if (coyote_jump_timer == 0 && !on_ground && jump_count == 0) {
             jump_count++;
@@ -398,7 +392,7 @@ switch (player_state) {
         }
         
         // AIR → WALL_GRAB 
-        else if (!on_ground && !_is_at_ledge && _is_touching_grabbable_wall && _is_pressing_wall && y_speed > 0 && wall_jump_gravity_bypass_timer <= 0 && ledge_regrab_lockout_timer <= 0) {
+        else if (!on_ground && !_is_at_ledge && _is_touching_grabbable_wall && _is_pressing_wall && y_speed > 0 && ledge_regrab_lockout_timer <= 0) {
             player_state = PlayerState.WALL_GRAB;
             wall_grab_timer = 0; // Reset the timer for the new grab
             jump_count = 0; // reset jumps on wall grab
@@ -429,14 +423,7 @@ switch (player_state) {
         image_xscale = on_wall;
     
         // LEDGE GRAB -> AIR
-        // Exit if timer ran out
-        if (ledge_grab_timer <= 0) {
-            player_state = PlayerState.AIR;
-            ledge_regrab_lockout_timer = ledge_regrab_lockout_frames; // Start ledge-grab lockout
-        }
-        
-        // Exit if let go of ledge
-        else if (!_is_pressing_wall) {
+        if (ledge_grab_timer <= 0 || !_is_pressing_wall) {
             player_state = PlayerState.AIR;
             ledge_regrab_lockout_timer = ledge_regrab_lockout_frames; // Start ledge-grab lockout
         }
@@ -454,7 +441,7 @@ switch (player_state) {
             wall_grab_timer++;
     
             // WALL GRAB -> WALL SLIDE
-            if (wall_grab_timer >= wall_grab_timer_max) {
+            if (wall_grab_timer >= wall_grab_frames) {
                 player_state = PlayerState.WALL_SLIDE;
                 audio_play_sound(sndPlayerWallSlide, 10, false);
             }

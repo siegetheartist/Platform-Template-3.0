@@ -84,15 +84,11 @@ ledge_regrab_lockout_timer = 0;
 
 // Timer for how long the player "grabs" the wall before sliding
 wall_grab_timer = 0;
-wall_grab_timer_max = 10; // Max frames to "hang" on wall before sliding
+wall_grab_frames = 10; // Max frames to "hang" on wall before sliding
 
 // Wall jump
 wall_jump_horizontal_push_off = 6; // Horizontal push when jumping off a wall
 wall_jump_speed = -4.0; // Initial upward velocity for a wall jump
-
-// Timer to suppress gravity after wall jump or wall grab
-wall_jump_gravity_bypass_frames = 20; // Max frames to bypass gravity after wall interaction (was 7)
-wall_jump_gravity_bypass_timer = 0; // Current timer for gravity suppression
 
 // Timer for how long horizontal control is disabled after wall jump
 wall_jump_move_loss_timer = 0; // Current timer for wall jump input lockout
@@ -160,7 +156,7 @@ on_ledge = false;
 /// @description Determines what kind of jump is requested.
 /// @arg {bool} _key_jump
 action_request_jump = function (_key_jump) {
-    
+    // TODO: Allow AIR JUMP Wall jump when jump_max = 1. Also move jump resets to here.
     // We only check for jumps if the key is pressed OR we have a buffer
     if (_key_jump || jump_input_buffer_timer > 0) {
 
@@ -170,10 +166,14 @@ action_request_jump = function (_key_jump) {
         }
         
         // Wall Jump
-        // TODO FIX: Using lockout timer to prevent premature air jumps, while next to wall, after ledge grab jump.
-        else if (( (player_state == PlayerState.WALL_GRAB || player_state == PlayerState.WALL_SLIDE) || 
-            (player_state == PlayerState.AIR && on_wall != 0)) 
-            && jump_count < jump_max ) {
+        else if ( (player_state == PlayerState.WALL_GRAB || player_state == PlayerState.WALL_SLIDE) && jump_count < jump_max
+            || (player_state == PlayerState.AIR && on_wall != 0) ) {
+            
+            // If performing a "kick-off", reset jump count because we have no kick-off player_state
+            if (player_state == PlayerState.AIR && on_wall != 0 && jump_max == 1) {
+                jump_count = 0;
+            }
+            
             return "wall";
         }
         
@@ -246,18 +246,16 @@ action_execute_jump = function (_jump_type, _wall_dir=0) {
         case "wall":
             y_speed = wall_jump_speed;
             x_speed = -_wall_dir * wall_jump_horizontal_push_off;
-            wall_jump_gravity_bypass_timer = wall_jump_gravity_bypass_frames;
             wall_jump_move_loss_timer = wall_jump_move_loss_frames;
-            last_wall_dir = _wall_dir; // remember which wall we jumped from
+            last_wall_dir = _wall_dir; // remember which wall we jumped from for input lockout
             audio_stop_sound(sndPlayerWallSlide);
-            show_debug_message("wall jump");
             break;
+        
         case "ledge":
             y_speed = ledge_jump_speed;
             ledge_grab_timer = 0;
             coyote_hang_timer = 0;
             ledge_regrab_lockout_timer = ledge_regrab_lockout_frames;
-            show_debug_message("ledge jump");
             break;
     }
     #endregion
