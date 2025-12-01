@@ -4,7 +4,7 @@ player_health = oGameManager.max_player_health; // Stores players current health
 invulnerable_timer = 0; // Timer for player invulnerability frames
 invulnerable_duration = 60; // How many frames player is invulnerable after taking damage (1 second at 60 FPS)
 flash_timer = 0; // Timer for visual damage indicator (blinking)
-flash_duration = 30; // How long the player sprite flashes after taking damage (0.5 seconds at 60 FPS)
+flash_duration = 30; // How long the player sprite flashes after taking damage (0.5 seconds at 60 FPS).
 #endregion
 
 
