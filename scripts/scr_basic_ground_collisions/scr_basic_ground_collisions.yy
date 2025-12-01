@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"scr_basic_ground_collisions",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"scr_basic_ground_collisions",
+  "parent":{
+    "name":"scrPlayer",
+    "path":"folders/Scripts/scrPlayer.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

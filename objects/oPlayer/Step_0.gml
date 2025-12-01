@@ -1,3 +1,6 @@
+moving_platform_collision_correction();
+
+
 #region PLAYER INPUT
 if (can_control && player_state != PlayerState.DEAD) {
     // Get keyboard/gamepad inputs and sets variables like key_left, key_right, _key_jump, etc.
@@ -6,23 +9,25 @@ if (can_control && player_state != PlayerState.DEAD) {
     // If we can't control the player, create a "zeroed-out" input struct
     // to prevent the rest of the code from crashing.
     input = {
-        left_held: 0, right_held: 0, jump_held: 0,
-        left_pressed: 0, right_pressed: 0, jump_pressed: 0, attack_pressed: 0,
+        left_held: 0, right_held: 0, down_held: 0, jump_held: 0,
+        left_pressed: 0, right_pressed: 0, down_pressed: 0, jump_pressed: 0, attack_pressed: 0,
         dir: 0
     };
 }
 
+// TODO: Consider making all the inputs instance instead of local so that functions can use them without passing in anything.
 // -- Local Variables for This Event --
 // We create local variables from the 'input' struct for easier use below.
 var _key_left = input.left_held;
 var _key_right = input.right_held;
+var _key_down = input.down_held;
 var _key_jump = input.jump_pressed;
 var _key_jump_held = input.jump_held;
 var _key_attack_pressed = input.attack_pressed;
 var _dir = input.dir;
 
 // Apply wall jump input lockout
-if (wall_jump_move_loss_timer > 0) {
+if (wall_jump_input_loss_timer > 0) {
     // If player is pressing back toward the wall we just jumped from, ignore it
     if (sign(_dir) == last_wall_dir) {
         _dir = 0;
@@ -52,117 +57,39 @@ if (knockback_duration_timer > 0) { knockback_duration_timer--; }
 if (ledge_grab_timer > 0) { ledge_grab_timer--;  }
 if (ledge_regrab_lockout_timer > 0) { ledge_regrab_lockout_timer--; }
 
-// Wall jump timers
-if (wall_jump_move_loss_timer > 0) { wall_jump_move_loss_timer--; }
-    
-// --- Variable jump sustain timer ---
-if (jump_speed_sustain_timer > 0) { jump_speed_sustain_timer--; }
+// Wall jump (input loss) timer
+if (wall_jump_input_loss_timer > 0) { wall_jump_input_loss_timer--; }
 
-// --- Coyote timers ---
-if (coyote_jump_timer > 0) { coyote_jump_timer--; }
-if (coyote_hang_timer > 0) { coyote_hang_timer--; }
-    
-// --- Jump Input Buffer timer ---
-if (jump_input_buffer_timer > 0) { jump_input_buffer_timer--; }
-    
-// --- Jump Sound Combo timer ---
-if (jump_combo_timer > 0) { jump_combo_timer--; } else { consecutive_jumps = 0; }
+// Jump timers
+timers_jump();
 #endregion
 
 
-#region HORIZONTAL MOVEMENT PHYSICS (accel, decel, knockback, etc)
-// --- Knockback Physics ---
-if (knockback_active) {
-    // Apply knockback-specific friction/deceleration
-    if (abs(x_speed) > knockback_h_friction) {
-        x_speed -= sign(x_speed) * knockback_h_friction;
-    } else {
-        x_speed = 0;
-    }
+// DEATH transition 
+if ((player_health <= 0 || y > fall_threshold) && player_state != PlayerState.DEAD) {
+    player_state = PlayerState.DEAD;
+}
 
-    // End knockback if duration timer runs out
-    if (knockback_duration_timer <= 0) {
-        knockback_active = false;
+
+#region STATE PHYSICS
+switch (player_state) {
+    case PlayerState.DEAD:
         x_speed = 0;
         y_speed = 0;
-    }
-}
-
-// --- Normal Movement Physics ---
-if (!knockback_active) {
-    
-    // TODO: Do I need this? We are already overriding in state machine
-    if (player_state == PlayerState.LEDGE_GRAB) {
-        // freeze handled in state override; do nothing here
-    }
-    else if (_dir != 0) {
-        // Accelerate towards max speed in the input direction
-        x_speed += _dir * accel;
-        x_speed = clamp(x_speed, -max_x_speed, max_x_speed);
-    } else {
-        // If no horizontal input, apply deceleration
-        if (abs(x_speed) > decel) {
-            x_speed -= sign(x_speed) * decel;
+        
+        // Check lives
+        if (oGameManager.player_lives > 0) {
+            oGameManager.player_lives--;
+            oGameManager.next_action = "respawn";
         } else {
-            x_speed = 0;
+            oGameManager.next_action = "game_over";
         }
-    }
-}
-#endregion
-
-
-#region VERTICAL MOVEMENT PHYSICS (gavity, knockback, etc)
-// TODO: Can we move wall grab & slide logic to state machine?
-// Wall slide and wall grab states handle their own vertical movement, overriding default gravity.
-// Therefore, only apply general gravity if not in those states.
-if (player_state != PlayerState.WALL_SLIDE && player_state != PlayerState.WALL_GRAB) {
-    
-    // Only apply gravity if coyote hang has expired
-    if (coyote_hang_timer <= 0) {
-        y_speed += grav;
-        y_speed = min(y_speed, grav_max); // Clamp vertical speed to prevent exceeding max falling speed
-    }
-
-    // No upper clamp for y_speed when knocked back, allowing full upward impulse.
-    // Otherwise, clamp to normal max upward speed for regular jumps.
-    if (!knockback_active) {
-        y_speed = max(y_speed, -grav_max);
-    }
-}
-#endregion
-
-
-#region PLAYER ACTIONS (jump, attack, etc)
-// --- Process Attack Input ---
-scr_player_input_attack(_key_attack_pressed);
-
-// --- Process Jump Input ---
-var _jump_type = action_request_jump(_key_jump);
-
-// --- Execute Jump ---
-if (_jump_type != "") {
-    action_execute_jump(_jump_type, on_wall);
-}
-
-// TODO: Fixout of range [2] when spamming jump against wall. air wall kick-off is triggering errors
-// --- Set variable jump sustain ---
-if (_key_jump_held && jump_speed_sustain_timer > 0) {
-    y_speed = jump_speed[jump_count -1];   // // Needs to run every frame to sustain upward velocity
-} else if (!_key_jump_held) {
-    jump_speed_sustain_timer = 0;    // cutoff if released
-}
-
-// --- Jump Input Buffer ---
-if (_key_jump && !on_ground && !on_wall && !on_ledge && !(player_state == PlayerState.AIR && player_state_previous == PlayerState.LEDGE_GRAB)) {
-        jump_input_buffer_timer = jump_input_buffer_frames;
-}
-#endregion End player actions
-
-
-#region STATE PHYSICS OVERRIDES
-switch (player_state) {
+        
+        oGameManager.current_state = GAME_STATE.FADING_OUT;
+        instance_destroy();
+        break;
+    case PlayerState.CROUCH:
     case PlayerState.LEDGE_GRAB:
-        //show_debug_message("LEDGE GRAB STATE - pre movement");
         // Run through ledge grab into wall grab since they share x_speed and y_speed 
     case PlayerState.WALL_GRAB:
         x_speed = 0;
@@ -171,156 +98,86 @@ switch (player_state) {
     case PlayerState.WALL_SLIDE:
         // Apply reduced gravity for wall sliding.
         y_speed = clamp(y_speed + grav_wall, 0, grav_wall_max);
-    
-        // Stop horizontal movement.
         x_speed = 0;
         break;
     case PlayerState.ATTACK: 
         if (on_ground) {
-            x_speed = 0; // Temporarily disable horizontal movement when attacking on the ground
+            x_speed = 0;
+        } else {
+            horizontal_physics(_dir);
         }
+        vertical_physics();
         break;
-    case PlayerState.DEAD:
-    // Stop movement - you're dead
-    x_speed = 0;
-    y_speed = 0;
-    
-    // Check lives
-    if (oGameManager.player_lives > 0) {
-        oGameManager.player_lives--;
-        oGameManager.next_action = "respawn";
-    } else {
-        oGameManager.next_action = "game_over";
-    }
-    
-    oGameManager.current_state = GAME_STATE.FADING_OUT;
-    instance_destroy();
+    default:
+        horizontal_physics(_dir);
+        vertical_physics();
         break;
 }
-#endregion End state physics overrides
+#endregion End state physics
 
 
-#region HORIZONTAL MOVEMENT RESOLUTION
+#region PLAYER ACTIONS (jump, attack, etc)
+// --- Process Attack Input ---
+scr_player_input_attack(_key_attack_pressed);
 
-// --- Move horizontally until collision ---
-var _sub_pixel = .5;
+// --- Process Jump Input ---
+var _jump_type = action_request_jump(_key_jump, _key_down);
 
-if (place_meeting(x + x_speed, y, collision_tileset)) {
-    
-    // Handle upward slope movement
-    if (!place_meeting(x + x_speed, y - abs(x_speed) - 1, collision_tileset)) {
-        while (place_meeting(x + x_speed, y, collision_tileset)) {
-            y -= _sub_pixel;
-        }
-    }
-
-    // Normal movement (no slopes)
-    else { 
-        var _x_pixel_step = _sub_pixel * sign(x_speed);
-        while (!place_meeting(x + _x_pixel_step, y, collision_tileset)) {
-            x += _x_pixel_step;
-        }
-        x_speed = 0;
-    }
+// --- Execute Jump ---
+if (_jump_type != "") {
+    action_execute_jump(_jump_type, on_wall);
 }
 
-// Handle going down slopes
-if (y_speed >= 0 && !place_meeting(x + x_speed, y + 1, collision_tileset) && place_meeting(x + x_speed, y + abs(x_speed) + 1, collision_tileset)) {
-    while (!place_meeting(x + x_speed, y + _sub_pixel, collision_tileset)) {
-        y += _sub_pixel;
-    }
+// --- Set variable jump sustain ---
+if (_key_jump_held && jump_speed_sustain_timer > 0) {
+    y_speed = jump_speed[jump_count -1];   // // Needs to run every frame to sustain upward velocity
+} else if (!_key_jump_held) {
+    jump_speed_sustain_timer = 0;    // cutoff if released
 }
-
-// --- Commit to horizontal movement ---
-x += x_speed;
-
-// --- Flush out of wall to prevent corner clipping ---
-if (on_wall != 0) { // only if we know which side we're on
-    while (place_meeting(x, y, collision_tileset)) {
-        x -= _sub_pixel * on_wall; // push out opposite the wall direction
-    }
-}
-
-// --- Clamp horizontal position to room bounds based on mask of the instance ---
-var _half_sprite_mask = .5 * (bbox_right - bbox_left);
-x = clamp(x, _half_sprite_mask, room_width - _half_sprite_mask);
-#endregion
+#endregion End player actions
 
 
-#region VERTICAL MOVEMENT RESOLUTION
-// --- Move vertically until collision ---
-if (place_meeting(x, y + y_speed, collision_tileset)) {
-    var _y_pixel_step = _sub_pixel * sign(y_speed);
-    while (!place_meeting(x, y + _y_pixel_step, collision_tileset)) {
-        y += _y_pixel_step;
-    }
-    // Stop jump_speed_sustain_timer if your y_speed is less than 0 when you collide with something above you.
-    if (y_speed < 0) {
-    	jump_speed_sustain_timer = 0;
-    }
-    y_speed = 0;
-}
-
-// --- Commit Vertical Movement ---
-y += y_speed;
+#region HORIZONTAL & VERTICAL MOVEMENT
+horizontal_movement();
+vertical_movement(_key_down, _key_jump);
 #endregion
 
 
 #region COLLISION CHECKS - Post movement
-// --- Ground Check ---
-var _is_on_ground = (y_speed >= 0 && place_meeting(x, y + 1, collision_tileset));
-set_on_ground(_is_on_ground);
 
-// --- Wall Checks ---
+// Detect wall side (-1 = left, 1 = right)
 on_wall = place_meeting(x + 1, y, collision_tileset) - place_meeting(x - 1, y, collision_tileset);
 var _is_pressing_wall = (sign(_dir) == on_wall) && (_dir != 0);
-var _one_pixel_to_the_side_of_mask = (on_wall == 1) ? (bbox_right + 1) : (bbox_left - 1);
-var _entire_mask_against_wall = false;
-var _is_touching_grabbable_wall = false;
+var _touching_grabbable_wall = false;
 
-// Ledge logic variables
-var _is_at_ledge = false;
-var _ledge_y_surface = 0; // This will store the Y-coord of the ledge's surface (the air pixel)
-var _ledge_grace_pixels = 4; // Number of pixels to snap upwards to ledge if close enough
+// Flags
+var _id_wall = noone;
+var _bottom_corner_touching = false;
+var _can_wall_grab = false;
+var _can_ledge_grab = false;
 
 if (on_wall != 0) {
     
-    // --- Check for a Ledge with Grace ---
-    // We loop from our top pixel (bbox_top) up <_ledge_grace_pixels> pixels
-    for (var i = 0; i < _ledge_grace_pixels; i++) {
-        var _y_check = bbox_top - i; // The Y-pixel we are checking (starts at bbox_top, then bbox_top-1, etc.)
-        
-        // Check for a wall at this pixel
-        var _is_wall_here = position_meeting(_one_pixel_to_the_side_of_mask, _y_check, collision_tileset);
-        
-        // Check for air 1 pixel *above* this wall pixel
-        var _is_air_above = !position_meeting(_one_pixel_to_the_side_of_mask, _y_check - 1, collision_tileset);
-        
-        // If we find a wall with air above it, we've found our ledge!
-        if (_is_wall_here && _is_air_above) {
-            _is_at_ledge = true;
-            _ledge_y_surface = _y_check - 1; // This is the Y-coord of the "air" pixel (the surface we hang from)
-            break; // Stop looping, we found the highest ledge in our grace range
-        }
+    // Ledge grab: wall exists, empty space above, player top near wall top
+    _id_wall = instance_place(x + on_wall, y, objWall);
+    if (_id_wall != noone) {
+        var _wall_is_ledge = !position_meeting(on_wall == 1 ? _id_wall.bbox_left : _id_wall.bbox_right, _id_wall.bbox_top - 1, objWall);
+    	var _player_top_aligned_with_ledge = abs(bbox_top - _id_wall.bbox_top) <= 2;
+        _can_ledge_grab = _wall_is_ledge && _player_top_aligned_with_ledge;
     }
-
-    // --- Check for a Wall Grab ---
-    var _top_corner_touching = position_meeting(_one_pixel_to_the_side_of_mask, bbox_top, collision_tileset);
-    var _bottom_corner_touching = position_meeting(_one_pixel_to_the_side_of_mask, bbox_bottom - 8, collision_tileset);
-    _entire_mask_against_wall = _top_corner_touching && _bottom_corner_touching;
-
-    // A wall is grabbable if it is NOT in the non-grabbable list and conditions are met
-    if (!place_meeting(x + on_wall, y, non_grabbable_solids) && _entire_mask_against_wall) {
-        _is_touching_grabbable_wall = true;
+    
+    // Wall grab: both corners touching, wall is grabbable
+    var _top_corner_touching = position_meeting((on_wall == 1) ? (bbox_right + 1) : (bbox_left - 1), bbox_top, collision_tileset);
+    _bottom_corner_touching = position_meeting((on_wall == 1) ? (bbox_right + 1) : (bbox_left - 1), bbox_bottom - 6, collision_tileset); // -6 = grace zone
+    var _entire_mask_against_wall = _top_corner_touching && _bottom_corner_touching;
+    if (!place_meeting(x + on_wall, y, non_grabbable_solids)) {
+        _touching_grabbable_wall = true;
     }
+    _can_wall_grab = _touching_grabbable_wall && _entire_mask_against_wall;
 }
+can_wall_jump = !on_ground && _touching_grabbable_wall && _bottom_corner_touching;
 #endregion
 
-
-// DEATH transition TODO: Find a better place for this. We want to include a death animation
-if ((player_health <= 0 || y > fall_threshold) && player_state != PlayerState.DEAD) {
-    player_state = PlayerState.DEAD;
-}
 
 #region STATE MACHINE - Post movement
 switch (player_state) {
@@ -336,6 +193,11 @@ switch (player_state) {
         // IDLE -> RUN
         else if (_dir != 0) {
             player_state = PlayerState.RUN;
+        }
+        
+        // IDLE -> CROUCH
+        else if (_key_down && instance_exists(my_floor_plat)) {
+        	player_state = PlayerState.CROUCH;
         }
         break;
     case PlayerState.RUN:
@@ -364,6 +226,46 @@ switch (player_state) {
         else if (_dir == 0) { // If no input, switch to the IDLE state.
             player_state = PlayerState.IDLE;
         }
+        
+        // RUN -> CROUCH
+        else if (_key_down && instance_exists(my_floor_plat)) {
+        	player_state = PlayerState.CROUCH;
+        }
+        break;
+    case PlayerState.CROUCH:
+        sprite_index = sprPlayerCrouch;
+        image_speed = 1;
+        mask_index = sprPlayerCrouch;
+        
+        // CROUCH → AIR (e.g., walking off a ledge or actively in knockback)
+        if (!on_ground && !knockback_active) {
+            player_state = PlayerState.AIR;
+            mask_index = sPlayerIdle;
+        }
+        
+        // CROUCH -> IDLE/RUN
+        else if (!_key_down) {
+            
+            // Check for clearance above player before allowing a state change back to idle or run
+            var _idle_height   = sprite_get_bbox_bottom(sPlayerIdle) - sprite_get_bbox_top(sPlayerIdle);
+            var _crouch_height = sprite_get_bbox_bottom(sprPlayerCrouch) - sprite_get_bbox_top(sprPlayerCrouch);
+            var _height_diff   = _idle_height - _crouch_height;
+            
+            if (x_speed == 0 && !place_meeting(x, y - _height_diff, objWall)) {
+            	player_state = PlayerState.IDLE;
+                mask_index = sPlayerIdle;
+            } 
+        
+            else if (x_speed != 0 && !place_meeting(x, y - _height_diff, objWall)) {
+            	player_state = PlayerState.RUN;
+                mask_index = sPlayerIdle;
+            }
+            
+            // If you can't go back to idle/run, stay in crouch
+            else {
+            	mask_index = sprPlayerCrouch;
+            }
+        }
         break;
     case PlayerState.AIR:
         if (y_speed < 0) {
@@ -373,26 +275,22 @@ switch (player_state) {
             image_speed = 1;
         }
         
-        // TODO: If possible, consolidate jump logic
         // Remove a jump if you got to air state by falling off a ledge and not by jumping
         if (coyote_jump_timer == 0 && !on_ground && jump_count == 0) {
             jump_count++;
         }
         
         // AIR -> LEDGE GRAB
-        if (!on_ground && _is_pressing_wall && _is_at_ledge && ledge_regrab_lockout_timer <= 0) {
+        if (!on_ground && _is_pressing_wall && _can_ledge_grab && y_speed >= 0 && ledge_regrab_lockout_timer <= 0) {
         	player_state = PlayerState.LEDGE_GRAB;
             ledge_grab_timer = ledge_grab_frames;
             jump_count = 0; // Reset jumps
             jump_speed_sustain_timer = 0;
-            
-            // Snap the player's Y position to the ledge surface we found
-            var _snap_distance_y = _ledge_y_surface - bbox_top; // This calculates the distance between our top and the ledge.
-            y += _snap_distance_y;
+            y = _id_wall.bbox_top + (y - bbox_top); // Snap the player's Y position to the ledge surface
         }
         
         // AIR → WALL_GRAB 
-        else if (!on_ground && !_is_at_ledge && _is_touching_grabbable_wall && _is_pressing_wall && y_speed > 0 && ledge_regrab_lockout_timer <= 0) {
+        else if (!on_ground && _is_pressing_wall && _can_wall_grab && y_speed >= 0 && ledge_regrab_lockout_timer <= 0) {
             player_state = PlayerState.WALL_GRAB;
             wall_grab_timer = 0; // Reset the timer for the new grab
             jump_count = 0; // reset jumps on wall grab
@@ -417,7 +315,6 @@ switch (player_state) {
         }
         break;
     case PlayerState.LEDGE_GRAB:
-        //show_debug_message("LEDGE GRAB STATE - post movement");
         sprite_index = sPlayerOnWall;
         image_speed = 0;
         image_xscale = on_wall;
@@ -473,7 +370,7 @@ switch (player_state) {
        }
    
        // WALL SLIDE → AIR
-       else if (!_is_pressing_wall || !_is_touching_grabbable_wall) {
+       else if (!_is_pressing_wall || !_touching_grabbable_wall || !_bottom_corner_touching) {
            player_state = PlayerState.AIR;
            audio_stop_sound(sndPlayerWallSlide);
        }
@@ -492,8 +389,6 @@ switch (player_state) {
             audio_play_sound(sndPlayerAttack, 10, false); 
             
             // Create the attack slash object
-            // Position it relative to the player, slightly in front based on facing_direction
-            // Pass the player's variable into the function
             var _total_x_offset = scr_get_offset(sPlayerAttack, sPlayerAttackSlash, -32);
             var _slash_x = x + facing_direction * _total_x_offset;
             current_attack_slash = instance_create_layer(_slash_x, y, "ilMiddle", oPlayerAttackSlash);
@@ -502,7 +397,7 @@ switch (player_state) {
                 current_attack_slash.owner = id; // Set the owner to this player instance
                 current_attack_slash.image_xscale = facing_direction; // Match player's direction
             }
-            attack_timer = attack_duration; // Start attack timer
+            attack_timer = attack_frames; // Start attack timer
         }
      
         // When attack animation is over
@@ -520,6 +415,14 @@ switch (player_state) {
         break;
 }
 #endregion
+
+
+// Check if you get crushed
+if (place_meeting(x, y, objWall)) {
+	image_blend = c_red;
+} else {
+    image_blend = c_white;
+}
 
 
 #region UPDATE VISUALS

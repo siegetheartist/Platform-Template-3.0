@@ -197,11 +197,11 @@ if (global.debug_draw_collision) {
             var _corner_line_height = string_height(" ") + 2; // Height + 2px gap
 
             // Draw Y Position (formatted to 0 decimal places)
-            draw_text(_corner_text_x, _corner_text_y, "Y Pos: " + string_format(y, 1, 0));
+            draw_text(_corner_text_x, _corner_text_y, "Y Pos: " + string_format(y, 1, 2));
             _corner_text_y += _corner_line_height; // Move down for the next line
 
             // Draw X Position (formatted to 0 decimal places)
-            draw_text(_corner_text_x, _corner_text_y, "X Pos: " + string_format(x, 1, 0));
+            draw_text(_corner_text_x, _corner_text_y, "X Pos: " + string_format(x, 1, 2));
             _corner_text_y += _corner_line_height; // Move down for the next line
             
             // Draw Y Speed (using y_speed) - formatted to 2 decimal places

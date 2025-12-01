@@ -8,9 +8,9 @@ global.collision_environment = [
     global.collision_tsCollision,
     global.collision_tlSlopes,
     oInvisibleBlock,
-    objDestructableWall,
-    objTimedPlatform,
-    objSlope, objSlope01, objSlope02, objSlope03, objSlope04, objSlope05
+    objDestructableWall, objTimedPlatform,
+    objWall, objMovingPlatform,
+    objSlope1, objSlope2, objSlope3, objSlope4
 ];
 #endregion
 

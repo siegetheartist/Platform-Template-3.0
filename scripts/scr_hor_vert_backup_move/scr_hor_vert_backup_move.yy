@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"scr_hor_vert_backup_move",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"scr_hor_vert_backup_move",
+  "parent":{
+    "name":"scrPlayer",
+    "path":"folders/Scripts/scrPlayer.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

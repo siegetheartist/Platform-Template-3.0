@@ -1,7 +1,4 @@
 /// @description Handle collision with oEnemy
- 
-// 'other' refers to the oEnemy instance that collided with this slash
- 
 // Ensure the enemy is not already hit by this specific attack slash instance
 if (ds_list_find_index(hit_enemies, other.id) == -1) {
     // Add the enemy to the hit list to prevent multiple hits from one slash
