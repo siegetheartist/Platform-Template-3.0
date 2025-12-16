@@ -38,7 +38,6 @@ max_player_health = 4; // Maximum player health (for display and resetting healt
 layer_set_visible("Layer_Game_over", false);
 
 // Play the background music on a loop when the room starts.
-// The priority (10) determines which sounds are played if the game reaches its channel limit.
 audio_play_sound(sndLevel1, 10, true);
 
 // Set orientation of listener to be correctly upright. (default is 0,0,1,  0,1,0)

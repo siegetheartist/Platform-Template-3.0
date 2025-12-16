@@ -86,11 +86,12 @@ function moving_platform_collision_correction() {
     }
 }
 
-///-----------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------
 
 /// @description Horizontal physics calculations. Handles knockback, accel, decel.
-/// @param _dir The current directional intent
-function horizontal_physics(_dir) {
+/// @param {type} _dir The current directional intent (-1 left, 1 right, 0 none).
+/// @param {real} [_change_speed] Multiplier for max_x_speed. Optional; defaults to 1.
+function horizontal_physics(_dir, _change_speed = 1) {
     // --- Knockback Physics ---
     if (knockback_active) {
         // Apply knockback-specific friction/deceleration
@@ -113,7 +114,7 @@ function horizontal_physics(_dir) {
         if (_dir != 0) {
             // Accelerate towards max speed in the input direction
             x_speed += _dir * accel;
-            x_speed = clamp(x_speed, -max_x_speed, max_x_speed);
+            x_speed = clamp(x_speed, -max_x_speed * _change_speed, max_x_speed * _change_speed);
         } else {
             // If no horizontal input, apply deceleration
             if (abs(x_speed) > decel) {
@@ -125,7 +126,7 @@ function horizontal_physics(_dir) {
     }
 }
 
-///-----------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------
 
 /// @description Vertical physics calculations. Handles gravity, knockback, coyote time.
 function vertical_physics() {
@@ -150,11 +151,11 @@ function vertical_physics() {
     }
 }
 
-///-----------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------
 
 /// @description Helper script to check for a semi-solid platform.
-/// @param _x The checking instance's x position
-/// @param _y The checking instance's y position
+/// @param {Real} _x checking instance's x position
+/// @param {Real} _y checking instance's y position
 function check_for_semi_solid_platform(_x, _y) {
     
     var _return = noone; // Holds the return value. Using "return" directly would exit the loop.
@@ -182,7 +183,7 @@ function check_for_semi_solid_platform(_x, _y) {
     return _return; // Return the ID of the semi-solid platform
 }
 
-///-----------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------
 
 /// @description Handles horizontal movement with and without collisions with non-moving objects.
 function horizontal_movement() {
@@ -240,13 +241,13 @@ function horizontal_movement() {
     x = clamp(x, _half_sprite_mask, room_width - _half_sprite_mask);
 }
 
-///-----------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------
 
-/// @param _key_down The down input
-/// @param _key_jump The jump input
+/// @param {bool} _key_down down input
+/// @param {bool} _key_jump jump input
 /// @description Handles vertical movement with and without collisions with moving and non-moving objects.
 // TODO: Enemies won't have key press. Update code to handle this.
-function vertical_movement(_key_down, _key_jump) {
+function vertical_movement() {
     // Ceiling collisions
     if (y_speed < 0 && place_meeting(x, y + y_speed, collision_tileset)) {
         var _sub_pixel = 0.5;
@@ -341,6 +342,7 @@ function vertical_movement(_key_down, _key_jump) {
         set_on_ground(true);
     }
     
+    /*
     // Enable jumping down through semi-solid platforms
     if (_key_down && _key_jump) {
         
@@ -364,6 +366,7 @@ function vertical_movement(_key_down, _key_jump) {
             }
         }
     }
+     */
     
     // --- Commit Vertical Movement ---
     if (!place_meeting(x, y + y_speed, objWall) ) {

@@ -15,7 +15,6 @@ if (can_control && player_state != PlayerState.DEAD) {
     };
 }
 
-// TODO: Consider making all the inputs instance instead of local so that functions can use them without passing in anything.
 // -- Local Variables for This Event --
 // We create local variables from the 'input' struct for easier use below.
 var _key_left = input.left_held;
@@ -47,6 +46,7 @@ var non_grabbable_solids = [oInvisibleBlock];
 #region PLAYER TIMER MANAGEMENT
 if (invulnerable_timer > 0) { invulnerable_timer--; }
 if (flash_timer > 0) { flash_timer--; }
+    //show_debug_message("Flash timer: " + string(flash_timer));
 if (attack_timer > 0) { attack_timer--; }
     
 // Knockback Timers
@@ -59,9 +59,6 @@ if (ledge_regrab_lockout_timer > 0) { ledge_regrab_lockout_timer--; }
 
 // Wall jump (input loss) timer
 if (wall_jump_input_loss_timer > 0) { wall_jump_input_loss_timer--; }
-
-// Jump timers
-timers_jump();
 #endregion
 
 
@@ -70,25 +67,30 @@ if ((player_health <= 0 || y > fall_threshold) && player_state != PlayerState.DE
     player_state = PlayerState.DEAD;
 }
 
+// HURT
+if (player_health_previous != player_health) {
+    //damage_flash_alpha = 1;
+    player_state = PlayerState.HURT;
+    scr_obj_flash_initialize(id, 30, c_red);
+}
+//if (damage_flash_alpha > 0) {
+//	damage_flash_alpha -= .05;
+//}
+
 
 #region STATE PHYSICS
 switch (player_state) {
     case PlayerState.DEAD:
         x_speed = 0;
         y_speed = 0;
-        
-        // Check lives
-        if (oGameManager.player_lives > 0) {
-            oGameManager.player_lives--;
-            oGameManager.next_action = "respawn";
-        } else {
-            oGameManager.next_action = "game_over";
-        }
-        
-        oGameManager.current_state = GAME_STATE.FADING_OUT;
-        instance_destroy();
         break;
     case PlayerState.CROUCH:
+        x_speed = 0;
+        break
+    case PlayerState.CROUCH_WALK:
+        horizontal_physics(_dir, .3); // Slow down x_speed to a "CROUCH_WALK"
+        vertical_physics();
+        break;
     case PlayerState.LEDGE_GRAB:
         // Run through ledge grab into wall grab since they share x_speed and y_speed 
     case PlayerState.WALL_GRAB:
@@ -120,26 +122,38 @@ switch (player_state) {
 // --- Process Attack Input ---
 scr_player_input_attack(_key_attack_pressed);
 
-// --- Process Jump Input ---
-var _jump_type = action_request_jump(_key_jump, _key_down);
+jump(_key_jump, _key_down, _key_jump_held);
 
-// --- Execute Jump ---
-if (_jump_type != "") {
-    action_execute_jump(_jump_type, on_wall);
+// Enable jumping down through semi-solid platforms
+if (_key_down && _key_jump) {
+    
+    // Ensure we are on a semi-solid object
+    if ( instance_exists(my_floor_plat)
+        && ( my_floor_plat.object_index == objSemiSolidWall || object_is_ancestor(my_floor_plat.object_index, objSemiSolidWall) ) ) {
+        
+        var _y_check = max(1, my_floor_plat.y_speed + 1);
+        if ( !place_meeting(x, y + _y_check, objWall) ) {
+            // Move below the platform
+            y += 1;
+            
+            // Inherit any downward speed from my floor platform so it doesn't catch me
+            y_speed = _y_check - 1;
+            
+            // Forget this platform for a brief time so we don't get caught again
+            forget_semi_solid = my_floor_plat;
+            
+            // No more floor platform
+            set_on_ground(false);
+        }
+    }
 }
 
-// --- Set variable jump sustain ---
-if (_key_jump_held && jump_speed_sustain_timer > 0) {
-    y_speed = jump_speed[jump_count -1];   // // Needs to run every frame to sustain upward velocity
-} else if (!_key_jump_held) {
-    jump_speed_sustain_timer = 0;    // cutoff if released
-}
 #endregion End player actions
 
 
 #region HORIZONTAL & VERTICAL MOVEMENT
 horizontal_movement();
-vertical_movement(_key_down, _key_jump);
+vertical_movement();
 #endregion
 
 
@@ -182,8 +196,13 @@ can_wall_jump = !on_ground && _touching_grabbable_wall && _bottom_corner_touchin
 #region STATE MACHINE - Post movement
 switch (player_state) {
     case PlayerState.IDLE:
-        sprite_index = sPlayerIdle;
-        image_speed = 1;
+        if (player_state_previous != PlayerState.IDLE) {
+        	image_index = 0;
+            image_speed = 1;
+            show_debug_message("idle entry");
+        }
+        
+        sprite_index = player_01.sprites.idle_01;
         
         // IDLE → AIR (e.g., walking off a ledge or actively in knockback)
         if (!on_ground && !knockback_active) {
@@ -200,9 +219,15 @@ switch (player_state) {
         	player_state = PlayerState.CROUCH;
         }
         break;
+    
     case PlayerState.RUN:
-        sprite_index = sPlayerRun;
-        image_speed = 1;
+        // On entry. Runs only once.
+        if (player_state_previous != PlayerState.RUN) {
+        	image_index = 0;
+            image_speed = 1;
+        }
+        
+        sprite_index = player_01.sprites.run;
     
         // Running sound logic: play the step sound at the beginning of animation frames 0 and 2.
         if ((floor(image_index) == 0 || floor(image_index) == 2) && (floor(image_index_previous) != floor(image_index))) {
@@ -222,57 +247,120 @@ switch (player_state) {
             player_state = PlayerState.AIR;
         }
         
-        // RUN -> IDLE
+        // RUN → IDLE
         else if (_dir == 0) { // If no input, switch to the IDLE state.
             player_state = PlayerState.IDLE;
         }
         
-        // RUN -> CROUCH
-        else if (_key_down && instance_exists(my_floor_plat)) {
+        // RUN → CROUCH
+        else if (_key_down) { // used to also have: && instance_exists(my_floor_plat)
         	player_state = PlayerState.CROUCH;
         }
         break;
+    
     case PlayerState.CROUCH:
-        sprite_index = sprPlayerCrouch;
+        sprite_index = player_01.sprites.crouch;
         image_speed = 1;
-        mask_index = sprPlayerCrouch;
+        mask_index = player_01.sprites.crouch_collision_mask;
         
         // CROUCH → AIR (e.g., walking off a ledge or actively in knockback)
-        if (!on_ground && !knockback_active) {
-            player_state = PlayerState.AIR;
-            mask_index = sPlayerIdle;
+        if (!on_ground) {
+        	player_state = PlayerState.AIR;
         }
         
-        // CROUCH -> IDLE/RUN
+        // CROUCH → IDLE/RUN
         else if (!_key_down) {
-            
+
             // Check for clearance above player before allowing a state change back to idle or run
-            var _idle_height   = sprite_get_bbox_bottom(sPlayerIdle) - sprite_get_bbox_top(sPlayerIdle);
-            var _crouch_height = sprite_get_bbox_bottom(sprPlayerCrouch) - sprite_get_bbox_top(sprPlayerCrouch);
-            var _height_diff   = _idle_height - _crouch_height;
+            var _height_diff = compare_mask_heights(player_01.sprites.idle_01, player_01.sprites.crouch);
             
             if (x_speed == 0 && !place_meeting(x, y - _height_diff, objWall)) {
             	player_state = PlayerState.IDLE;
-                mask_index = sPlayerIdle;
+                mask_index = player_01.sprites.default_collision_mask;
             } 
         
             else if (x_speed != 0 && !place_meeting(x, y - _height_diff, objWall)) {
             	player_state = PlayerState.RUN;
-                mask_index = sPlayerIdle;
+                mask_index = player_01.sprites.default_collision_mask;
             }
             
-            // If you can't go back to idle/run, stay in crouch
-            else {
-            	mask_index = sprPlayerCrouch;
+        }
+        
+        // CROUCH →  CROUCH_WALK
+        else if (_dir != 0) {
+        	player_state = PlayerState.CROUCH_WALK;
+        }
+        
+        break;
+    
+    case PlayerState.CROUCH_WALK:
+        sprite_index = player_01.sprites.crouch_walk;
+        mask_index = player_01.sprites.crouch_collision_mask;
+        
+        // Animate only while moving
+        if (_dir == 0) {
+        	image_speed = 0;
+        } else {
+        	image_speed = 1;
+        }
+        
+        // CROUCH_WALK → AIR (e.g., walking off a ledge or actively in knockback)
+        if (!on_ground) {
+        	player_state = PlayerState.AIR;
+        }
+        
+        // CROUCH_WALK → IDLE/RUN
+        if (!_key_down) {
+            
+            var _height_diff = compare_mask_heights(player_01.sprites.idle_01, player_01.sprites.crouch);
+            
+            if (x_speed == 0 && !place_meeting(x, y - _height_diff, objWall)) {
+            	player_state = PlayerState.IDLE;
+                mask_index = player_01.sprites.default_collision_mask;
+            } 
+            
+            else if (x_speed != 0 && !place_meeting(x, y - _height_diff, objWall)) {
+            	player_state = PlayerState.RUN;
+                mask_index = player_01.sprites.default_collision_mask;
             }
         }
         break;
+    
     case PlayerState.AIR:
-        if (y_speed < 0) {
-            sprite_index = sPlayerAirAscending;
-        } else {
-            sprite_index = sPlayerAirDescending;
+        // On entry logic. Only runs once
+        if (player_state_previous != PlayerState.AIR) {
+        	sprite_index = player_01.sprites.jump;
             image_speed = 1;
+            image_index = 0;
+            show_debug_message("On entry: " + string(image_index) );
+        }
+        
+        // Rising
+        if (y_speed < 0) {
+            // Switch to Jump Sprite (Only if we aren't already wearing it)
+            if (sprite_index != player_01.sprites.jump) {
+                sprite_index = player_01.sprites.jump;
+                image_index = 0;
+                image_speed = 1;
+                show_debug_message("Rising. Image index: " + string(image_index) );
+                sprite_index = player_01.sprites.jump;
+            }
+            // Stop animation at the end
+            if (image_index >= image_number - 1) {
+            	image_speed = 0;
+                image_index = image_number -1;
+                show_debug_message("Done animating: " + string(image_index) );
+            }
+        } 
+        
+        // Falling
+        else {
+            // Switch to Fall Sprite (Only if we aren't already wearing it)
+            if (sprite_index != player_01.sprites.fall) {
+            	sprite_index = player_01.sprites.fall;
+                image_speed = 1;
+                image_index = 0;
+            }
         }
         
         // Remove a jump if you got to air state by falling off a ledge and not by jumping
@@ -280,7 +368,7 @@ switch (player_state) {
             jump_count++;
         }
         
-        // AIR -> LEDGE GRAB
+        // AIR → LEDGE GRAB
         if (!on_ground && _is_pressing_wall && _can_ledge_grab && y_speed >= 0 && ledge_regrab_lockout_timer <= 0) {
         	player_state = PlayerState.LEDGE_GRAB;
             ledge_grab_timer = ledge_grab_frames;
@@ -314,38 +402,41 @@ switch (player_state) {
             }
         }
         break;
+    
     case PlayerState.LEDGE_GRAB:
-        sprite_index = sPlayerOnWall;
-        image_speed = 0;
+        sprite_index = player_01.sprites.corner_grab;
+        image_speed = 1;
         image_xscale = on_wall;
     
-        // LEDGE GRAB -> AIR
+        // LEDGE GRAB → AIR
         if (ledge_grab_timer <= 0 || !_is_pressing_wall) {
             player_state = PlayerState.AIR;
             ledge_regrab_lockout_timer = ledge_regrab_lockout_frames; // Start ledge-grab lockout
         }
         break;
+    
     case PlayerState.WALL_GRAB:
-        sprite_index = sPlayerOnWall;
+        sprite_index = player_01.sprites.wall_slide;
         image_speed = 0;
         image_xscale = -on_wall;
     
-        // WALL GRAB -> AIR
+        // WALL GRAB → AIR
         if (!_is_pressing_wall) {
             player_state = PlayerState.AIR;
         } else {
             // Otherwise, continue the grab.
             wall_grab_timer++;
     
-            // WALL GRAB -> WALL SLIDE
+            // WALL GRAB → WALL SLIDE
             if (wall_grab_timer >= wall_grab_frames) {
                 player_state = PlayerState.WALL_SLIDE;
                 audio_play_sound(sndPlayerWallSlide, 10, false);
             }
         }
         break;
+    
     case PlayerState.WALL_SLIDE:
-        sprite_index = sPlayerOnWall;
+        sprite_index = player_01.sprites.wall_slide;
         image_speed = 1;
         image_xscale = -on_wall;
         if (!audio_is_playing(sndPlayerWallSlide)) {
@@ -375,43 +466,93 @@ switch (player_state) {
            audio_stop_sound(sndPlayerWallSlide);
        }
     break;
+
     case PlayerState.ATTACK: 
         // --- On-Entry Logic (first frame of the ATTACK state) ---
         if (player_state_previous != PlayerState.ATTACK) {
+            image_index = 0;
+            image_speed = 1;
             
             // Set sprites
             if (!on_ground) {
-            	sprite_index = sPlayerAirAttack;
+                if (y_speed > 0) { sprite_index = player_01.sprites.air_attack_02; } 
+                else if (y_speed < 0) { sprite_index = player_01.sprites.air_attack_01; }
             } else {
-                sprite_index = sPlayerAttack;
+                sprite_index = player_01.sprites.attack_01;
             }
             
             audio_play_sound(sndPlayerAttack, 10, false); 
             
             // Create the attack slash object
-            var _total_x_offset = scr_get_offset(sPlayerAttack, sPlayerAttackSlash, -32);
-            var _slash_x = x + facing_direction * _total_x_offset;
-            current_attack_slash = instance_create_layer(_slash_x, y, "ilMiddle", oPlayerAttackSlash);
+            //var _total_x_offset = scr_get_offset(sPlayerAttack, sPlayerAttackSlash, -32);
+            //var _slash_x = x + facing_direction * _total_x_offset;
+            //current_attack_slash = instance_create_layer(_slash_x, y, "ilMiddle", oPlayerAttackSlash);
             
-            if (instance_exists(current_attack_slash)) {
-                current_attack_slash.owner = id; // Set the owner to this player instance
-                current_attack_slash.image_xscale = facing_direction; // Match player's direction
-            }
-            attack_timer = attack_frames; // Start attack timer
+            //if (instance_exists(current_attack_slash)) {
+            //    current_attack_slash.owner = id; // Set the owner to this player instance
+            //    current_attack_slash.image_xscale = facing_direction; // Match player's direction
+            //}
+            //attack_timer = attack_frames; // Start attack timer
         }
      
         // When attack animation is over
-        if (attack_timer <= 0) {
+        if (image_index >= image_number - 1) {
             // Transition back to an appropriate state based on whether the player is on the ground
-            if (on_ground) {
-                player_state = PlayerState.IDLE;
-            } else {
-                player_state = PlayerState.AIR;
-            }
+            if (on_ground && x_speed != 0) { player_state = PlayerState.RUN; } 
+            else if (on_ground && x_speed == 0) { player_state = PlayerState.IDLE; }
+            else { player_state = PlayerState.AIR; }
         }
         break;
+    
+    case PlayerState.HURT:
+        // Entry logic. Prevent running again once set.
+        if (player_state_previous != PlayerState.HURT) {
+        	sprite_index = player_01.sprites.hurt;
+            image_index = 0;
+            image_speed = 1;
+            invulnerable_timer = invulnerable_frames;
+        }
+        
+        // Transition out of HURT state if HURT animation is over.
+        if (image_index == image_number - 1) {
+            // HURT → AIR
+            if (!on_ground) {
+            	player_state = PlayerState.AIR;
+            }
+        	// HURT → RUN
+            else if (on_ground && x_speed != 0) {
+            	player_state = PlayerState.RUN;
+            }
+            // HURT → IDLE
+            else if (on_ground && x_speed == 0) {
+            	player_state = PlayerState.IDLE;
+            } 
+        }
+
+        break;
+    
     case PlayerState.DEAD:
-    audio_play_sound(sndPlayerDeath, 10, false);
+        // On entry logic. Runs once 
+        if (player_state_previous != PlayerState.DEAD) {
+        	audio_play_sound(sndPlayerDeath, 10, false);
+            image_index = 0;
+            sprite_index = player_01.sprites.die;
+            
+            // Check lives
+            if (oGameManager.player_lives > 0) {
+                oGameManager.player_lives--;
+                oGameManager.next_action = "respawn";
+            } else {
+                oGameManager.next_action = "game_over";
+            }
+            
+            oGameManager.current_state = GAME_STATE.FADING_OUT;
+        }
+        
+        // Play death animation until finished
+        if (image_index == image_number - 1) {
+            image_speed = 0;
+        }
         break;
 }
 #endregion
@@ -441,4 +582,5 @@ if (player_state != PlayerState.ATTACK && !knockback_active) { // Prevent changi
 // Keep track of previous variable values
 image_index_previous = image_index; // // Update previous image index for animation sound logic
 player_state_previous = player_state;
+player_health_previous = player_health;
 #endregion

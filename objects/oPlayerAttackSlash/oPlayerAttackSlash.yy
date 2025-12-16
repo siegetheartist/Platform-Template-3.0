@@ -38,5 +38,5 @@
     "path":"sprites/sPlayerAttackSlash/sPlayerAttackSlash.yy",
   },
   "spriteMaskId":null,
-  "visible":true,
+  "visible":false,
 }

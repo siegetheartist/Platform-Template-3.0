@@ -1,10 +1,14 @@
 #region PLAYER HEALTH AND INVULNERABILITY
 // Initialize player health in OgameManager. 
-player_health = oGameManager.max_player_health; // Stores players current health and is updated in scr_apply_damage script
+player_health = oGameManager.max_player_health; // Stores players current health and is updated in scr_apply_damage() script
+player_health_previous = player_health; // Track last frames health total to compare
+// TODO: Rework how player takes damage and indicators
 invulnerable_timer = 0; // Timer for player invulnerability frames
-invulnerable_duration = 60; // How many frames player is invulnerable after taking damage (1 second at 60 FPS)
+invulnerable_frames = 60; // How many frames player is invulnerable after taking damage (1 second at 60 FPS)
 flash_timer = 0; // Timer for visual damage indicator (blinking)
-flash_duration = 30; // How long the player sprite flashes after taking damage (0.5 seconds at 60 FPS).
+flash_frames = 240; // How long the player sprite flashes after taking damage (0.5 seconds at 60 FPS).
+flash_color = c_red;
+damage_flash_alpha = 0;
 #endregion
 
 
@@ -25,15 +29,15 @@ can_control = false;
 #region BASE MOVEMENT 
 // Horizontal speedS
 x_speed = 0; // Horizontal speed (pixels per frame)
-max_x_speed = 2.5; // Maximum horizontal speed the player can reach
+max_x_speed = 2.25; // Maximum horizontal speed the player can reach
 
 // Acceleration and deceleration for smooth movement
 accel = 0.3;
 decel = 0.5;
 
-// TODO: Add walk and run and swap to structs - access by utilizing dot notation ex: walk.accel
+// TODO: Add walk and run and swap to structs
 walk = {
-    accel : .2,
+    accel : .3,
     decel : .5,
     max_x_speed : 2.5
 }
@@ -146,15 +150,99 @@ enum PlayerState {
     IDLE,
     RUN,
     CROUCH,
+    CROUCH_WALK,
+    ROLL,
     AIR,
     LEDGE_GRAB,
     WALL_GRAB,
     WALL_SLIDE,
     ATTACK,
+    HURT,
     DEAD
 }
 player_state = PlayerState.IDLE; // Initialize the player's state
-player_state_previous = PlayerState.IDLE; // NEW: Store the previous state for on-entry logic
+player_state_previous = PlayerState.IDLE; // Store the previous state for on-entry logic
+#endregion
+
+
+#region PLAYER ASSETS (i.e. sprites and sounds)
+player_02 = new define_player_assets(
+    {
+        attack_01 : sPlayerAttack,
+        attack_02 : sPlayerAttack,
+        attack_03 : sPlayerAttack,
+        air_attack_01 : sPlayerAirAttack,
+        air_attack_02 : sPlayerAirAttack,
+        corner_grab : sPlayerOnWall,
+        corner_climb : undefined,
+        corner_jump : undefined,
+        crouch : sprPlayerCrouch,
+        crouch_walk : sprPlayerCrouchWalk,
+        die : sPlayerDeath,
+        fall : sPlayerAirDescending,
+        hurt : sPlayerHurt,
+        idle_01 : sPlayerIdle,
+        idle_02 : undefined,
+        jump : sPlayerAirAscending,
+        roll : undefined,
+        run : sPlayerRun,
+        wall_slide : sPlayerOnWall,
+        default_collision_mask : sprPlayerCollisionMask,
+        crouch_collision_mask : sprPlayerCollisionMaskCrouch
+    },
+    {
+        attack_01 : sndPlayerAttack,
+        die : sndPlayerDeath,
+        hurt : sndPlayerTakesDamage,
+        jump_01 : sndPlayerJump,
+        jump_02 : sndPlayerJump02,
+        jump_03 : sndPlayerJump03,
+        jump_landing : sndPlayerJumpLanding,
+        run_step_01 : sndPlayerStep01,
+        run_step_02 : sndPlayerStep02,
+        wall_grab : sndPlayerWallGrab,
+        wall_slide : sndPlayerWallSlide
+    }
+);
+
+player_01 = new define_player_assets(
+    {
+        attack_01 : spr_p2_attack_01,
+        attack_02 : spr_p2_attack_02,
+        attack_03 : spr_p2_attack_03,
+        air_attack_01 : spr_p2_air_attack_1,
+        air_attack_02 : spr_p2_air_attack_2,
+        corner_grab : spr_p2_corner_grab,
+        corner_climb : spr_p2_corner_climb,
+        corner_jump : spr_p2_corner_jump,
+        crouch : spr_p2_crouch,
+        crouch_walk : spr_p2_crouch_walk,
+        die : spr_p2_die,
+        fall : spr_p2_fall,
+        hurt : spr_p2_hurt,
+        idle_01 : spr_p2_idle,
+        idle_02 : spr_p2_idle_2,
+        jump : spr_p2_jump,
+        roll : spr_p2_roll_3,
+        run : spr_p2_run,
+        wall_slide : spr_p2_wall_slide,
+        default_collision_mask : spr_p2_collision_mask_01,
+        crouch_collision_mask : spr_p2_collision_mask_02
+    },
+    {
+        attack_01 : sndPlayerAttack,
+        die : sndPlayerDeath,
+        hurt : sndPlayerTakesDamage,
+        jump_01 : sndPlayerJump,
+        jump_02 : sndPlayerJump02,
+        jump_03 : sndPlayerJump03,
+        jump_landing : sndPlayerJumpLanding,
+        run_step_01 : sndPlayerStep01,
+        run_step_02 : sndPlayerStep02,
+        wall_grab : sndPlayerWallGrab,
+        wall_slide : sndPlayerWallSlide
+    }
+);
 #endregion
 
 
@@ -176,9 +264,6 @@ image_index_previous = 0;
 
 on_ground = false; // Re-assigned in jump logic, vertical physics (via ending coyote timer) and vertical move/collide
 on_wall = false;
-on_ledge = false; // TODO: Build requirements for on_ledge consideration. Not started yet
-//can_ledge_grab = false;
-//can_wall_grab = false
 can_wall_jump = false;
 
 
@@ -210,7 +295,7 @@ action_request_jump = function (_key_jump, _key_down) {
     	_floor_is_solid = true;
     }
 
-    // --- Jump Input Buffer --- TODO: Add on_ledge once it's made
+    // --- Jump Input Buffer ---
     if (_key_jump && !on_ground && !on_wall) {
             jump_input_buffer_timer = jump_input_buffer_frames;
     }
@@ -319,6 +404,37 @@ action_execute_jump = function (_jump_type, _wall_dir=0) {
     #endregion
 }
 
+/// @desc Set "variable" jump sustain. Jump higher if jump held.
+/// @param {bool} _key_jump_held Is the jump button being held?
+jump_sustain = function(_key_jump_held) {
+    if (_key_jump_held && jump_speed_sustain_timer > 0) {
+        y_speed = jump_speed[jump_count - 1]; // Needs to run every frame to sustain upward velocity
+    } else if (!_key_jump_held) {
+        jump_speed_sustain_timer = 0; // cutoff if released
+    }
+}
+
+/// @description Calls all jump-related logic in the correct order
+/// @param {bool} _key_jump Jump key pressed (not held)
+/// @param {bool} _key_down Down key pressed (for jumping through semi-solid platforms)
+/// @param {bool} _key_jump_held Jump key pressed AND held
+jump = function(_key_jump, _key_down, _key_jump_held) {
+    
+    // 1. Run Timers (Always)
+    timers_jump();
+
+    // 2. Check for Jump Request
+    var _jump_type = action_request_jump(_key_jump, _key_down);
+
+    // 3. Execute Jump (if requested)
+    if (_jump_type != "") {
+        action_execute_jump(_jump_type, on_wall);
+    }
+
+    // 4. Handle Sustain (Always, for variable height)
+    jump_sustain(_key_jump_held);
+}
+
 
 /// @description Set's on ground / air variables (i.e: on_ground, jump_count, jump_speed_sustain_timer, coyote_hang_timer, coyote_jump_timer).
 set_on_ground = function (_val = true) {
@@ -335,7 +451,23 @@ set_on_ground = function (_val = true) {
         coyote_jump_timer = coyote_jump_frames;
     } else {
         on_ground = false;
+        mask_index = player_01.sprites.default_collision_mask; // Resets mask after hopping through semi-solid platform
         my_floor_plat = noone; // if we are not on ground, forget platform
         coyote_hang_timer = 0;
+        
+        //if (player_state != PlayerState.ATTACK) {
+        //	player_state = PlayerState.AIR;
+        //}
     }
+}
+
+
+/// @desc Compare the heights of two different sprites and return the difference in height.
+/// @param {sprite} sprite1 description {sprite} sprite1 The first sprite (baseline).
+/// @param {sprite} sprite2 description {sprite} sprite2 The second sprite to compare against.
+/// @return {real} The height difference (sprite1 - sprite2).
+function compare_mask_heights(sprite1, sprite2) {
+    var _idle_height   = sprite_get_bbox_bottom(sprite1) - sprite_get_bbox_top(sprite1);
+    var _crouch_height = sprite_get_bbox_bottom(sprite2) - sprite_get_bbox_top(sprite2);
+    return abs(_idle_height - _crouch_height);
 }

@@ -103,7 +103,6 @@ if (global.debug_draw_collision) {
             
                     // Draw the mask's sprite at the player's position.
                     // The shader will turn it into a solid red fill.
-                    // FIXED: Pass c_red and 0.4 directly to the function.
                     draw_sprite_ext(mask_index, image_index, x, y, image_xscale, image_yscale, image_angle, c_white, 1.0);
                     
                     shader_reset();
@@ -169,11 +168,14 @@ if (global.debug_draw_collision) {
                 switch (player_state) {
                     case PlayerState.IDLE:       _state_string_name = "Idle"; break;
                     case PlayerState.RUN:        _state_string_name = "Run"; break;
+                    case PlayerState.CROUCH:        _state_string_name = "Crouch"; break;
+                    case PlayerState.CROUCH_WALK:        _state_string_name = "Crouch Walk"; break;
                     case PlayerState.AIR:        _state_string_name = "Air"; break;
                     case PlayerState.LEDGE_GRAB: _state_string_name = "Ledge Grab"; break;
                     case PlayerState.WALL_GRAB:  _state_string_name = "Wall Grab"; break;
                     case PlayerState.WALL_SLIDE: _state_string_name = "Wall Slide"; break;
                     case PlayerState.ATTACK:     _state_string_name = "Attack"; break;
+                    case PlayerState.HURT:       _state_string_name = "Hurt"; break;
                     case PlayerState.DEAD:       _state_string_name = "Dead"; break;
                 }
                 draw_text(_text_x, _text_y, "State: " + _state_string_name);
@@ -225,7 +227,8 @@ if (global.debug_draw_collision) {
             draw_text(_corner_text_x, _corner_text_y, "Wall Grab Timer: " + string(wall_grab_timer));
             _corner_text_y += _corner_line_height; // Move down for the next line
             
-            //draw_text(_corner_text_x, _corner_text_y, "Coyote Jump grace: " + string(coyote_jump_timer));
+            draw_text(_corner_text_x, _corner_text_y, "iFrames: " + string(invulnerable_timer));
+            _corner_text_y += _corner_line_height; // Move down for the next line
             
         } else {
              show_debug_message("Warning: Debug font 'fnt_debug_txt' not found for corner text.");

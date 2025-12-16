@@ -11,7 +11,6 @@ if (respawn_grace_period > 0) {
 }
 
 
-
 #region GAME STATE MACHINE
 switch (current_state) {
     case GAME_STATE.IDLE:
@@ -36,14 +35,12 @@ switch (current_state) {
         switch (next_action) {
             case "respawn":
     
-                /*
                 // Respawn logic
                 var _old_player = instance_find(oPlayer, 0);
                 if (_old_player) {
                     instance_destroy(_old_player);
                 }
-                */         
-    
+                      
                 // Create a new player instance at the last checkpoint's location.
                 var _new_player = instance_create_layer(global.checkpoint_x, global.checkpoint_y, "ilMiddle", oPlayer);
                 _new_player.can_control = false;
