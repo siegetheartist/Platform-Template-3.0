@@ -16,6 +16,7 @@ function define_player_assets(_sprites = {}, _sounds = {}) constructor {
         jump      : _sprites.jump      ?? undefined,
         fall      : _sprites.fall      ?? undefined,
         run       : _sprites.run       ?? undefined,
+        roll      : _sprites.roll       ?? undefined,
         idle_01   : _sprites.idle_01   ?? undefined,
         idle_02   : _sprites.idle_02   ?? undefined,
         die       : _sprites.die       ?? undefined,

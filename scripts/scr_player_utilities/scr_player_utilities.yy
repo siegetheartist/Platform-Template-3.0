@@ -1,9 +1,9 @@
 {
   "$GMScript":"v1",
-  "%Name":"scrFloatToInteger",
+  "%Name":"scr_player_utilities",
   "isCompatibility":false,
   "isDnD":false,
-  "name":"scrFloatToInteger",
+  "name":"scr_player_utilities",
   "parent":{
     "name":"Scripts",
     "path":"folders/Scripts.yy",

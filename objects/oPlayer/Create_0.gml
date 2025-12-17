@@ -92,6 +92,10 @@ jump_combo_timeout = 120; // 2 seconds at 60 FPS
 #endregion
 
 
+roll_input_buffer_timer = 0;
+roll_input_buffer_frames = 15;
+
+
 #region WALL INTERACTIONS
 ledge_grab_timer = 0;
 ledge_grab_frames = 90; // How many frames player hangs on a ledge

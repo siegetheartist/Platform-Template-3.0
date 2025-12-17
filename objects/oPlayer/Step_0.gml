@@ -10,7 +10,7 @@ if (can_control && player_state != PlayerState.DEAD) {
     // to prevent the rest of the code from crashing.
     input = {
         left_held: 0, right_held: 0, down_held: 0, jump_held: 0,
-        left_pressed: 0, right_pressed: 0, down_pressed: 0, jump_pressed: 0, attack_pressed: 0,
+        left_pressed: 0, right_pressed: 0, down_pressed: 0, jump_pressed: 0, roll_pressed: 0, attack_pressed: 0,
         dir: 0
     };
 }
@@ -22,6 +22,7 @@ var _key_right = input.right_held;
 var _key_down = input.down_held;
 var _key_jump = input.jump_pressed;
 var _key_jump_held = input.jump_held;
+var _key_roll = input.roll_pressed;
 var _key_attack_pressed = input.attack_pressed;
 var _dir = input.dir;
 
@@ -64,13 +65,13 @@ if (wall_jump_input_loss_timer > 0) { wall_jump_input_loss_timer--; }
 
 // DEATH transition 
 if ((player_health <= 0 || y > fall_threshold) && player_state != PlayerState.DEAD) {
-    player_state = PlayerState.DEAD;
+    set_transition_state(PlayerState.DEAD);
 }
 
 // HURT
 if (player_health_previous != player_health) {
     //damage_flash_alpha = 1;
-    player_state = PlayerState.HURT;
+    set_transition_state(PlayerState.HURT);
     scr_obj_flash_initialize(id, 30, c_red);
 }
 //if (damage_flash_alpha > 0) {
@@ -108,6 +109,10 @@ switch (player_state) {
         } else {
             horizontal_physics(_dir);
         }
+        vertical_physics();
+        break;
+    case PlayerState.ROLL:
+        horizontal_physics(_dir, 1.4); // Slow down x_speed to a "CROUCH_WALK"
         vertical_physics();
         break;
     default:
@@ -148,6 +153,21 @@ if (_key_down && _key_jump) {
     }
 }
 
+//Roll
+// Decrement roll input buffer timer
+if (roll_input_buffer_timer > 0) { 
+    roll_input_buffer_timer--;
+    show_debug_message("Roll input buffer timer: " + string(roll_input_buffer_timer)); 
+}
+    
+// Filling up roll input buffer
+if (_key_roll && roll_input_buffer_timer <= 0) { roll_input_buffer_timer = roll_input_buffer_frames; }
+
+// Executing the roll
+if (on_ground && (_key_roll || roll_input_buffer_timer > 0)) {
+	set_transition_state(PlayerState.ROLL);
+    roll_input_buffer_timer = 0;
+}
 #endregion End player actions
 
 
@@ -192,42 +212,29 @@ if (on_wall != 0) {
 can_wall_jump = !on_ground && _touching_grabbable_wall && _bottom_corner_touching;
 #endregion
 
-
+// TODO Add more robust on entry logic
 #region STATE MACHINE - Post movement
 switch (player_state) {
     case PlayerState.IDLE:
-        if (player_state_previous != PlayerState.IDLE) {
-        	image_index = 0;
-            image_speed = 1;
-            show_debug_message("idle entry");
-        }
-        
-        sprite_index = player_01.sprites.idle_01;
-        
+        set_on_entry_animation(player_01.sprites.idle_01);
+
         // IDLE → AIR (e.g., walking off a ledge or actively in knockback)
         if (!on_ground && !knockback_active) {
-            player_state = PlayerState.AIR;
+            set_transition_state(PlayerState.AIR);
         }
     
         // IDLE -> RUN
         else if (_dir != 0) {
-            player_state = PlayerState.RUN;
+            set_transition_state(PlayerState.RUN);
         }
         
         // IDLE -> CROUCH
         else if (_key_down && instance_exists(my_floor_plat)) {
-        	player_state = PlayerState.CROUCH;
+            set_transition_state(PlayerState.CROUCH);
         }
         break;
-    
     case PlayerState.RUN:
-        // On entry. Runs only once.
-        if (player_state_previous != PlayerState.RUN) {
-        	image_index = 0;
-            image_speed = 1;
-        }
-        
-        sprite_index = player_01.sprites.run;
+        set_on_entry_animation(player_01.sprites.run);
     
         // Running sound logic: play the step sound at the beginning of animation frames 0 and 2.
         if ((floor(image_index) == 0 || floor(image_index) == 2) && (floor(image_index_previous) != floor(image_index))) {
@@ -244,43 +251,41 @@ switch (player_state) {
         
         // RUN → AIR (e.g., walking off a ledge or actively in knockback)
         if (!on_ground && !knockback_active) {
-            player_state = PlayerState.AIR;
+            set_transition_state(PlayerState.AIR);
         }
         
         // RUN → IDLE
         else if (_dir == 0) { // If no input, switch to the IDLE state.
-            player_state = PlayerState.IDLE;
+            set_transition_state(PlayerState.IDLE);
         }
         
         // RUN → CROUCH
         else if (_key_down) { // used to also have: && instance_exists(my_floor_plat)
-        	player_state = PlayerState.CROUCH;
+            set_transition_state(PlayerState.CROUCH);
         }
         break;
-    
     case PlayerState.CROUCH:
-        sprite_index = player_01.sprites.crouch;
-        image_speed = 1;
+        set_on_entry_animation(player_01.sprites.crouch);
         mask_index = player_01.sprites.crouch_collision_mask;
         
         // CROUCH → AIR (e.g., walking off a ledge or actively in knockback)
         if (!on_ground) {
-        	player_state = PlayerState.AIR;
+        	set_transition_state(PlayerState.AIR);
         }
         
         // CROUCH → IDLE/RUN
         else if (!_key_down) {
-
+            
             // Check for clearance above player before allowing a state change back to idle or run
-            var _height_diff = compare_mask_heights(player_01.sprites.idle_01, player_01.sprites.crouch);
+            var _height_diff = compare_mask_heights(player_01.sprites.default_collision_mask, player_01.sprites.crouch_collision_mask);
             
             if (x_speed == 0 && !place_meeting(x, y - _height_diff, objWall)) {
-            	player_state = PlayerState.IDLE;
+            	set_transition_state(PlayerState.IDLE);
                 mask_index = player_01.sprites.default_collision_mask;
             } 
         
             else if (x_speed != 0 && !place_meeting(x, y - _height_diff, objWall)) {
-            	player_state = PlayerState.RUN;
+            	set_transition_state(PlayerState.RUN);
                 mask_index = player_01.sprites.default_collision_mask;
             }
             
@@ -288,63 +293,90 @@ switch (player_state) {
         
         // CROUCH →  CROUCH_WALK
         else if (_dir != 0) {
-        	player_state = PlayerState.CROUCH_WALK;
+        	set_transition_state(PlayerState.CROUCH_WALK);
         }
         
         break;
-    
     case PlayerState.CROUCH_WALK:
-        sprite_index = player_01.sprites.crouch_walk;
+        set_on_entry_animation(player_01.sprites.crouch_walk);
         mask_index = player_01.sprites.crouch_collision_mask;
-        
-        // Animate only while moving
-        if (_dir == 0) {
-        	image_speed = 0;
-        } else {
-        	image_speed = 1;
-        }
         
         // CROUCH_WALK → AIR (e.g., walking off a ledge or actively in knockback)
         if (!on_ground) {
-        	player_state = PlayerState.AIR;
+        	set_transition_state(PlayerState.AIR);
+        }
+        
+        // CROUCH_WALK → CROUCH
+        else if (x_speed == 0) {
+        	set_transition_state(PlayerState.CROUCH);
         }
         
         // CROUCH_WALK → IDLE/RUN
-        if (!_key_down) {
+        else if (!_key_down) {
             
-            var _height_diff = compare_mask_heights(player_01.sprites.idle_01, player_01.sprites.crouch);
+            var _height_diff = compare_mask_heights(player_01.sprites.default_collision_mask, player_01.sprites.crouch_collision_mask);
             
             if (x_speed == 0 && !place_meeting(x, y - _height_diff, objWall)) {
-            	player_state = PlayerState.IDLE;
+            	set_transition_state(PlayerState.IDLE);
                 mask_index = player_01.sprites.default_collision_mask;
             } 
             
             else if (x_speed != 0 && !place_meeting(x, y - _height_diff, objWall)) {
-            	player_state = PlayerState.RUN;
+            	set_transition_state(PlayerState.RUN);
                 mask_index = player_01.sprites.default_collision_mask;
             }
         }
         break;
-    
-    case PlayerState.AIR:
-        // On entry logic. Only runs once
-        if (player_state_previous != PlayerState.AIR) {
-        	sprite_index = player_01.sprites.jump;
-            image_speed = 1;
-            image_index = 0;
-            show_debug_message("On entry: " + string(image_index) );
+    case PlayerState.ROLL:
+        if (player_state_previous != player_state) {
+            set_animation(player_01.sprites.roll);
+            player_state_previous = player_state;
+            show_debug_message("Entered " + string(player_state));
+            mask_index = player_01.sprites.crouch_collision_mask;
+            invulnerable_timer = 20; // 20 iframes
         }
+        
+        var _height_diff = compare_mask_heights(player_01.sprites.default_collision_mask, player_01.sprites.crouch_collision_mask);
+        
+        if (image_index >= image_number - 1) {
+        	// ROLL → AIR
+            if (!on_ground) {
+            	set_transition_state(PlayerState.AIR);
+                mask_index = player_01.sprites.default_collision_mask;
+            }
+            
+            // ROLL → CROUCH
+            else if (on_ground && _key_down) {
+            	set_transition_state(PlayerState.CROUCH);
+            }
+            
+            // ROLL → IDLE/RUN
+            else if (on_ground && !place_meeting(x, y - _height_diff, objWall)) {
+            	if (x_speed != 0) {
+                	set_transition_state(PlayerState.RUN);
+                    mask_index = player_01.sprites.default_collision_mask;
+                } else {
+                	set_transition_state(PlayerState.IDLE);
+                    mask_index = player_01.sprites.default_collision_mask;
+                }
+            } 
+            
+            // AVOID GETTING CRUSHED. Transition to crouch if there is a wall above you
+            else {
+                if (x_speed != 0) {
+                	set_transition_state(PlayerState.CROUCH_WALK);
+                } else {
+                	set_transition_state(PlayerState.CROUCH);
+                }
+            }
+        }
+        break;
+    case PlayerState.AIR:
+        set_on_entry_animation(player_01.sprites.jump);
         
         // Rising
         if (y_speed < 0) {
-            // Switch to Jump Sprite (Only if we aren't already wearing it)
-            if (sprite_index != player_01.sprites.jump) {
-                sprite_index = player_01.sprites.jump;
-                image_index = 0;
-                image_speed = 1;
-                show_debug_message("Rising. Image index: " + string(image_index) );
-                sprite_index = player_01.sprites.jump;
-            }
+            show_debug_message("image index: " + string(image_index) );
             // Stop animation at the end
             if (image_index >= image_number - 1) {
             	image_speed = 0;
@@ -357,9 +389,7 @@ switch (player_state) {
         else {
             // Switch to Fall Sprite (Only if we aren't already wearing it)
             if (sprite_index != player_01.sprites.fall) {
-            	sprite_index = player_01.sprites.fall;
-                image_speed = 1;
-                image_index = 0;
+            	set_animation(player_01.sprites.fall);
             }
         }
         
@@ -370,7 +400,7 @@ switch (player_state) {
         
         // AIR → LEDGE GRAB
         if (!on_ground && _is_pressing_wall && _can_ledge_grab && y_speed >= 0 && ledge_regrab_lockout_timer <= 0) {
-        	player_state = PlayerState.LEDGE_GRAB;
+        	set_transition_state(PlayerState.LEDGE_GRAB);
             ledge_grab_timer = ledge_grab_frames;
             jump_count = 0; // Reset jumps
             jump_speed_sustain_timer = 0;
@@ -379,7 +409,7 @@ switch (player_state) {
         
         // AIR → WALL_GRAB 
         else if (!on_ground && _is_pressing_wall && _can_wall_grab && y_speed >= 0 && ledge_regrab_lockout_timer <= 0) {
-            player_state = PlayerState.WALL_GRAB;
+            set_transition_state(PlayerState.WALL_GRAB);
             wall_grab_timer = 0; // Reset the timer for the new grab
             jump_count = 0; // reset jumps on wall grab
             jump_speed_sustain_timer = 0;
@@ -396,48 +426,43 @@ switch (player_state) {
                 scr_spawn_dust_cloud(x, y, facing_direction);
             }
             if (_dir != 0) {
-                player_state = PlayerState.RUN;
+                set_transition_state(PlayerState.RUN);
             } else {
-                player_state = PlayerState.IDLE;
+                //player_state = PlayerState.IDLE;
+                set_transition_state(PlayerState.IDLE);
             }
         }
         break;
-    
     case PlayerState.LEDGE_GRAB:
-        sprite_index = player_01.sprites.corner_grab;
-        image_speed = 1;
+        set_on_entry_animation(player_01.sprites.corner_grab);
         image_xscale = on_wall;
     
         // LEDGE GRAB → AIR
         if (ledge_grab_timer <= 0 || !_is_pressing_wall) {
-            player_state = PlayerState.AIR;
+            set_transition_state(PlayerState.AIR);
             ledge_regrab_lockout_timer = ledge_regrab_lockout_frames; // Start ledge-grab lockout
         }
         break;
-    
     case PlayerState.WALL_GRAB:
-        sprite_index = player_01.sprites.wall_slide;
-        image_speed = 0;
+        set_on_entry_animation(player_01.sprites.wall_slide);
         image_xscale = -on_wall;
     
         // WALL GRAB → AIR
         if (!_is_pressing_wall) {
-            player_state = PlayerState.AIR;
+            set_transition_state(PlayerState.AIR);
         } else {
             // Otherwise, continue the grab.
             wall_grab_timer++;
     
             // WALL GRAB → WALL SLIDE
             if (wall_grab_timer >= wall_grab_frames) {
-                player_state = PlayerState.WALL_SLIDE;
+                set_transition_state(PlayerState.WALL_SLIDE);
                 audio_play_sound(sndPlayerWallSlide, 10, false);
             }
         }
         break;
-    
     case PlayerState.WALL_SLIDE:
-        sprite_index = player_01.sprites.wall_slide;
-        image_speed = 1;
+        set_on_entry_animation(player_01.sprites.wall_slide);
         image_xscale = -on_wall;
         if (!audio_is_playing(sndPlayerWallSlide)) {
             audio_play_sound(sndPlayerWallSlide, 10, false);
@@ -453,32 +478,28 @@ switch (player_state) {
        // WALL SLIDE → IDLE/RUN (only after lock expires)
        if (on_ground && y_speed >= 0) {
            if (_dir != 0) {
-               player_state = PlayerState.RUN;
+               set_transition_state(PlayerState.RUN);
            } else {
-               player_state = PlayerState.IDLE;
+               set_transition_state(PlayerState.IDLE);
            }
            audio_stop_sound(sndPlayerWallSlide);
        }
    
        // WALL SLIDE → AIR
        else if (!_is_pressing_wall || !_touching_grabbable_wall || !_bottom_corner_touching) {
-           player_state = PlayerState.AIR;
+           set_transition_state(PlayerState.AIR);
            audio_stop_sound(sndPlayerWallSlide);
        }
     break;
-
     case PlayerState.ATTACK: 
         // --- On-Entry Logic (first frame of the ATTACK state) ---
-        if (player_state_previous != PlayerState.ATTACK) {
-            image_index = 0;
-            image_speed = 1;
-            
+        if (player_state_previous != player_state) {
             // Set sprites
             if (!on_ground) {
-                if (y_speed > 0) { sprite_index = player_01.sprites.air_attack_02; } 
-                else if (y_speed < 0) { sprite_index = player_01.sprites.air_attack_01; }
+                if (y_speed > 0) { set_animation(player_01.sprites.air_attack_02); } 
+                else if (y_speed < 0) { set_animation(player_01.sprites.air_attack_01); }
             } else {
-                sprite_index = player_01.sprites.attack_01;
+                set_animation(player_01.sprites.attack_01);
             }
             
             audio_play_sound(sndPlayerAttack, 10, false); 
@@ -493,50 +514,50 @@ switch (player_state) {
             //    current_attack_slash.image_xscale = facing_direction; // Match player's direction
             //}
             //attack_timer = attack_frames; // Start attack timer
+            
+            player_state_previous = player_state;
+            show_debug_message("Entered " + string(player_state));
         }
      
         // When attack animation is over
         if (image_index >= image_number - 1) {
             // Transition back to an appropriate state based on whether the player is on the ground
-            if (on_ground && x_speed != 0) { player_state = PlayerState.RUN; } 
-            else if (on_ground && x_speed == 0) { player_state = PlayerState.IDLE; }
-            else { player_state = PlayerState.AIR; }
+            if (on_ground && x_speed != 0) { set_transition_state(PlayerState.RUN); } 
+            else if (on_ground && x_speed == 0) { set_transition_state(PlayerState.IDLE); }
+            else { set_transition_state(PlayerState.AIR); }
         }
         break;
-    
     case PlayerState.HURT:
         // Entry logic. Prevent running again once set.
-        if (player_state_previous != PlayerState.HURT) {
-        	sprite_index = player_01.sprites.hurt;
-            image_index = 0;
-            image_speed = 1;
+        if (player_state_previous != player_state) {
+        	set_animation(player_01.sprites.hurt);
             invulnerable_timer = invulnerable_frames;
+            player_state_previous = player_state;
+            show_debug_message("Entered " + string(player_state));
         }
         
         // Transition out of HURT state if HURT animation is over.
-        if (image_index == image_number - 1) {
+        if (image_index >= image_number - 1) {
             // HURT → AIR
             if (!on_ground) {
-            	player_state = PlayerState.AIR;
+            	set_transition_state(PlayerState.AIR);
             }
         	// HURT → RUN
             else if (on_ground && x_speed != 0) {
-            	player_state = PlayerState.RUN;
+            	set_transition_state(PlayerState.RUN);
             }
             // HURT → IDLE
             else if (on_ground && x_speed == 0) {
-            	player_state = PlayerState.IDLE;
+            	set_transition_state(PlayerState.IDLE);
             } 
         }
 
         break;
-    
     case PlayerState.DEAD:
         // On entry logic. Runs once 
-        if (player_state_previous != PlayerState.DEAD) {
+        if (player_state_previous != player_state) {
         	audio_play_sound(sndPlayerDeath, 10, false);
-            image_index = 0;
-            sprite_index = player_01.sprites.die;
+            set_animation(player_01.sprites.die);
             
             // Check lives
             if (oGameManager.player_lives > 0) {
@@ -547,10 +568,13 @@ switch (player_state) {
             }
             
             oGameManager.current_state = GAME_STATE.FADING_OUT;
+            
+            player_state_previous = player_state;
+            show_debug_message("Entered " + string(player_state));
         }
         
         // Play death animation until finished
-        if (image_index == image_number - 1) {
+        if (image_index >= image_number - 1) {
             image_speed = 0;
         }
         break;
@@ -581,6 +605,6 @@ if (player_state != PlayerState.ATTACK && !knockback_active) { // Prevent changi
 #region BOOKKEEPING
 // Keep track of previous variable values
 image_index_previous = image_index; // // Update previous image index for animation sound logic
-player_state_previous = player_state;
+//player_state_previous = player_state;
 player_health_previous = player_health;
 #endregion
