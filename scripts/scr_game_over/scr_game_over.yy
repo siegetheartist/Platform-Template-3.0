@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"scr_game_over",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"scr_game_over",
+  "parent":{
+    "name":"scrUI",
+    "path":"folders/Scripts/scrUI.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

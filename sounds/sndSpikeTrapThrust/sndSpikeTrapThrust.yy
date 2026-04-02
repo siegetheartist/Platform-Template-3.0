@@ -1,0 +1,26 @@
+{
+  "$GMSound":"v2",
+  "%Name":"sndSpikeTrapThrust",
+  "audioGroupId":{
+    "name":"audiogroup_default",
+    "path":"audiogroups/audiogroup_default",
+  },
+  "bitDepth":1,
+  "channelFormat":2,
+  "compression":3,
+  "compressionQuality":4,
+  "conversionMode":0,
+  "duration":2.8578684,
+  "exportDir":"",
+  "name":"sndSpikeTrapThrust",
+  "parent":{
+    "name":"sndHazards",
+    "path":"folders/Sounds/sndHazards.yy",
+  },
+  "preload":false,
+  "resourceType":"GMSound",
+  "resourceVersion":"2.0",
+  "sampleRate":44100,
+  "soundFile":"sndSpikeTrapThrust.mp3",
+  "volume":0.3,
+}

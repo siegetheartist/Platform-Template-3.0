@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"scr_spawn_dust_cloud",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"scr_spawn_dust_cloud",
+  "parent":{
+    "name":"scrPlayer",
+    "path":"folders/Scripts/scrPlayer.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

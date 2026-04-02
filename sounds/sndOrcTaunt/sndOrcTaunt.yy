@@ -1,0 +1,26 @@
+{
+  "$GMSound":"v2",
+  "%Name":"sndOrcTaunt",
+  "audioGroupId":{
+    "name":"audiogroup_default",
+    "path":"audiogroups/audiogroup_default",
+  },
+  "bitDepth":1,
+  "channelFormat":1,
+  "compression":3,
+  "compressionQuality":4,
+  "conversionMode":0,
+  "duration":0.7828345,
+  "exportDir":"",
+  "name":"sndOrcTaunt",
+  "parent":{
+    "name":"sndOrc",
+    "path":"folders/Sounds/sndOrc.yy",
+  },
+  "preload":false,
+  "resourceType":"GMSound",
+  "resourceVersion":"2.0",
+  "sampleRate":44100,
+  "soundFile":"sndOrcTaunt.wav",
+  "volume":0.89,
+}

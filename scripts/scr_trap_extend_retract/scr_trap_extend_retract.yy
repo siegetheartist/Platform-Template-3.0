@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"scr_trap_extend_retract",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"scr_trap_extend_retract",
+  "parent":{
+    "name":"scrHazards",
+    "path":"folders/Scripts/scrHazards.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"scr_player_input_attack",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"scr_player_input_attack",
+  "parent":{
+    "name":"scrPlayer",
+    "path":"folders/Scripts/scrPlayer.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

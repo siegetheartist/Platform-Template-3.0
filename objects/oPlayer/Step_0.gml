@@ -1,235 +1,298 @@
-#region CHECKS
+#region INPUT AND VARIABLES
+// -- Universal Input Handling --
+// The condition to check for input is now in the player object.
+if (can_control && player_state != PlayerState.DEAD) {
+    // Get the raw input from our universal script.
+    // We store it in an instance variable `input` so all other scripts/events can access it if needed.
+    input = scr_get_input(); 
+} else {
+    // If we can't control the player, create a "zeroed-out" input struct
+    // to prevent the rest of the code from crashing.
+    input = {
+        left_held: 0, right_held: 0, jump_held: 0,
+        left_pressed: 0, right_pressed: 0, jump_pressed: 0, attack_pressed: 0,
+        dir: 0
+    };
+}
 
+// -- Local Variables for This Event --
+// We create local variables from the 'input' struct for easier use below.
+var _key_left = input.left_held;
+var _key_right = input.right_held;
+var _key_jump = input.jump_pressed;
+var _key_jump_held = input.jump_held;
+var _key_attack_pressed = input.attack_pressed;
+var _dir = input.dir;
+
+// --- Collision Tileset ---
+var collision_cave01 = layer_tilemap_get_id("t_Collision"); // main room titleset
+var collision_slopes = layer_tilemap_get_id("tl_slopes"); // new layer to handle slopes
+var collision_tileset = [collision_cave01, collision_slopes, objDestructableWall, objTimedPlatform, oInvisibleBlock]; // new variable to hold all collidables
+// rename collision solids?
+
+// This group contains only the objects that should NOT allow wall grabs.
+var non_grabbable_solids = [oInvisibleBlock];
+#endregion
+
+
+#region COLLISION CHECKS
 // --- Ground Check ---
-var _on_ground = place_meeting(x, y + 1, oBlock);
-
-// --- Movement check ---
-var _is_moving = hsp != 0;
+var _on_ground = place_meeting(x, y + 1, collision_tileset);
 
 // --- Vertical State Checks ---
-var _is_ascending = vsp < 0; // True if moving upwards
-var _is_descending = vsp > 0; // True if moving downwards
+var _is_ascending = vsp < 0;
 
-//  --- Touching wall check
-// Returns: 1 if wall on right, -1 on left, and 0 if no wall
-var _on_wall = place_meeting(x+1, y, oBlock) - place_meeting(x-1, y, oBlock); 
+// --- Wall Check ---
+var _on_wall = place_meeting(x + 1, y, collision_tileset) - place_meeting(x - 1, y, collision_tileset);
+var _is_touching_wall = (_on_wall != 0);
+var _is_pressing_wall = (sign(_dir) == _on_wall) && (_dir != 0);
 
-#endregion
-
-#region GET INPUTS
-// Only get inputs if the player has control.
-if (can_control) {
-    var _key_left = keyboard_check(ord("A"));
-    var _key_right = keyboard_check(ord("D"));
-    var _key_jump = keyboard_check_pressed(vk_space);
-    var _key_jump_held = keyboard_check(vk_space);
-    var _key_down = keyboard_check(ord("S")); // Check for 'S' key for fast fall/drop
+// Check if the wall being touched is GRABBABLE
+var _is_touching_grabbable_wall = false;
+if (_is_touching_wall) {
+    // A wall is grabbable if it is NOT in the non-grabbable list.
+    if (!place_meeting(x + _on_wall, y, non_grabbable_solids)) {
+        _is_touching_grabbable_wall = true;
+    }
 }
 #endregion
 
-#region HORIZONTAL MOVEMENT
-if (can_control) {
-    // --- Decrement wall jump delay ---
-    // Reduces the delay counter by 1 each frame, ensuring it doesn't go below 0.
-    wall_jump_delay = max(wall_jump_delay - 1, 0);
 
-    var _dir = 0; // Initialize _dir to 0. This will be the *effective* direction for acceleration.
+#region TIMER MANAGEMENT
+// --- Player Timers ---
+if (invulnerable_timer > 0) { invulnerable_timer--; }
+if (flash_timer > 0) { flash_timer--; }
+if (attack_timer > 0) { attack_timer--; }
+    
+// Knockback Timers
+if (knockback_cooldown_timer > 0) { knockback_cooldown_timer--; }
+if (knockback_duration_timer > 0) { knockback_duration_timer--; }
+    
+// Jump combo logic
+if (jump_combo_timer > 0) {
+    jump_combo_timer--;
+} else {
+    consecutive_jumps = 0;
+}
 
-    // Only get raw directional input if the wall jump delay has expired
-    if (wall_jump_delay == 0) {
-        _dir = _key_right - _key_left;
+// // Wall grab timer and wall jump gravity bypass
+if (wall_jump_gravity_bypass > 0) {
+    wall_jump_gravity_bypass--;
+}
+    
+// Wall jump move loss timer
+if (wall_jump_move_loss > 0) {
+    wall_jump_move_loss--;
+    _dir = 0; // Input is locked during wall jump move loss
+    // Only transition to AIR if not currently attacking when the move loss ends
+    if (wall_jump_move_loss <= 0 && player_state != PlayerState.ATTACK) {
+        player_state = PlayerState.AIR;
     }
+}
+#endregion
 
-    // Determine if the player is in a 'wall clinging' state (airborne, on wall, not fast-falling)
-    var _is_wall_clinging = (_on_wall != 0) && (!_on_ground) && (!_key_down);
 
-    // If airborne wall clinging, nullify input and kill hsp
-    if (_is_wall_clinging) {
-        _dir = 0; // Nullify horizontal input if clinging to a wall (without fast-falling)
-        hsp = 0; // Explicitly kill horizontal speed to prevent jitter when airborne wall clinging
+
+#region GENERAL VERTICAL MOVEMENT PHYSICS
+// Wall slide and wall grab states handle their own vertical movement, overriding default gravity.
+// Therefore, only apply general gravity if not in those states.
+if (player_state != PlayerState.WALL_SLIDE && player_state != PlayerState.WALL_GRAB) {
+    // Apply gravity to vertical speed.
+    vsp += grav;
+    // Clamp vertical speed to prevent it from exceeding max falling speed.
+    vsp = min(vsp, grav_max);
+    // No upper clamp for vsp when knocked back, allowing full upward impulse.
+    // Otherwise, clamp to normal max upward speed for regular jumps.
+    if (!knockback_active) {
+        vsp = max(vsp, -grav_max);
     }
-    // NEW: Jitter fix for when on ground and pressing into a wall
-    else if (_on_ground && _dir != 0 && place_meeting(x + _dir, y, oBlock)) {
-        hsp = 0; // If on the ground and trying to move into a wall, immediately set hsp to 0
-        _dir = 0; // Also nullify _dir for this frame to prevent further acceleration
+}
+#endregion
+
+
+
+#region JUMP LOGIC
+// We check for jump input here, before state transitions, to ensure that
+// a jump can be registered even in the brief window after leaving the ground (coyote time).
+if (scr_player_input_jump(_key_jump, _on_ground)) {
+}
+#endregion
+
+
+
+
+
+#region STATE TRANSITIONS
+// Attack Input Check (takes priority over other transitions) - Now calls a dedicated script
+scr_player_input_attack(_key_attack_pressed); // This script will handle the transition to ATTACK state
+
+// Transition from wall slide to ground
+if (_on_ground && player_state == PlayerState.WALL_SLIDE) {
+    if (_dir != 0) {
+        player_state = PlayerState.RUN;
+    } else {
+        player_state = PlayerState.IDLE;
     }
+}
 
 
-    // --- Apply Acceleration/Deceleration ---
-    // This block now applies acceleration/deceleration based on the (potentially nullified) _dir.
-    // If _is_wall_clinging or grounded-against-wall fix applied, _dir is 0 and hsp is already 0,
-    // so this block won't accidentally re-introduce movement or unnecessary deceleration calculations.
-    if (_dir != 0) { 
-        hsp += _dir * accel; 
-    } else { 
-        if (hsp > 0) {
-            hsp = max(hsp - decel, 0);
+// Universal transition from air to ground
+if (_on_ground && player_state == PlayerState.AIR) {
+    // Spawn dust cloud on landing
+    scr_spawn_dust_cloud(x, y, facing_direction);
+
+    // Check if the player was truly in an AIR state in the previous frame
+    // to prevent playing the landing sound immediately after initiating a jump.
+    if (player_state_previous == PlayerState.AIR) {
+        // Play landing sound
+        audio_play_sound(sndPlayerJumpLanding, 10, false);
+        
+        // Spawn dust cloud on landing
+        scr_spawn_dust_cloud(x, y, facing_direction);
+    }
+    
+    // Transition to appropriate ground state
+    if (_dir != 0) {
+        player_state = PlayerState.RUN;
+    } else {
+        player_state = PlayerState.IDLE;
+    }
+}
+// Universal transition from ground to air (e.g., walking off a ledge)
+// Also ensure we don't transition if actively in knockback.
+if (!_on_ground && (player_state == PlayerState.IDLE || player_state == PlayerState.RUN) && player_state != PlayerState.ATTACK && !knockback_active) {
+    player_state = PlayerState.AIR;
+}
+#endregion
+
+
+
+#region HORIZONTAL MOVEMENT PHYSICS (DEFAULT AND KNOCKBACK)
+if (knockback_active) {
+    // Apply knockback-specific friction/deceleration
+    if (abs(hsp) > knockback_h_friction) {
+        hsp -= sign(hsp) * knockback_h_friction;
+    } else {
+        hsp = 0; // Snap to zero
+    }
+    // End knockback if duration timer runs out
+    if (knockback_duration_timer <= 0) {
+        knockback_active = false;
+        hsp = 0; // Stop any residual knockback hsp
+        vsp = 0; // Stop any residual knockback vsp
+    }
+} else { // Normal movement physics if not knocked back
+    if (_dir != 0) {
+        // Accelerate towards max speed in the input direction
+        hsp += _dir * accel;
+        hsp = clamp(hsp, -max_hsp, max_hsp);
+    } else {
+        // If no horizontal input, apply deceleration
+        if (abs(hsp) > decel) {
+            hsp -= sign(hsp) * decel;
         } else {
-            hsp = min(hsp + decel, 0);
+            hsp = 0; // Snap to zero
         }
     }
+}
+#endregion
 
-    // --- Set Max Speed ---
-    // This applies regardless of wall jump delay, as current speed should always be clamped.
-    hsp = clamp(hsp, -max_hsp, max_hsp);
 
-    // --- Wall Jump ---
-    if (_on_wall !=0) && (!_on_ground) && (_key_jump) { // If: on wall, in air, and space bar pressed
-        // Change hsp to be opposite the wall, jump away from the wall
-        hsp = -_on_wall * wall_jump_distance;
-        // Change vsp to jump vertically differently than from the ground
-        vsp = jump_height_wall;
-        
-        // --- Activate wall jump delay ---
-        // Player loses horizontal control for wall_jump_delay_max frames after a wall jump.
-        wall_jump_delay = wall_jump_delay_max;
+
+#region STATE MACHINE LOGIC
+// Execute the logic for the current state
+switch (player_state) {
+    case PlayerState.IDLE:
+        scr_player_state_idle(_dir);
+        break;
+    case PlayerState.RUN:
+        scr_player_state_run(_dir);
+        break;
+    case PlayerState.AIR:
+        scr_player_state_air(_key_jump_held, _on_wall, _is_touching_grabbable_wall, _is_pressing_wall, _dir);
+        break;
+    case PlayerState.WALL_GRAB:
+        scr_player_state_wall_grab(_on_wall, _is_pressing_wall, _key_jump);
+        break;
+    case PlayerState.WALL_SLIDE:
+        scr_player_state_wall_slide(_on_wall, _is_touching_wall, _is_pressing_wall, _key_jump);
+        break;
+    case PlayerState.ATTACK: 
+        scr_player_state_attack(_on_ground); // Pass _on_ground to determine return state and modify hsp if needed
+        break;
+    case PlayerState.DEAD:
+        // Add death logic here later
+        hsp = 0;
+        vsp = 0;
+        break;
+}
+#endregion
+
+
+
+#region MOVEMENT AND COLLISION
+// --- Move horizontally until collision
+if (place_meeting(x + hsp, y, collision_tileset)) {
+    var _sub_pixel = .5;
+    var _pixel_step = _sub_pixel * sign(hsp);
+    while (!place_meeting(x + _pixel_step, y, collision_tileset)) {
+        x += _pixel_step;
     }
-} else {
-    // If player has no control, stop horizontal movement immediately.
     hsp = 0;
 }
-#endregion
 
-#region VERTICAL MOVEMENT
-if (can_control) {
-    // --- Jump Buffer Input ---
-    if (_key_jump) {
-        jump_buffer = 10; // Set jump buffer for 10 frames
+// --- Commit to horizontal movement ---
+x += hsp;
+
+
+// --- Move vertically until collision ---
+if (place_meeting(x, y + vsp, collision_tileset)) {
+    var _sub_pixel = .5;
+    var _pixel_step = _sub_pixel * sign(vsp);
+    while (!place_meeting(x, y + _pixel_step, collision_tileset)) {
+        y += _pixel_step;
     }
-    jump_buffer--; // Decrement jump buffer each frame
-
-    // --- Apply Gravity ---
-    var _grav_final = grav; // Default gravity
-    var _grav_max_final = grav_max; // Default max fall speed
-    var _vsp_min_clamp = jump_height; // Default minimum vsp for clamping (allows upward movement during jump)
-
-    // If player is on a wall AND not on the ground, AND NOT actively wall jumping this frame, AND NOT currently ascending
-    if (_on_wall != 0) && (!_on_ground) && (!(_key_jump)) && (!_is_ascending) { 
-        // Check if 'down' key is pressed to initiate a fast fall from the wall
-        if (_key_down) {
-            _grav_final = grav; // Revert to normal gravity for a faster fall
-            _grav_max_final = grav_max; // Revert to normal max fall speed
-        } else {
-            _grav_final = grav_wall; // Apply slower wall slide gravity
-            _grav_max_final = grav_max_wall; // Apply slower max fall speed when wall sliding
-        }
-        _vsp_min_clamp = 0; // When wall sliding (and not jumping away or ascending), cap upward movement at 0
-    }
-
-    vsp += _grav_final; // Apply the calculated gravity to vertical speed
-    vsp = clamp(vsp, _vsp_min_clamp, _grav_max_final); // Clamp vertical speed using the determined minimum
-
-    // --- Vertical Movement Logic & Coyote Time ---
-    if (_on_ground) {
-        vsp = 0; // Reset vertical speed when on the ground
-        coyote_time = 10; // Reset coyote time when on the ground
-        
-        // Check for buffered jump
-        if (jump_buffer > 0) {
-            vsp = jump_height; // Perform jump
-            jump_buffer = 0; // Consume jump buffer
-        }
-    } else { // If not on the ground
-        // Gravity is already applied above by 'vsp += _grav_final;', so no need to add 'vsp += grav;' here again.
-        coyote_time--; // Decrement coyote time in air
-        
-        // Check for coyote time jump
-        if (_key_jump && (coyote_time > 0)) {
-            vsp = jump_height; // Perform jump
-            coyote_time = 0; // Consume coyote time
-        }
-    }
-
-    // --- Variable Jumps ---
-    // If ascending and jump key is released, reduce jump height
-    if (_is_ascending) && (!_key_jump_held) {
-        vsp = max(vsp, jump_height_min);
-    }
-} else {
-    // If player has no control, stop vertical movement immediately.
     vsp = 0;
 }
+
+// --- Commit Vertical Movement ---
+y += vsp;
 #endregion
 
-#region COLLISIONS AND MOVEMENT
 
-// --- Horizontal Movement and Collision --
-x += hsp; // Apply horizontal movement
-if (place_meeting(x, y, oBlock)) { // Check for horizontal collision at new position
-    var _pixel_step = sign(hsp); // Determine direction to move back (1 or -1)
-    // Move player back one pixel at a time until no longer colliding
-    while (place_meeting(x, y, oBlock)) {
-        x -= _pixel_step;
-    }
-    hsp = 0; // Stop horizontal movement on collision
-}
 
-// --- Vertical Movement and Collision ---
-y += vsp; // Apply vertical movement
-if (place_meeting(x, y, oBlock)) { // Check for vertical collision at new position
-    var _pixel_step = sign(vsp); // Determine direction to move back (1 or -1)
-    // Move player back one pixel at a time until no longer colliding
-    while (place_meeting(x, y, oBlock)) {
-        y -= _pixel_step;
-    }
-    vsp = 0; // Stop vertical movement on collision
-}
-
-#endregion
-
-#region ANIMATIONS
-
-// --- Orient sprite to face movement direction ---
-if (hsp != 0) {
-    image_xscale = sign(hsp);
-}
-
-// --- Set Animation Based on State ---
-if (!_on_ground) { // If in the air
-    // Check if the player is against a wall
-    if (_on_wall != 0) {
-        sprite_index = sPlayerOnWall;
-        image_speed = 0; // Freeze the animation if it's a single frame
-        image_xscale = -_on_wall; // FLIP the sprite to face the wall
-    } else {
-        // Normal airborne animation
-        sprite_index = sPlayerInAir;
-
-        if (vsp < 0) { // If ascending
-            image_index = 0; // First frame for ascending
-            image_speed = 0; // Freeze animation
-        } else { // If descending (vsp >= 0)
-            image_index = 1; // Second frame for descending
-            image_speed = 0; // Freeze animation
-        }
-    }
-} else { // If on the ground
-    if (_is_moving) {
-        sprite_index = sPlayerRun;
-        image_speed = 1; // Play run animation
-    } else {
-        sprite_index = sPlayer; // Idle sprite
-        image_speed = 1; // Play idle animation
+#region UPDATE VISUALS
+// Update facing direction based on input or momentum
+if (player_state != PlayerState.ATTACK && !knockback_active) { // Prevent changing direction during attack or knockback
+    if (_dir != 0) {
+        facing_direction = _dir;
+    } else if (hsp != 0) {
+        facing_direction = sign(hsp);
     }
 }
-
 #endregion
 
-#region ENEMIES
 
-// Game over
-if (place_meeting(x, y, oBad)) {
-    // Player triggers a fade-out to respawn.
-    instance_create_layer(0, 0, "l_Faders", oFader);
-    oFader.fader_mode = "respawn";
-}
+#region HAZARD & ENEMY DAMAGE
+// --- Enemy/Hazard Collision and Damage ---
+var _collided_enemy = instance_place(x, y, oEnemy);
+if ((_collided_enemy != noone) && invulnerable_timer <= 0) {
+    var _damage_taken = _collided_enemy.enemy_damage;
 
-#endregion
-
-#region DELETE BEFORE PUBLISHING
-if (keyboard_check(vk_enter)) {
-    // Player triggers a fade-out to respawn.
-    instance_create_layer(0, 0, "l_Faders", oFader);
-    oFader.fader_mode = "respawn";
+    if (_damage_taken > 0) {
+        scr_apply_damage(id, _damage_taken, "player_health", sndPlayerTakesDamage);
+        scr_apply_invulnerability(id);
+        scr_apply_flash(id);
+        scr_status_effect_knockback(id, _collided_enemy.x, _collided_enemy.knockback_h_strength, _collided_enemy.knockback_v_strength);
+    }
 }
 #endregion
+
+
+#region MISC LOGIC
+// Update previous image index for animation sound logic
+image_index_previous = image_index;
+#endregion
+
+
+player_state_previous = player_state;

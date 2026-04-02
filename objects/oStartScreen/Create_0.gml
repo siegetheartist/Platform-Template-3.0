@@ -1,0 +1,1 @@
+// turn the start screen script into an object. we only use it once. no point in it being a script

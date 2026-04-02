@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"scr_spawn_tiled_decorations",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"scr_spawn_tiled_decorations",
+  "parent":{
+    "name":"scrDraw",
+    "path":"folders/Scripts/scrDraw.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

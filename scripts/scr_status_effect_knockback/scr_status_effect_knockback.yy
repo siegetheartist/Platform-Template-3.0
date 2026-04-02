@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"scr_status_effect_knockback",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"scr_status_effect_knockback",
+  "parent":{
+    "name":"scrStatusEffects",
+    "path":"folders/Scripts/scrStatusEffects.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

@@ -1,0 +1,26 @@
+{
+  "$GMSound":"v2",
+  "%Name":"sndGoblinAttack01",
+  "audioGroupId":{
+    "name":"audiogroup_default",
+    "path":"audiogroups/audiogroup_default",
+  },
+  "bitDepth":1,
+  "channelFormat":1,
+  "compression":3,
+  "compressionQuality":4,
+  "conversionMode":0,
+  "duration":1.5318367,
+  "exportDir":"",
+  "name":"sndGoblinAttack01",
+  "parent":{
+    "name":"sndGoblin",
+    "path":"folders/Sounds/sndGoblin.yy",
+  },
+  "preload":false,
+  "resourceType":"GMSound",
+  "resourceVersion":"2.0",
+  "sampleRate":44100,
+  "soundFile":"sndGoblinAttack01.wav",
+  "volume":1.0,
+}

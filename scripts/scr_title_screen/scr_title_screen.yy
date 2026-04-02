@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"scr_title_screen",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"scr_title_screen",
+  "parent":{
+    "name":"scrUI",
+    "path":"folders/Scripts/scrUI.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

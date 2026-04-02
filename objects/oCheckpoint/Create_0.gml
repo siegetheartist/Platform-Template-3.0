@@ -1,3 +1,2 @@
-// This ensures every checkpoint starts in the 'off' position.
-image_index = 0;
-image_speed = 0;
+//  CHECKPOINT VARIABLES
+is_active = false; // Is this checkpoint currently the active one?

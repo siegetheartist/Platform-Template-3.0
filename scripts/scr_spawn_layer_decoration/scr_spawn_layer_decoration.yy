@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"scr_spawn_layer_decoration",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"scr_spawn_layer_decoration",
+  "parent":{
+    "name":"scrDraw",
+    "path":"folders/Scripts/scrDraw.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

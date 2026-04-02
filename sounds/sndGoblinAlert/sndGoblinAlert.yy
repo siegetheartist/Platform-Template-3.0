@@ -1,0 +1,26 @@
+{
+  "$GMSound":"v2",
+  "%Name":"sndGoblinAlert",
+  "audioGroupId":{
+    "name":"audiogroup_default",
+    "path":"audiogroups/audiogroup_default",
+  },
+  "bitDepth":1,
+  "channelFormat":1,
+  "compression":3,
+  "compressionQuality":4,
+  "conversionMode":0,
+  "duration":1.9062812,
+  "exportDir":"",
+  "name":"sndGoblinAlert",
+  "parent":{
+    "name":"sndGoblin",
+    "path":"folders/Sounds/sndGoblin.yy",
+  },
+  "preload":false,
+  "resourceType":"GMSound",
+  "resourceVersion":"2.0",
+  "sampleRate":44100,
+  "soundFile":"sndGoblinAlert.wav",
+  "volume":0.29,
+}

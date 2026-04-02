@@ -1,0 +1,26 @@
+{
+  "$GMSound":"v2",
+  "%Name":"sndPlayerWallSlide",
+  "audioGroupId":{
+    "name":"audiogroup_default",
+    "path":"audiogroups/audiogroup_default",
+  },
+  "bitDepth":1,
+  "channelFormat":1,
+  "compression":3,
+  "compressionQuality":4,
+  "conversionMode":0,
+  "duration":0.36968255,
+  "exportDir":"",
+  "name":"sndPlayerWallSlide",
+  "parent":{
+    "name":"sndPlayer",
+    "path":"folders/Sounds/sndPlayer.yy",
+  },
+  "preload":false,
+  "resourceType":"GMSound",
+  "resourceVersion":"2.0",
+  "sampleRate":44100,
+  "soundFile":"sndPlayerWallSlide.mp3",
+  "volume":1.0,
+}
